@@ -1,0 +1,72 @@
+{
+  "name": "rain-alley-letters",
+  "type": "module",
+  "productName": "雨巷来信",
+  "version": "1.0.0",
+  "description": "一封写在雨后街角里的轻量桌面功能信。",
+  "main": "src/main.cjs",
+  "author": "雨巷来信工作室",
+  "license": "AGPL-3.0-or-later",
+  "scripts": {
+    "prepare-assets": "node tools/create-assets.cjs",
+    "start": "node start.cjs",
+    "test:cs2-uninstall": "node tools/cs2-uninstall-runtime-check.cjs",
+    "preview:cs2-uninstall": "node tools/cs2-uninstall-runtime-check.cjs --preview",
+    "prepare:opensource": "node tools/prepare-open-source.cjs",
+    "test": "node --test tools/site-policy.test.cjs tools/netdisk.test.cjs tools/cs2-transaction.test.cjs tools/cs2-uninstall.test.cjs && node tools/renderer-smoke.cjs && node tools/_ui-runtime-check.cjs && node tools/cs2-install-runtime-check.cjs && node tools/spectrum-runtime-check.cjs && node --check src/celebration.js && node --check src/catalog.js && node --check src/renderer.js && node --check src/main.cjs && node --check src/preload.cjs && node --check src/site-preload.cjs && node --check src/netdisk-resolver.cjs && node --check src/features.js",
+    "dist": "npm run prepare-assets && electron-builder --dir --win --x64 && node tools/build-direct-installer.cjs",
+    "pack": "electron-builder --dir --win --x64"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "cn.rainalley.letters",
+    "productName": "雨巷来信",
+    "directories": {
+      "output": "release"
+    },
+    "electronDist": "node_modules/electron/dist",
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "LICENSE",
+      "THIRD_PARTY_NOTICES.md",
+      "package.json"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "executableName": "雨巷来信",
+      "icon": "assets/rain-alley.ico"
+    },
+    "nsis": {
+      "warningsAsErrors": false,
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "雨巷来信",
+      "script": "installer.nsi",
+      "installerHeader": "assets/installer-header.bmp",
+      "installerSidebar": "assets/installer-sidebar.bmp"
+    }
+  },
+  "dependencies": {
+    "@sweetalert2/theme-dark": "5.0.26",
+    "jquery": "3.6.0",
+    "js-md5": "0.7.3",
+    "js-sha256": "0.11.1",
+    "sweetalert2": "11.4.8"
+  }
+}

@@ -1,0 +1,426 @@
+{
+  "preparedAt": "2026-10-31T16:26:31.045Z",
+  "uploaded": false,
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 215,
+      "sha256": "ebee3790c68e90351a8357188c32810451f7eebb0020968c1a07f826aa93b311"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 34523,
+      "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "bytes": 2737,
+      "sha256": "fe090c3d105c860a9862f22a6baab9cce2b9a0070cec47be41b88815b5c05853"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6042,
+      "sha256": "d3083f261920b46a5fbce240419702f7827719c267863afbc1e131a88750a363"
+    },
+    {
+      "path": "package.json",
+      "bytes": 2708,
+      "sha256": "39108569951d74b179c8d10ad8f2359aeae55b203a7df24b453834cd9e831777"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 133063,
+      "sha256": "c8e3569b660b5e04d3acb3f0143f89883ec69d0ac07a8db096cab2c18e6a89d6"
+    },
+    {
+      "path": "start.cjs",
+      "bytes": 649,
+      "sha256": "150cdee1ae6c56de3f155908f16d03f84c931d5421c4e933bfa5f6e47366cefd"
+    },
+    {
+      "path": "cloudflare-config.json",
+      "bytes": 46,
+      "sha256": "431c20e0047baa74928bc6b341537ba5b23143d57dd110d569fe1b76f16591a3"
+    },
+    {
+      "path": "installer.template.nsi",
+      "bytes": 2356,
+      "sha256": "448f98c79a1d87321b3a9863bdedeff0ed640c734be1d4d5f2b11ce911e02519"
+    },
+    {
+      "path": "设计规范.md",
+      "bytes": 14566,
+      "sha256": "5cd95f6a90fc3b31b5836776a988734dde45f2832913dca501342576b2584f57"
+    },
+    {
+      "path": "功能模块规范.md",
+      "bytes": 12155,
+      "sha256": "a970fb3daafbb2f340fbfffc67f5570b8154fddc336bef9d25336715553a9bcf"
+    },
+    {
+      "path": "src/catalog.js",
+      "bytes": 126531,
+      "sha256": "5ace326968c682ffc1c52b9a42458bae23ce8caaf03af00ea2453a089f8e2d51"
+    },
+    {
+      "path": "src/celebration.js",
+      "bytes": 3766,
+      "sha256": "d8847d08bf290348c459eb94a24710f86a29c5cc4369e922288fa6e5f653a1ed"
+    },
+    {
+      "path": "src/cloudflare-config.json",
+      "bytes": 46,
+      "sha256": "431c20e0047baa74928bc6b341537ba5b23143d57dd110d569fe1b76f16591a3"
+    },
+    {
+      "path": "src/cs2-installer.cjs",
+      "bytes": 6472,
+      "sha256": "4d4514595e1672787d684e08eab9efad5859f10543d3a23ba7d977acbbae9299"
+    },
+    {
+      "path": "src/cs2-payload-manifest.json",
+      "bytes": 113591,
+      "sha256": "57dde63721087fcd81397f863d75fde299d87f74536409b2889b98a029e5f9ba"
+    },
+    {
+      "path": "src/cs2-uninstaller.cjs",
+      "bytes": 6946,
+      "sha256": "2fbba82a5cda1f28243125574ec535a6cf3bfb231c08b54d0c099c18b48c8582"
+    },
+    {
+      "path": "src/developer-vault.cjs",
+      "bytes": 4371,
+      "sha256": "323d09e4b3c8b852daada9893d0da8275bd29e362239176e9d284f3b25c24f97"
+    },
+    {
+      "path": "src/features.js",
+      "bytes": 4699,
+      "sha256": "ba1c4336472f7e487d547ffe9658984e77cdc5961149b5ed32dfbd1105ed20f4"
+    },
+    {
+      "path": "src/index.html",
+      "bytes": 30561,
+      "sha256": "93c9a0ea6b1d298fcc44f8dda009ff90748717d6990ba33c0d1cf9fd8e949864"
+    },
+    {
+      "path": "src/linkswift/AGPL-3.0-or-later.txt",
+      "bytes": 34523,
+      "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef"
+    },
+    {
+      "path": "src/linkswift/jquery-3.6.0.min.js",
+      "bytes": 89501,
+      "sha256": "ff1523fb7389539c84c65aba19260648793bb4f5e29329d2ee8804bc37a3fe6e"
+    },
+    {
+      "path": "src/linkswift/LinkSwift-1.1.3.user.js",
+      "bytes": 584293,
+      "sha256": "840a753c3e3c3becb5f4f4e46ba0f900c3ca44c1d640aafd0666732adeab417e"
+    },
+    {
+      "path": "src/linkswift/md5-0.7.3.min.js",
+      "bytes": 9202,
+      "sha256": "31d57206075645a34f442e3a56d5d2b445e437cf99739889bc1d65662b02bc31"
+    },
+    {
+      "path": "src/linkswift/sha256-0.11.1.min.js",
+      "bytes": 9229,
+      "sha256": "4b53da9acab6a5d4010107be2025002fe1a22da64804dd5200b46895cb899219"
+    },
+    {
+      "path": "src/linkswift/sweetalert2-11.4.8.min.css",
+      "bytes": 24260,
+      "sha256": "7f14f6bc43e2ad8d80481341142056c04b0bc426497778237a7d3743694a78a1"
+    },
+    {
+      "path": "src/linkswift/sweetalert2-11.4.8.min.js",
+      "bytes": 42951,
+      "sha256": "8c80ad67878fb50120f124f112bf665e7804452332970d3279b571b13a26d910"
+    },
+    {
+      "path": "src/linkswift/sweetalert2-theme-dark-5.0.26.min.css",
+      "bytes": 24208,
+      "sha256": "3e9cc574e98e93b8409b6d0556e51062e663cc47e103e3d89e2e92f6df384d68"
+    },
+    {
+      "path": "src/linkswift/third-party-licenses/jquery-3.6.0-MIT.txt",
+      "bytes": 1097,
+      "sha256": "d4db9ebe6f29f5168eac45ad713f055623ac5d0dcd5ba92da23d650ae012020d"
+    },
+    {
+      "path": "src/linkswift/third-party-licenses/js-md5-0.7.3-MIT.txt",
+      "bytes": 1059,
+      "sha256": "2f6d4ea58919464f677b4560094d34b7fe12ebfd38bf0b62a8a502a25d2acedd"
+    },
+    {
+      "path": "src/linkswift/third-party-licenses/js-sha256-0.11.1-MIT.txt",
+      "bytes": 1076,
+      "sha256": "0fea2e0cffe72ee17adc25c42e55daf5c87c6e9cd5b3362ee4213890bda0ee7c"
+    },
+    {
+      "path": "src/linkswift/third-party-licenses/sweetalert2-11.4.8-MIT.txt",
+      "bytes": 1097,
+      "sha256": "879aa33feba35b3428c6485fc17cddd8c820d7a8780281aa945e60582a28c4b4"
+    },
+    {
+      "path": "src/linkswift/third-party-licenses/sweetalert2-theme-dark-5.0.26-MIT.txt",
+      "bytes": 1082,
+      "sha256": "c3c9733240f968716c9b65831ac65e91356001252cc37b40ef21c107b0fc18f4"
+    },
+    {
+      "path": "src/linkswift/THIRD-PARTY-NOTICES.txt",
+      "bytes": 433,
+      "sha256": "f2018dafc1eaaf69274cd605aec1bd0364f524e0f931f7d2e49d8444ee1cc993"
+    },
+    {
+      "path": "src/main.cjs",
+      "bytes": 86684,
+      "sha256": "a902173267cc0f4d2fa8c8d02f0a531327bb69e7b0484cdf3bcc83d3b30c95b9"
+    },
+    {
+      "path": "src/netdisk-resolver.cjs",
+      "bytes": 9986,
+      "sha256": "f942c8f7d3046939096433f93daa3a29f5fe5a214becf9e6ac721bd4d6c3a326"
+    },
+    {
+      "path": "src/netdisk.js",
+      "bytes": 6434,
+      "sha256": "fd8be7701597d2d81a0f1957aeb6cea7d156d273882d19fa5b6d2822133c6d18"
+    },
+    {
+      "path": "src/preload.cjs",
+      "bytes": 6013,
+      "sha256": "7a91531bafb58987be84ff57b2e76bacf664ce72701a6d926d144c6c646ae63a"
+    },
+    {
+      "path": "src/renderer.js",
+      "bytes": 169,
+      "sha256": "92fafa31caca6c6abe10dac8b6cf1654288ef51ecf7ee2e1ff3a24020fd836ea"
+    },
+    {
+      "path": "src/site-policy.cjs",
+      "bytes": 2814,
+      "sha256": "cbc580be4652fe98e7c4094c3c77401ee0a601e3c0e2e8ddda51f7e869aefd67"
+    },
+    {
+      "path": "src/site-preload.cjs",
+      "bytes": 2072,
+      "sha256": "ec21558165a626bbf8279ba205be75f734825ca58a85eb8e7636d9cde717208d"
+    },
+    {
+      "path": "src/spectrum.css",
+      "bytes": 5678,
+      "sha256": "5f8511da9a11dd969b4db5b49f39fd8ee147567f353d044093d07e95538b7e72"
+    },
+    {
+      "path": "src/styles.css",
+      "bytes": 112589,
+      "sha256": "82c0a45b3ddf09f0d613f9d0740f229465375bfb1f309f5c807f60f38af9c057"
+    },
+    {
+      "path": "assets/installer-header.bmp",
+      "bytes": 25818,
+      "sha256": "b19244639ee34400901391c3ac9bc868fc561a70dc51c880fe6efaf2c0844723"
+    },
+    {
+      "path": "assets/installer-sidebar.bmp",
+      "bytes": 154542,
+      "sha256": "469b7f3318d18a0f92908a0b1d4d134fdcf48a42c3a5b078ad216be048c3f209"
+    },
+    {
+      "path": "assets/rain-alley.ico",
+      "bytes": 381038,
+      "sha256": "5929059f99c232cf09e59a947dd30f3fcc7991c2c4e6afb40e53bedc07f953e9"
+    },
+    {
+      "path": "design-system/default/MASTER.md",
+      "bytes": 1963,
+      "sha256": "f9dfbda5d19334efc29adefb30fc4c56216420e0407456923b2b86c9dd77c60e"
+    },
+    {
+      "path": "design-system/default/pages/netdisk.md",
+      "bytes": 1147,
+      "sha256": "cacb1818a07ad405a4247d68f9af8b280e0b67dd42aaccb99bc914c5d503a1eb"
+    },
+    {
+      "path": "design-system/default/pages/street.md",
+      "bytes": 1034,
+      "sha256": "b7d9b21b9d8d2820ba251aa98efc9ab1364d610d1a24500cc67fbea290941162"
+    },
+    {
+      "path": "design-system/default/pages/web-bookmarks.md",
+      "bytes": 1059,
+      "sha256": "54ad780764126e95bbfab9e14bd876d7b91e2f693b58d316695da04251c36c83"
+    },
+    {
+      "path": "docs/CS2卸载开发记录-20261101.md",
+      "bytes": 4022,
+      "sha256": "b8b89edf32c7dbf8b8e97756941b51ca02da9d13cf421bbc96f4a3d4f1fd699a"
+    },
+    {
+      "path": "docs/开源说明.md",
+      "bytes": 3392,
+      "sha256": "6b611054aa7d03aa1e886bcf7a7f5cc32b86381b49b4606c15d03044814fcc22"
+    },
+    {
+      "path": "tools/build-direct-installer.cjs",
+      "bytes": 3067,
+      "sha256": "55b677b759f31b27ef2e83e73bf26c15891ca87b856a3b0fcfdbb34f01d7d01e"
+    },
+    {
+      "path": "tools/check-window-icon.ps1",
+      "bytes": 1731,
+      "sha256": "23fb33cb33aad565bdefa50321fa60ba12233121d7a181c7e84d45b8ed1c5ad4"
+    },
+    {
+      "path": "tools/create-assets.cjs",
+      "bytes": 6628,
+      "sha256": "db3e4dcb679a882778fa7361fa9ebf328cce92a9f6c6a639405a8d8d21c4ef15"
+    },
+    {
+      "path": "tools/create-installer-script.cjs",
+      "bytes": 834,
+      "sha256": "72bf3cbb69608e9b2b9105f350a4fa8302b68cbf28cbdcc1a26b0095ed2ad9c4"
+    },
+    {
+      "path": "tools/cs2-install-runtime-check.cjs",
+      "bytes": 13943,
+      "sha256": "315532212f44dc777f5ead2e93971b0ebcd79148504244d7e38530848c6bb402"
+    },
+    {
+      "path": "tools/cs2-transaction.test.cjs",
+      "bytes": 3514,
+      "sha256": "3e6215db11116b4baeeded938da6dff74f91c83fcee70d42e5871ec2da884f11"
+    },
+    {
+      "path": "tools/cs2-uninstall-runtime-check.cjs",
+      "bytes": 6739,
+      "sha256": "2da667e5e62f26901c0653ff2c661a907f530dce8aafb968ddccad85c18362b7"
+    },
+    {
+      "path": "tools/cs2-uninstall.test.cjs",
+      "bytes": 4330,
+      "sha256": "854d03e8d673797b32c83868a29fb9b66a6cc115714d97d97df855673cfe5f56"
+    },
+    {
+      "path": "tools/direct-installer.nsi",
+      "bytes": 2647,
+      "sha256": "27ad170de426994dfe7508a70f952fe56912e4668f9f01684018e9dd19da7476"
+    },
+    {
+      "path": "tools/icon-probe.cjs",
+      "bytes": 508,
+      "sha256": "5bad089be3b53136e51b70f59baf50dfd57851d0cc2525c3996d1c8691e87722"
+    },
+    {
+      "path": "tools/inspect-runtime.cjs",
+      "bytes": 602,
+      "sha256": "7b34fba5d8933578d281f81f25d835f40199c0254f889f7830eb5d07a8ec1787"
+    },
+    {
+      "path": "tools/netdisk.test.cjs",
+      "bytes": 4368,
+      "sha256": "eeb0427a77c59e7533ebb810126c6bf3008eefd287a99e18b5f0acb32294ce4a"
+    },
+    {
+      "path": "tools/packaged-start-check.cjs",
+      "bytes": 6920,
+      "sha256": "6f5267572ee19b52a547554eacbeeac934b76984955a6859b152b8121814f50f"
+    },
+    {
+      "path": "tools/prepare-open-source.cjs",
+      "bytes": 3452,
+      "sha256": "da3d7ac91dd20bb9777491a0f83524b9e3fefa92d899fb6ce611dccd119bb2cd"
+    },
+    {
+      "path": "tools/preview-community.cjs",
+      "bytes": 3637,
+      "sha256": "160ea448909bcaa2a99fa5b79af549e3e7e684b9db7c18d8cb8b03c792cfebed"
+    },
+    {
+      "path": "tools/renderer-smoke.cjs",
+      "bytes": 7742,
+      "sha256": "13717f10a0d78e374a31341dc905a72e28586062a9549d557b37bf5847821d60"
+    },
+    {
+      "path": "tools/site-policy.test.cjs",
+      "bytes": 968,
+      "sha256": "f2076e0ea1cc19f1528f7ef5417153941a7578e9badaf159d977fee398922f1f"
+    },
+    {
+      "path": "tools/spectrum-runtime-check.cjs",
+      "bytes": 7478,
+      "sha256": "44f7a64cbce262d2aa89dbc9a16c664b9ac44722f001f6cc365a1d5f6e282401"
+    },
+    {
+      "path": "tools/taskbar-runtime-check.cjs",
+      "bytes": 1586,
+      "sha256": "43dd143edd99f30f33f4cdfe5b3d120d3620b2168586d153127977e48657b953"
+    },
+    {
+      "path": "tools/_ui-runtime-check.cjs",
+      "bytes": 68349,
+      "sha256": "7f22bbabb7c4c149b2cc9977a9fbb1bde492fe454de17f84124548d4086b4306"
+    },
+    {
+      "path": "cloudflare/auth-api/package.json",
+      "bytes": 502,
+      "sha256": "1eebf2c8374322acd0686488fce8d17149153e53e477b0c6be04aec0d84da15a"
+    },
+    {
+      "path": "cloudflare/auth-api/package-lock.json",
+      "bytes": 101370,
+      "sha256": "58cc03fad3d94716a3a6646a5a7cd8282b8438f67e6f408e50caab8ce22c2401"
+    },
+    {
+      "path": "cloudflare/auth-api/README.md",
+      "bytes": 1871,
+      "sha256": "01a9603270f551284c10c2b1df3cb6499672bf3acb1387d92c27512b15a8ea25"
+    },
+    {
+      "path": "cloudflare/auth-api/cloudflare.config.ts",
+      "bytes": 851,
+      "sha256": "5311cda7e43a9bc9197f41b1dc79fd06ff65cca532e3e1982315b7d0fec5977c"
+    },
+    {
+      "path": "cloudflare/auth-api/vite.config.ts",
+      "bytes": 153,
+      "sha256": "d3800cc90ad99369afbf95be5154bc445ff44398a76354abccf0665390629882"
+    },
+    {
+      "path": "cloudflare/auth-api/src/community.test.mjs",
+      "bytes": 4513,
+      "sha256": "8d3b69e7b2d30edad502fe6d7488f0f7c0020890ddf46aeb6a92e2b21c949d3e"
+    },
+    {
+      "path": "cloudflare/auth-api/src/index.js",
+      "bytes": 23229,
+      "sha256": "a8144da6af7be232ca5138af1708dc7ab69b1a26f03c4369180bf2cdb72a46f1"
+    },
+    {
+      "path": "cloudflare/auth-api/src/security.test.mjs",
+      "bytes": 3410,
+      "sha256": "9f0382fd8bf990001e24b0906e82d55ef81676fdc6aa9fb9b5780955ce8ebb80"
+    },
+    {
+      "path": "cloudflare/auth-api/migrations/0001_identity_and_comments.sql",
+      "bytes": 1207,
+      "sha256": "cfedbb65574b6aa660cc6798359fab555027c56712801337908e546f5842461e"
+    },
+    {
+      "path": "cloudflare/auth-api/migrations/0002_public_profiles.sql",
+      "bytes": 339,
+      "sha256": "c92097c0c393ef01a9fa73aa7c9d7447dc201a32d59be258647aa131c0f7a3f6"
+    },
+    {
+      "path": "cloudflare/auth-api/migrations/0003_root_and_community_lock.sql",
+      "bytes": 712,
+      "sha256": "ba21e0b339271036ee7e019a12e8204e564744b3f3611f9430275866f14cfcc0"
+    },
+    {
+      "path": "installer.nsi",
+      "bytes": 2357,
+      "sha256": "07e8816fe04e59303bc8f5f373fb0ca35ffbe1cf62c6fa2800eadf4b61fadf5f"
+    }
+  ]
+}

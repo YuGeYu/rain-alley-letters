@@ -1,0 +1,11 @@
+LinkSwift 1.1.3 uses these bundled third-party runtime files:
+
+- jQuery 3.6.0 — MIT License
+- SweetAlert2 11.4.8 — MIT License
+- SweetAlert2 theme-dark 5.0.26 — MIT License
+- js-md5 0.7.3 — MIT License
+- js-sha256 0.11.1 — MIT License
+
+Their license texts are available from the corresponding npm packages. The
+upstream LinkSwift source and its AGPL-3.0-or-later license are included next
+to this notice in this directory.

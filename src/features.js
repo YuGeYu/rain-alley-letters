@@ -1,0 +1,15 @@
+export const features = Object.freeze([
+  Object.freeze({ id: 'street-postcard', name: '雨巷主页', kind: 'builtin', summary: '雨夜主题主页 · 本地轻量绘制。', detail: '雨巷主页以本地绘制的雨夜插画承载功能入口，打开即用，保持安静流畅。', availability: 'ready', builtin: true, permissions: ['本地界面资源'] }),
+  Object.freeze({ id: 'cs2-inventory', name: 'CS2 库存插件', kind: 'desktop-plugin', summary: '本机饰品资料整理 · 功能仍在评估。', detail: '尚无经过验证的安装包，当前不会读取或修改游戏进程。未来实现范围仅考虑玩家自己的本机环境，不适用于官方服务器、联网对局或任何带反作弊的服务器。', availability: 'coming', permissions: ['CS2 本机路径'] }),
+  Object.freeze({ id: 'cs2-demo', name: 'Demo 重玩插件', kind: 'desktop-plugin', summary: '本机 Demo 整理 · 兼容版本待验证。', detail: '规划用于整理玩家本机的 Demo 文件；当前没有安装包，也不会修改游戏或 Demo 文件。', availability: 'coming', permissions: ['本机 Demo 路径'] }),
+  Object.freeze({ id: 'cs2-bots', name: 'CS2 人机增强', kind: 'desktop-plugin', summary: 'Bot Improver v1.4.7 · 玩家本机自建服务器插件。', detail: '基于 ed0ard/CS2-Bot-Improver 官方开源 Release。仅适用于玩家自行启动的本机服务器，不适用于官方服务器、联网对局或启用反作弊的服务器。雨巷来信不随应用附带官方资源包，也不修改压缩包内容；安装前会校验资源包并备份将被覆盖的同名文件。', availability: 'ready', version: '1.4.7', source: 'https://github.com/ed0ard/CS2-Bot-Improver/releases/tag/v1.4.7', packageUrl: 'https://github.com/ed0ard/CS2-Bot-Improver/releases/download/v1.4.7/CS2BotImprover.zip', quarkUrl: 'https://pan.quark.cn/s/2e9f1139858b', permissions: ['读取官方 ZIP', '写入玩家指定的 CS2 游戏目录'] }),
+  Object.freeze({ id: 'netdisk-links', name: '网盘直链工具', kind: 'utility', summary: '下载地址整理 · 支持八类常用网盘。', detail: '在应用内粘贴网盘分享页或已取得的下载地址。工具会先识别公开直链；需要登录、分享密码或页面状态时，在隔离的网盘页面中启用 LinkSwift 1.1.3 助手。不会绕过平台权限，也不会把雨巷账号令牌交给网盘站点。', availability: 'ready', version: '1.1.3', source: 'https://github.com/hmjz100/LinkSwift/releases/tag/v1.1.3', permissions: ['网盘分享页会话', '受限 HTTPS API 请求'] }),
+  Object.freeze({ id: 'pure-bilibili', name: '纯净 B 站视频', kind: 'website', summary: '应用内观看视频 · 播放页仍在制作。', detail: '这里将显示经过整理的 B 站视频页面。当前尚未确认独立站点地址，暂不加载或跳转。', availability: 'coming', permissions: ['应用内网页'] }),
+  Object.freeze({ id: 'pig-daily', name: '今日小猪 · 凉拌版', kind: 'website', summary: '站点已连通 · 在雨巷窗口内打开。', detail: '已检测到小猪站点可访问，页面通过独立网页视图呈现，不会跳转到系统浏览器。', availability: 'ready', siteUrl: 'https://pig.600318.xyz/', permissions: ['应用内网页'] }),
+  Object.freeze({ id: 'liangban-api', name: '凉拌 API', kind: 'website', summary: 'API 服务站 · 在雨巷窗口内打开。', detail: '已检测到 API 服务站可访问，网页与账号令牌分别使用独立会话。', availability: 'ready', siteUrl: 'https://api.600318.xyz/', permissions: ['应用内网页'] }),
+  Object.freeze({ id: 'resource-vault', name: '凉拌资源网站', kind: 'website', summary: '资源分享站 · 在雨巷窗口内打开。', detail: '已检测到资源分享站可访问。站点使用独立浏览器会话，不会读取应用账号令牌。', availability: 'ready', siteUrl: 'https://vault.600318.xyz/', permissions: ['应用内网页'] }),
+  Object.freeze({ id: 'cat-stickers', name: '猫猫虫表情包', kind: 'website', summary: '贴纸与表情包 · 站点地址待确认。', detail: '收集与整理猫猫虫表情包。正式上架前不会使用未确认的站点或远程资源。', availability: 'coming', permissions: ['应用内网页'] }),
+]);
+
+export const featureCategory = (feature) => feature.kind === 'desktop-plugin' ? 'steam' : feature.kind === 'website' ? 'website' : feature.kind === 'builtin' ? 'builtin' : 'utility';
+export const featureCategoryName = (feature) => feature.kind === 'desktop-plugin' ? 'Steam 插件' : feature.kind === 'website' ? '应用内网站' : feature.kind === 'builtin' ? '内置页面' : '桌面工具';
