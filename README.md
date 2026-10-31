@@ -73,5 +73,5 @@ npm run dist
 
 雨巷来信采用 **AGPL-3.0-or-later**，完整许可见 [LICENSE](LICENSE)，第三方版权、许可及来源见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)，源码范围、构建要求和外部包边界见 [开源说明](docs/开源说明.md)。LinkSwift 的原脚本与许可随源码保留。
 
-CS2 人机增强、Panel 和其官方 ZIP 不随项目分发；MIT 授权的 Inventory Simulator 3.7.2 原版 ZIP 与许可随应用附带。Panel 使用独立的 **PolyForm Strict** 许可，不因主插件或本项目采用 AGPL 而改变。项目与 Valve、上游作者及各网盘平台无官方关联。
+CS2 人机增强、Panel 和其官方 ZIP 不随项目分发；MIT 授权的 Inventory Simulator 3.7.2 原版 ZIP、许可及共享运行库随应用附带，安装饰品工坊无需下载依赖。Panel 使用独立的 **PolyForm Strict** 许可，不因主插件或本项目采用 AGPL 而改变。项目与 Valve、上游作者及各网盘平台无官方关联。
 

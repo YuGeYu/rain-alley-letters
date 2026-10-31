@@ -661,6 +661,8 @@ function configureSiteSession() {
   const siteSession = session.fromPartition('persist:rain-alley-sites');
   const permitted = (permission, origin) => {
     try {
+      // writeText requires sanitized-write; never grant clipboard reads here.
+      if (permission === 'clipboard-sanitized-write') return siteAllowed(new URL(origin));
       const mapped = permission === 'media' || permission === 'mediaKeySystem' ? 'media' : permission === 'geolocation' ? 'geolocation' : permission === 'notifications' ? 'notifications' : permission === 'clipboard-read' ? 'clipboard-read' : permission;
       return appState?.allowedPermissions.includes(mapped) === true && siteAllowed(new URL(origin));
     } catch { return false; }
@@ -897,7 +899,7 @@ ipcMain.handle('app:get-state', async (event) => {
   };
 });
 ipcMain.handle('app:save-state', async (event, value) => { ensureTrusted(event); return saveAppState(value); });
-ipcMain.handle('clipboard:write', (event, value) => { ensureTrusted(event); clipboard.writeText(typeof value === 'string' ? value.slice(0, 100_000) : ''); return true; });
+ipcMain.handle('clipboard:write', async (event, value) => { ensureTrusted(event); await clipboard.writeText(typeof value === 'string' ? value.slice(0, 100_000) : ''); return true; });
 ipcMain.handle('account:resume', async (event) => {
   ensureTrusted(event);
   if (authSession && authSession.expiresAt > Math.floor(Date.now() / 1000)) return { username: authSession.username, role: authSession.role };
@@ -1179,18 +1181,10 @@ ipcMain.handle('cs2:install', async (event, input = {}) => {
 
 let cs2InstallRunning = false;
 async function runtimeArchive() {
-  const prefs = await loadAppState();
-  let archive = prefs.cs2Archive;
-  if (!archive || !fsSync.existsSync(archive)) archive = path.join(app.getPath('userData'), 'cs2-bot-improver-v1.4.7.zip');
-  if (!fsSync.existsSync(archive)) {
-    const response = await net.fetch('https://github.com/ed0ard/CS2-Bot-Improver/releases/download/v1.4.7/CS2BotImprover.zip');
-    if (!response.ok) throw new Error('共享运行库下载失败，请从人机增强页面选择官方 ZIP 后重试。');
-    const temp = archive + '.tmp';
-    await fs.writeFile(temp, Buffer.from(await response.arrayBuffer()));
-    await fs.rename(temp, archive);
-  }
+  const archive = path.join(__dirname, '..', 'assets/plugins/cs2-shared-runtime.zip');
+  if (!fsSync.existsSync(archive)) throw new Error('随应用附带的共享运行库缺失，请修复雨巷来信安装。');
   const digest = crypto.createHash('sha256').update(await fs.readFile(archive)).digest('hex');
-  if (digest !== require('./cs2-payload-manifest.json').archiveSha256) throw new Error('共享运行库来源包校验失败，请重新选择官方人机增强 ZIP。');
+  if (digest !== require('./shared-runtime-manifest.json').archiveSha256) throw new Error('随应用附带的共享运行库校验失败。');
   return archive;
 }
 function requireGameClosed() {
@@ -1442,13 +1436,13 @@ ipcMain.on('site:linkswift-storage', (event, message = {}) => {
   }
   saveLinkSwiftValues().catch(() => {});
 });
-ipcMain.handle('site:clipboard', (event, value) => {
+ipcMain.handle('site:clipboard', async (event, value) => {
   if (!linkSwiftEnabledFor(event.sender)) throw new Error('不允许的网页剪贴板请求。');
   let currentPage;
   try { currentPage = new URL(event.sender.getURL()); } catch { throw new Error('当前网页地址无效。'); }
   if (!providerFor(currentPage) || (!isSharePageUrl(currentPage) && !isLinkSwiftOAuthPageUrl(currentPage))) throw new Error('当前网页不是受支持的网盘或授权页面。');
   const text = typeof value === 'string' ? value.slice(0, 100_000) : '';
-  clipboard.writeText(text);
+  await clipboard.writeText(text);
   return true;
 });
 async function injectLinkSwiftInto(contents, provider, { allowOAuthPage = false } = {}) {

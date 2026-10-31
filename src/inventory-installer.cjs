@@ -15,7 +15,13 @@ async function installInventory({ root, archive, runtimeArchive, keepBackup }) {
       // Reuse compatible runtime files only, without installing bot features.
       const runtime = await fs.mkdtemp(path.join(os.tmpdir(), 'alley-shared-runtime-'));
       try {
-        await extractArchive(runtimeArchive, runtime);
+        // Native tar cannot read Electron ASAR virtual paths.
+        const localRuntime = path.join(runtime, 'runtime.zip');
+        await fs.copyFile(runtimeArchive, localRuntime);
+        const runtimeDigest = crypto.createHash('sha256').update(await fs.readFile(localRuntime)).digest('hex');
+        const bundledManifest = require('./shared-runtime-manifest.json');
+        if (![runtimeManifest.archiveSha256, bundledManifest.archiveSha256].includes(runtimeDigest)) throw new Error('共享运行库资源校验失败。');
+        await extractArchive(localRuntime, runtime);
         for (const item of runtimeManifest.files.filter(x => shared(x.path))) {
           const target = path.join(stage, item.path);
           await fs.mkdir(path.dirname(target), { recursive: true });

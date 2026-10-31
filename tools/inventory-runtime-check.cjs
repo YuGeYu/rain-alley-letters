@@ -17,16 +17,19 @@ async function run() {
   const preloadPath = path.join(appRoot, 'src/preload.cjs');
   let preload = fs.readFileSync(preloadPath, 'utf8');
   preload = preload.replace("openWebsite: async (url, _approved, tabId) => ({ id: tabId || 'test-tab', url, title: '测试分享页', loading: false }),", "openWebsite: (url, approvedByUser = false, tabId) => ipcRenderer.invoke('site:open', url, approvedByUser === true, tabId),");
-  preload = preload.replace('chooseCs2Directory:', "testBounds: () => ipcRenderer.invoke('test:bounds'), testLink: url => ipcRenderer.invoke('test:link', url), testExternal: () => ipcRenderer.invoke('test:external'), chooseCs2Directory:");
+  preload = preload.replace('chooseCs2Directory:', "testCopy: () => ipcRenderer.invoke('test:copy'), testBounds: () => ipcRenderer.invoke('test:bounds'), testLink: url => ipcRenderer.invoke('test:link', url), testExternal: () => ipcRenderer.invoke('test:external'), chooseCs2Directory:");
   fs.writeFileSync(preloadPath, preload);
   const mainPath = path.join(appRoot, 'src/main.cjs');
   fs.appendFileSync(mainPath, '\nconst testExternal=[];shell.openExternal=async url=>{testExternal.push(url);};ipcMain.handle("test:external",()=>testExternal);ipcMain.handle("test:bounds",()=>[...websiteViews.values()].map(v=>v.getBounds()));ipcMain.handle("test:link",async(_e,url)=>websiteViews.get(activeWebsiteId).webContents.executeJavaScript("window.open("+JSON.stringify(url)+")",true));\n');
+  fs.appendFileSync(mainPath, "\nconst originalClipboard = clipboard.readText();\napp.on('will-quit', () => clipboard.writeText(originalClipboard));\nipcMain.handle('test:copy', async () => {\n const c = websiteViews.get(activeWebsiteId).webContents;\n c.focus();\n await c.executeJavaScript(\"navigator.clipboard.writeText('/猪圈签到')\", true);\n const text = await clipboard.readText();\n const denied = await c.executeJavaScript(\"navigator.clipboard.readText().then(()=>false,()=>true)\", true);\n await clipboard.writeText(await originalClipboard);\n return { text, denied };\n});\n");
+  let launchRoot = appRoot;
+  if (process.argv.includes('--asar')) { launchRoot = path.join(base, 'app.asar'); await require('@electron/asar').createPackage(appRoot, launchRoot); }
   const http = require('node:http');
   const server = http.createServer((_req, res) => res.end('<!doctype html><meta charset="utf-8"><body style="height:3000px;background:#183044;color:white"><h1>本机跳转与滚动验证</h1></body>'));
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const url = 'http://127.0.0.1:' + server.address().port + '/';
   const port = await freePort(); const env = { ...process.env }; delete env.ELECTRON_RUN_AS_NODE;
-  const proc = spawn(path.join(root, 'node_modules/electron/dist/electron.exe'), [appRoot, '--remote-debugging-port=' + port, '--remote-allow-origins=*', '--user-data-dir=' + profile], { stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, env });
+  const proc = spawn(path.join(root, 'node_modules/electron/dist/electron.exe'), [launchRoot, '--remote-debugging-port=' + port, '--remote-allow-origins=*', '--user-data-dir=' + profile], { stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, env });
   let output = ''; proc.stdout.on('data', c => output += c); proc.stderr.on('data', c => output += c);
   let socket, keep = false;
   try {
@@ -55,6 +58,8 @@ async function run() {
     assert.ok(!fs.existsSync(path.join(game, 'addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll')));
     await route(url);
     await waitFor(cdp, 'window.alleyDesktop.testBounds().then(a=>a.some(b=>b.width>0))', 'Native website not visible');
+    await new Promise(resolve => setTimeout(resolve, 300));
+    assert.deepEqual(await cdp.evaluate('window.alleyDesktop.testCopy()'), { text: '/猪圈签到', denied: true });
     await cdp.evaluate("window.alleyDesktop.testLink('ccswitch://v1/import?resource=provider&test=1')");
     await new Promise(resolve => setTimeout(resolve, 200));
     assert.equal(await cdp.evaluate("document.querySelector('#siteWarningOverlay').hidden"), true, 'Disabled protocol should not open confirmation');

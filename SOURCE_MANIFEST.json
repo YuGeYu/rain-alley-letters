@@ -1,5 +1,5 @@
 {
-  "preparedAt": "2026-10-31T17:32:33.529Z",
+  "preparedAt": "2026-10-31T19:04:27.444Z",
   "uploaded": false,
   "files": [
     {
@@ -14,13 +14,13 @@
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 3150,
-      "sha256": "f623043d8467ff45348a4c320bed1462e97361798366d71408fa1d3ed1d993a8"
+      "bytes": 3639,
+      "sha256": "6e96786a1ee3b71bde0447c57ca434f8e2d0871e8a592e72b738498b6cde17f5"
     },
     {
       "path": "README.md",
-      "bytes": 6709,
-      "sha256": "4064be99ab097e0aaf7a68abb40ada22404cead28358dae9e2b00c9873d9a9ac"
+      "bytes": 6842,
+      "sha256": "e9e9110bb5b2065f8bcc7b97bd1100c7464e65be4f650285083d9f72d27837af"
     },
     {
       "path": "package.json",
@@ -104,8 +104,8 @@
     },
     {
       "path": "src/features.js",
-      "bytes": 4901,
-      "sha256": "d8417b473d15a78fc8eb365ee4bce218f3d62d2a20c1b86b9c0a530e654803f3"
+      "bytes": 4895,
+      "sha256": "c2304c9558c3b323164f973cb649348bcbcd8aa6bede461146027ad03d76ffda"
     },
     {
       "path": "src/index.html",
@@ -114,8 +114,8 @@
     },
     {
       "path": "src/inventory-installer.cjs",
-      "bytes": 3007,
-      "sha256": "5fb58dce022962bd8349dd967c68a0343afd9b9721563d786e3aa1e40fe8774f"
+      "bytes": 3535,
+      "sha256": "2706488537163fce882cbce0494b9f7ef984e9bd0e9483bfe9fc47bf1be3b787"
     },
     {
       "path": "src/inventory-payload-manifest.json",
@@ -124,8 +124,8 @@
     },
     {
       "path": "src/inventory-ui.js",
-      "bytes": 2067,
-      "sha256": "7a7d387f99fa9f1ca031e23ebe4e58fafd39d90aba3e860522a339f42f34e835"
+      "bytes": 1997,
+      "sha256": "013980c8386121d32216087fc198f140aeecca3224fbf0ba0c9e7896469df5e1"
     },
     {
       "path": "src/linkswift/AGPL-3.0-or-later.txt",
@@ -199,8 +199,8 @@
     },
     {
       "path": "src/main.cjs",
-      "bytes": 91991,
-      "sha256": "71f57ec077efdec0bf05b46434a3d8e310d69cc8e88b5bcc2225a2c8b94b8cbe"
+      "bytes": 91731,
+      "sha256": "6060aa5fa7ebfad901bd2d16e52e2104bda1e7674733e2903de43e8a1d26c128"
     },
     {
       "path": "src/netdisk-resolver.cjs",
@@ -221,6 +221,11 @@
       "path": "src/renderer.js",
       "bytes": 169,
       "sha256": "92fafa31caca6c6abe10dac8b6cf1654288ef51ecf7ee2e1ff3a24020fd836ea"
+    },
+    {
+      "path": "src/shared-runtime-manifest.json",
+      "bytes": 94012,
+      "sha256": "945f59c0234df4fda9d6de303b3cc4c229581b9bea98b16a6d886099715de92b"
     },
     {
       "path": "src/site-policy.cjs",
@@ -251,6 +256,11 @@
       "path": "assets/installer-sidebar.bmp",
       "bytes": 154542,
       "sha256": "469b7f3318d18a0f92908a0b1d4d134fdcf48a42c3a5b078ad216be048c3f209"
+    },
+    {
+      "path": "assets/plugins/cs2-shared-runtime.zip",
+      "bytes": 67943286,
+      "sha256": "c399a013da2247af837a0be8798c68d6a174e941d348b94cde648cd4f4aadd38"
     },
     {
       "path": "assets/plugins/InventorySimulator-LICENSE.txt",
@@ -294,13 +304,13 @@
     },
     {
       "path": "docs/开源说明.md",
-      "bytes": 3930,
-      "sha256": "0886cbffec2e3f38a7db9b4a18c4395e9796e5e35e0442da198d1171b3105de5"
+      "bytes": 4030,
+      "sha256": "6e2861afe93de6131d3d22b616473414a54c33ea9a09be864acde81ea2a083fd"
     },
     {
       "path": "docs/饰品工坊与网页跳转开发记录-20261101.md",
-      "bytes": 4944,
-      "sha256": "9888fe10a847f387c50e10a0728ce50005b16b47bb5c3f2bf1cbff055750964c"
+      "bytes": 5486,
+      "sha256": "11d00b53c22e08d73beedd38cfdb14cdaa89367ddb3b640536ad4beca083f19d"
     },
     {
       "path": "tools/build-direct-installer.cjs",
@@ -364,8 +374,8 @@
     },
     {
       "path": "tools/inventory-runtime-check.cjs",
-      "bytes": 9485,
-      "sha256": "5666698a71a26f0be4c4e8546d62aa791ec05ddca8d4ffeeb97430dd172c7b79"
+      "bytes": 10399,
+      "sha256": "29ba72f15f9bc26ed04cd48063c2c59d6774c3ac2042c595d37db889b084cdc9"
     },
     {
       "path": "tools/netdisk.test.cjs",
@@ -379,8 +389,8 @@
     },
     {
       "path": "tools/prepare-open-source.cjs",
-      "bytes": 3725,
-      "sha256": "810e5c831dab1db2c87a6dcd1b4afc0aab8b6d6a0c8ee8c230b65c597b4408af"
+      "bytes": 3942,
+      "sha256": "a687ab7e24912fcdbd18c7b37f30f30971c403bf17a449efed38c9bdb1313897"
     },
     {
       "path": "tools/preview-community.cjs",
