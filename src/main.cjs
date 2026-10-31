@@ -49,7 +49,8 @@ const NETDISK_API_HOSTS = new Set([
   'login.123pan.com', 'aliyundrive.com', 'aliyundrive.net', 'alipan.com', 'alicloudccp.com', 'aliyundrive.cloud', 'cmecloud.cn',
   '189.cn', 'xunlei.com', 'quark.cn', 'uc.cn', '123pan.com', '123pan.cn', '123684.com', '123865.com', '123952.com', '123912.com', 'cjjd19.com',
 ]);
-const TRUSTED_SITE_HOSTS = new Set(['pig.600318.xyz', 'vault.600318.xyz', 'api.600318.xyz', 'www.bilibili.com', 'space.bilibili.com', 'player.bilibili.com', 'github.com', 'release-assets.githubusercontent.com', 'objects.githubusercontent.com', ...NETDISK_PAGE_HOSTS, ...NETDISK_API_HOSTS]);
+const CATALOG_SITE_HOSTS = ['maomaochongmiao.600318.xyz', 'mistport.600318.xyz', 'career.600318.xyz', 'usc.600318.xyz'];
+const TRUSTED_SITE_HOSTS = new Set(['pig.600318.xyz', 'vault.600318.xyz', 'api.600318.xyz', 'www.bilibili.com', 'space.bilibili.com', 'player.bilibili.com', 'github.com', 'release-assets.githubusercontent.com', 'objects.githubusercontent.com', ...CATALOG_SITE_HOSTS, ...NETDISK_PAGE_HOSTS, ...NETDISK_API_HOSTS]);
 const ACCOUNT_API_HOSTS = new Set(['auth.600318.xyz', 'rain-alley-auth.600318.workers.dev']);
 const DEFAULT_STATE = Object.freeze({
   selectedFeature: 'street-postcard', installedFeatures: ['street-postcard'], muted: true, lightweight: false, theme: 'dark',
@@ -63,6 +64,8 @@ let websiteView;
 const websiteViews = new Map();
 const websiteTabIds = new Set();
 let activeWebsiteId = '';
+let fullscreenWebsiteId = '';
+const normalWebsiteBounds = new Map();
 const activeDownloads = new Map();
 const downloadHistory = new Map();
 const claimedDownloadPaths = new Set();
@@ -263,7 +266,9 @@ async function loadAppState() {
       favorites: cleanFeatureIds(saved.favorites),
       history: cleanFeatureIds(saved.history).slice(0, 300),
       navigationPolicy: ['allowlist', 'blocklist', 'allow-all', 'deny-all'].includes(saved.navigationPolicy) ? saved.navigationPolicy : DEFAULT_STATE.navigationPolicy,
-      allowedHosts: cleanHosts(saved.allowedHosts, TRUSTED_SITE_HOSTS),
+      // Add newly published catalog sites once; preserve later user removals.
+      allowedHosts: cleanHosts(saved.catalogSites20261101 ? saved.allowedHosts : [...cleanHosts(saved.allowedHosts, TRUSTED_SITE_HOSTS), ...CATALOG_SITE_HOSTS], TRUSTED_SITE_HOSTS),
+      catalogSites20261101: true,
       blockedHosts: cleanHosts(saved.blockedHosts, []),
       allowExternalProtocols: saved.allowExternalProtocols === true,
       allowHttp: saved.allowHttp === true, allowLocalNetwork: saved.allowLocalNetwork === true, allowPopups: saved.allowPopups === true, downloadsEnabled: saved.downloadsEnabled !== false,
@@ -290,6 +295,7 @@ async function writeAppState(input) {
   const previous = await loadAppState();
   if (!input || typeof input !== 'object' || Array.isArray(input)) return previous;
   const next = {
+    catalogSites20261101: true,
     selectedFeature: typeof input.selectedFeature === 'string' && /^[a-z0-9-]{2,40}$/.test(input.selectedFeature) ? input.selectedFeature : previous.selectedFeature,
     installedFeatures: Array.isArray(input.installedFeatures)
       ? [...new Set(['street-postcard', ...input.installedFeatures.filter((id) => typeof id === 'string' && /^[a-z0-9-]{2,40}$/.test(id))])]
@@ -481,7 +487,29 @@ function normalizeSiteUrl(value, { allowUnsafeProtocol = false } = {}) {
   return url;
 }
 
+function exitWebsiteFullscreen() {
+  if (!fullscreenWebsiteId) return;
+  const id = fullscreenWebsiteId;
+  fullscreenWebsiteId = '';
+  const view = websiteViews.get(id);
+  if (view && !view.webContents.isDestroyed()) {
+    view.webContents.executeJavaScript('document.fullscreenElement && document.exitFullscreen()').catch(() => {});
+    const bounds = normalWebsiteBounds.get(id);
+    if (bounds) view.setBounds(bounds);
+  }
+  if (windowRef && !windowRef.isDestroyed()) {
+    windowRef.setFullScreen(false);
+    windowRef.webContents.send('desktop:site-fullscreen-exited');
+  }
+}
+function fitFullscreenWebsite() {
+  const view = websiteViews.get(fullscreenWebsiteId);
+  if (!view || !windowRef || view.webContents.isDestroyed()) return;
+  const [width, height] = windowRef.getContentSize();
+  view.setBounds({ x: 0, y: 0, width, height });
+}
 function hideWebsiteViews(visibleId = '') {
+  if (fullscreenWebsiteId && fullscreenWebsiteId !== visibleId) exitWebsiteFullscreen();
   for (const [id, view] of websiteViews) {
     if (!view.webContents.isDestroyed()) view.setBounds({ x: 0, y: 0, width: 0, height: 0 });
     if (id === visibleId) websiteView = view;
@@ -495,12 +523,16 @@ function websiteBounds(input, tabId = activeWebsiteId) {
   const view = typeof tabId === 'string' ? websiteViews.get(tabId) : null;
   if (!view || view.webContents.isDestroyed()) { hideWebsiteViews(); return true; }
   const [x, y, width, height] = values;
+  // Renderer resize reports must not shrink a native fullscreen player.
+  if (fullscreenWebsiteId === tabId && width > 0 && height > 0) { fitFullscreenWebsite(); return true; }
+  if (fullscreenWebsiteId === tabId) exitWebsiteFullscreen();
   hideWebsiteViews(tabId);
   if (width < 1 || height < 1) return true;
   const [contentWidth, contentHeight] = windowRef.getContentSize();
   const left = Math.max(0, Math.min(contentWidth - 1, Math.round(x)));
   const top = Math.max(0, Math.min(contentHeight - 1, Math.round(y)));
   view.setBounds({ x: left, y: top, width: Math.max(1, Math.min(contentWidth - left, Math.round(width))), height: Math.max(1, Math.min(contentHeight - top, Math.round(height))) });
+  normalWebsiteBounds.set(tabId, view.getBounds());
   return true;
 }
 function activateWebsiteTab(tabId) {
@@ -529,6 +561,21 @@ function createWebsiteView(tabId) {
     },
   });
   const contents = view.webContents;
+  contents.on('enter-html-full-screen', () => {
+    if (tabId !== activeWebsiteId || view.getBounds().width < 1) {
+      contents.executeJavaScript('document.exitFullscreen()').catch(() => {});
+      return;
+    }
+    normalWebsiteBounds.set(tabId, view.getBounds());
+    fullscreenWebsiteId = tabId;
+    windowRef.setFullScreen(true);
+    fitFullscreenWebsite();
+    contents.focus();
+  });
+  contents.on('leave-html-full-screen', () => { if (fullscreenWebsiteId === tabId) exitWebsiteFullscreen(); });
+  contents.on('before-input-event', (_event, input) => {
+    if (input.type === 'keyDown' && input.key === 'Escape' && fullscreenWebsiteId === tabId) exitWebsiteFullscreen();
+  });
   const notify = (channel, detail = {}) => windowRef?.webContents.send(channel, { tabId, ...detail });
   windowRef.contentView.addChildView(view);
   websiteTabIds.add(tabId);
@@ -548,6 +595,7 @@ function createWebsiteView(tabId) {
   });
   contents.on('did-start-navigation', (_event, _url, isInPlace, isMainFrame) => {
     if (isInPlace || !isMainFrame) return;
+    if (fullscreenWebsiteId === tabId) exitWebsiteFullscreen();
     abortLinkSwiftRequests(contents);
   });
   contents.on('will-navigate', (event, nextUrl) => {
@@ -573,6 +621,8 @@ function createWebsiteView(tabId) {
   });
   contents.on('page-title-updated', (_event, title) => notify('desktop:site-title', { url: contents.getURL(), title }));
   contents.once('destroyed', () => {
+    if (fullscreenWebsiteId === tabId) exitWebsiteFullscreen();
+    normalWebsiteBounds.delete(tabId);
     websiteViews.delete(tabId);
     linkSwiftContents.delete(contents.id);
     if (activeWebsiteId === tabId) {
@@ -659,16 +709,20 @@ async function ensureDownloadDirectory() {
 }
 function configureSiteSession() {
   const siteSession = session.fromPartition('persist:rain-alley-sites');
-  const permitted = (permission, origin) => {
+  const permitted = (permission, origin, contents) => {
     try {
       // writeText requires sanitized-write; never grant clipboard reads here.
       if (permission === 'clipboard-sanitized-write') return siteAllowed(new URL(origin));
+      if (permission === 'fullscreen') {
+        const active = websiteViews.get(activeWebsiteId);
+        return active?.webContents === contents && active.getBounds().width > 0 && siteAllowed(new URL(origin)) && siteAllowed(new URL(contents.getURL()));
+      }
       const mapped = permission === 'media' || permission === 'mediaKeySystem' ? 'media' : permission === 'geolocation' ? 'geolocation' : permission === 'notifications' ? 'notifications' : permission === 'clipboard-read' ? 'clipboard-read' : permission;
       return appState?.allowedPermissions.includes(mapped) === true && siteAllowed(new URL(origin));
     } catch { return false; }
   };
-  siteSession.setPermissionCheckHandler((_contents, permission, origin) => permitted(permission, origin));
-  siteSession.setPermissionRequestHandler((_contents, permission, callback, details) => callback(permitted(permission, details.requestingUrl || '')));
+  siteSession.setPermissionCheckHandler((contents, permission, origin) => permitted(permission, origin, contents));
+  siteSession.setPermissionRequestHandler((contents, permission, callback, details) => callback(permitted(permission, details.requestingUrl || contents?.getURL() || '', contents)));
   siteSession.on('will-download', (event, item) => {
     if (!appState?.downloadsEnabled) { event.preventDefault(); item.cancel(); windowRef?.webContents.send('desktop:download-blocked'); return; }
     const folder = appState.downloadDirectory;
@@ -713,6 +767,7 @@ function closeWebsite(tabId = '') {
   if (tabId && !websiteTabIds.has(tabId)) return false;
   if (!tabId && !websiteTabIds.size) return false;
   for (const [id, view] of closing) {
+    if (fullscreenWebsiteId === id) exitWebsiteFullscreen();
     if (view) {
       abortLinkSwiftRequests(view.webContents);
       windowRef?.contentView.removeChildView(view);
@@ -814,7 +869,7 @@ function createWindow() {
     show: false,
     resizable: true,
     maximizable: true,
-    fullscreenable: false,
+    fullscreenable: true,
     autoHideMenuBar: true,
     title: '雨巷来信 · 工具集合',
     icon: shellIconPath(),
@@ -865,6 +920,9 @@ function createWindow() {
     windowRef?.webContents.send('desktop:suspend');
   });
   windowRef.on('restore', () => windowRef?.webContents.send('desktop:resume'));
+  windowRef.on('resize', fitFullscreenWebsite);
+  windowRef.on('enter-full-screen', fitFullscreenWebsite);
+  windowRef.on('leave-full-screen', exitWebsiteFullscreen);
   windowRef.on('maximize', () => { wasMaximized = true; windowRef?.webContents.send('desktop:window-state', true); });
   windowRef.on('unmaximize', () => { wasMaximized = false; windowRef?.webContents.send('desktop:window-state', false); });
 }

@@ -90,6 +90,7 @@ const envelopeAnimationTimers = new WeakMap();
 document.addEventListener('visibilitychange', () => { document.documentElement.dataset.effectsPaused = String(document.hidden); });
 desktop?.onSuspend?.(() => { document.documentElement.dataset.effectsPaused = 'true'; document.dispatchEvent(new Event('alley:suspend-effects')); });
 desktop?.onResume?.(() => { document.documentElement.dataset.effectsPaused = 'false'; });
+desktop?.onSiteFullscreenExited?.(() => scheduleSiteBounds());
 
 function celebrateMilestone(key) {
   void celebrate(key, state.preferences, desktop);
@@ -583,6 +584,9 @@ function updateInstallationSummary() {
 }
 
 function showPage(page) {
+  // A fullscreen native view can occlude the renderer and pause its RAF.
+  // Hide it immediately when leaving the site, before scheduling layout.
+  if (page !== 'site') desktop?.setWebsiteBounds({ x: 0, y: 0, width: 0, height: 0 }).catch(() => {});
   sceneHomePage.hidden = page !== 'scene';
   collectionPage.hidden = page !== 'collection';
   detailPage.hidden = page !== 'detail';

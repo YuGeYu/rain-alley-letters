@@ -282,6 +282,9 @@ async function testInterface(appRoot, base) {
 
     await cdp.evaluate("const page = document.querySelector('#sceneHomePage'); page.scrollTop = page.scrollHeight; page.dispatchEvent(new Event('scroll'));");
     await waitFor(cdp, "document.querySelectorAll('#sceneFeatureRail [data-feature-id]').length > 6", 'Scrolling the home page did not progressively load more works.');
+    while (await cdp.evaluate("!document.querySelector('#homeLoadMore').hidden")) {
+      await cdp.evaluate("document.querySelector('#homeLoadMore').click()");
+    }
     const loadedHome = await cdp.evaluate("({ count: document.querySelectorAll('#sceneFeatureRail [data-feature-id]').length, done: document.querySelector('#homeLoadMore')?.hidden })");
     assertResult(loadedHome.count === home.featureTotal && loadedHome.done, 'Progressive home loading did not finish cleanly.');
 
@@ -333,6 +336,10 @@ async function testInterface(appRoot, base) {
     const catalogInitialBatch = await cdp.evaluate("({ count: document.querySelectorAll('#featureGrid [data-envelope-id]').length, total: Number(document.querySelector('.catalog-tabs [data-filter=all] .tab-count').textContent) })");
     assertResult(catalogInitialBatch.count < catalogInitialBatch.total, `The catalog rendered every item at once: ${JSON.stringify(catalogInitialBatch)}`);
     await cdp.evaluate("document.querySelector('#featureGrid').dispatchEvent(new WheelEvent('wheel', { deltaY: 400, bubbles: true }))");
+    await waitFor(cdp, "document.querySelectorAll('#featureGrid [data-envelope-id]').length > 6", 'Wheel did not append a catalog batch.');
+    while (await cdp.evaluate("!document.querySelector('#catalogPagination').hidden")) {
+      await cdp.evaluate("document.querySelector('#catalogPagination button').click()");
+    }
     await waitFor(cdp, "document.querySelectorAll('#featureGrid [data-envelope-id]').length === Number(document.querySelector('.catalog-tabs [data-filter=all] .tab-count').textContent)", 'Scrolling down did not append the remaining catalog envelopes.');
     await cdp.evaluate("document.querySelector('.catalog-tabs [data-filter=website]').click()");
     await waitFor(cdp, "document.querySelector('#appAddressInput').value === 'rainalley://app/catalog?category=website'", 'Category route did not retain its query.');

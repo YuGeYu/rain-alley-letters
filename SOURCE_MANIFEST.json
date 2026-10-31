@@ -1,5 +1,5 @@
 {
-  "preparedAt": "2026-10-31T19:04:27.444Z",
+  "preparedAt": "2026-10-31T19:44:50.108Z",
   "uploaded": false,
   "files": [
     {
@@ -19,8 +19,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 6842,
-      "sha256": "e9e9110bb5b2065f8bcc7b97bd1100c7464e65be4f650285083d9f72d27837af"
+      "bytes": 6972,
+      "sha256": "c7578fc5985ff33d5382ddc78e9a6bb2e0e0e2a79872309485ddb2060643664c"
     },
     {
       "path": "package.json",
@@ -59,8 +59,8 @@
     },
     {
       "path": "src/catalog.js",
-      "bytes": 135071,
-      "sha256": "38a6354188fedcbde481986033cdb3c2ab9b0cd9dd87878673d912e248abe8c1"
+      "bytes": 135389,
+      "sha256": "24ad7a27257020962ccc35114d2feaa641ff39d5906210933f6982703d027e3d"
     },
     {
       "path": "src/celebration.js",
@@ -104,8 +104,8 @@
     },
     {
       "path": "src/features.js",
-      "bytes": 4895,
-      "sha256": "c2304c9558c3b323164f973cb649348bcbcd8aa6bede461146027ad03d76ffda"
+      "bytes": 6425,
+      "sha256": "0201ca0e1835bb4ae44d596ede5a20e19545df5f22e1ab7cfd30014c88f408d2"
     },
     {
       "path": "src/index.html",
@@ -199,8 +199,8 @@
     },
     {
       "path": "src/main.cjs",
-      "bytes": 91731,
-      "sha256": "6060aa5fa7ebfad901bd2d16e52e2104bda1e7674733e2903de43e8a1d26c128"
+      "bytes": 94873,
+      "sha256": "2fa63de73b912e95e098943f7f2a2dfb88d3ba4f71db9e6dbe2ddae24317b1a4"
     },
     {
       "path": "src/netdisk-resolver.cjs",
@@ -214,8 +214,8 @@
     },
     {
       "path": "src/preload.cjs",
-      "bytes": 6726,
-      "sha256": "4e95fec235295b5cce0b81a3744214d40b0cc6e903cf364f80ea4cfc3f18333a"
+      "bytes": 6822,
+      "sha256": "ba19a5663f5a9aae68c4d0e4f8dc4e953bc16def38ee62c1a9cc25fbc2290807"
     },
     {
       "path": "src/renderer.js",
@@ -306,6 +306,11 @@
       "path": "docs/开源说明.md",
       "bytes": 4030,
       "sha256": "6e2861afe93de6131d3d22b616473414a54c33ea9a09be864acde81ea2a083fd"
+    },
+    {
+      "path": "docs/网站上架与视频全屏修复-20261101.md",
+      "bytes": 1590,
+      "sha256": "a1082d88f8caee468de5073c1ada3e8b417ab463663f17cd6e703c4e9e91a34c"
     },
     {
       "path": "docs/饰品工坊与网页跳转开发记录-20261101.md",
@@ -418,9 +423,14 @@
       "sha256": "43dd143edd99f30f33f4cdfe5b3d120d3620b2168586d153127977e48657b953"
     },
     {
+      "path": "tools/website-fullscreen-runtime-check.cjs",
+      "bytes": 8140,
+      "sha256": "46be3a1095863ff3e401c0adec15e7f9ce6fb4392c3def783f3006178e422e8d"
+    },
+    {
       "path": "tools/_ui-runtime-check.cjs",
-      "bytes": 68349,
-      "sha256": "7f22bbabb7c4c149b2cc9977a9fbb1bde492fe454de17f84124548d4086b4306"
+      "bytes": 68847,
+      "sha256": "8174c8dfb9fe1b10493c4b8a4f0b914ef39930775c08c691210451aac94bd95f"
     },
     {
       "path": "cloudflare/auth-api/package.json",

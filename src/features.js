@@ -8,7 +8,11 @@ export const features = Object.freeze([
   Object.freeze({ id: 'pig-daily', name: '今日小猪 · 凉拌版', kind: 'website', summary: '站点已连通 · 在雨巷窗口内打开。', detail: '已检测到小猪站点可访问，页面通过独立网页视图呈现，不会跳转到系统浏览器。', availability: 'ready', siteUrl: 'https://pig.600318.xyz/', permissions: ['应用内网页'] }),
   Object.freeze({ id: 'liangban-api', name: '凉拌 API', kind: 'website', summary: 'API 服务站 · 在雨巷窗口内打开。', detail: '已检测到 API 服务站可访问，网页与账号令牌分别使用独立会话。', availability: 'ready', siteUrl: 'https://api.600318.xyz/', permissions: ['应用内网页'] }),
   Object.freeze({ id: 'resource-vault', name: '凉拌资源网站', kind: 'website', summary: '资源分享站 · 在雨巷窗口内打开。', detail: '已检测到资源分享站可访问。站点使用独立浏览器会话，不会读取应用账号令牌。', availability: 'ready', siteUrl: 'https://vault.600318.xyz/', permissions: ['应用内网页'] }),
-  Object.freeze({ id: 'cat-stickers', name: '猫猫虫表情包', kind: 'website', summary: '贴纸与表情包 · 站点地址待确认。', detail: '收集与整理猫猫虫表情包。正式上架前不会使用未确认的站点或远程资源。', availability: 'coming', permissions: ['应用内网页'] }),
+  Object.freeze({ id: 'cat-stickers', name: '猫猫虫表情包', kind: 'website', summary: '可爱猫猫虫 · 收藏聊天里的小心情。', detail: '浏览猫猫虫表情包，为日常聊天挑选一份可爱。收藏站点，随时回来看看。', availability: 'ready', siteUrl: 'https://maomaochongmiao.600318.xyz/', permissions: ['应用内网页'] }),
+  Object.freeze({ id: 'bilibili', name: '哔哩哔哩', kind: 'website', summary: '主理人的空间 · 发现喜欢的视频。', detail: '打开凉拌豇豆炒肉丝的 B 站空间，也可以使用 B 站搜索继续发现视频。喜欢的话，欢迎为主理人的视频点个赞。此入口与纯净 B 站视频工具独立。', availability: 'ready', siteUrl: 'https://space.bilibili.com/1404249584', permissions: ['应用内网页'] }),
+  Object.freeze({ id: 'mistport', name: '雾港回响', kind: 'website', summary: '雾港来信 · 开启一段新的冒险。', detail: '访问《雾港回响》游戏网站，了解游戏、查看消息并前往下载。', availability: 'ready', siteUrl: 'https://mistport.600318.xyz/', permissions: ['应用内网页'] }),
+  Object.freeze({ id: 'cs-career', name: '准星之外', kind: 'website', summary: 'CS 生涯转盘 · 转出你的下一段故事。', detail: '打开《准星之外》CS 生涯转盘，为自己的 CS 旅程寻找新的灵感与乐趣。', availability: 'ready', siteUrl: 'https://career.600318.xyz/', permissions: ['应用内网页'] }),
+  Object.freeze({ id: 'useless-skills', name: '无用技能大挑战', kind: 'website', summary: '奇妙小挑战 · 发现意想不到的拿手好戏。', detail: '打开无用技能大挑战，体验那些看似无用、却让人忍不住尝试的有趣技能。', availability: 'ready', siteUrl: 'https://usc.600318.xyz/', permissions: ['应用内网页'] }),
 ]);
 
 export const featureCategory = (feature) => feature.kind === 'desktop-plugin' ? 'steam' : feature.kind === 'website' ? 'website' : feature.kind === 'builtin' ? 'builtin' : 'utility';

@@ -75,6 +75,7 @@ contextBridge.exposeInMainWorld('alleyDesktop', Object.freeze({
   goForwardWebsite: (tabId) => ipcRenderer.invoke('site:go-forward', tabId),
   onShowHome: (callback) => subscribe('desktop:show-home', callback),
   onSiteLoaded: (callback) => subscribe('desktop:site-loaded', callback),
+  onSiteFullscreenExited: (callback) => subscribe('desktop:site-fullscreen-exited', callback),
   onSiteTitle: (callback) => subscribe('desktop:site-title', callback),
   onSiteFailed: (callback) => subscribe('desktop:site-failed', callback),
   onSiteBlocked: (callback) => subscribe('desktop:site-blocked', callback),
