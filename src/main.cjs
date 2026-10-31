@@ -20,6 +20,8 @@ const {
 const crypto = require('node:crypto');
 const { installOfficialPayload } = require('./cs2-installer.cjs');
 const { inspectUninstall, uninstallPayload } = require('./cs2-uninstaller.cjs');
+const { installInventory } = require('./inventory-installer.cjs');
+const { externalProtocol } = require('./external-protocol.cjs');
 const { spawn, spawnSync } = require('node:child_process');
 const fsSync = require('node:fs');
 const fs = require('node:fs/promises');
@@ -263,6 +265,7 @@ async function loadAppState() {
       navigationPolicy: ['allowlist', 'blocklist', 'allow-all', 'deny-all'].includes(saved.navigationPolicy) ? saved.navigationPolicy : DEFAULT_STATE.navigationPolicy,
       allowedHosts: cleanHosts(saved.allowedHosts, TRUSTED_SITE_HOSTS),
       blockedHosts: cleanHosts(saved.blockedHosts, []),
+      allowExternalProtocols: saved.allowExternalProtocols === true,
       allowHttp: saved.allowHttp === true, allowLocalNetwork: saved.allowLocalNetwork === true, allowPopups: saved.allowPopups === true, downloadsEnabled: saved.downloadsEnabled !== false,
       downloadBaseUrl: cleanOptionalHttpsUrl(saved.downloadBaseUrl, DEFAULT_STATE.downloadBaseUrl),
       downloadDirectory: typeof saved.downloadDirectory === 'string' && path.isAbsolute(saved.downloadDirectory) ? saved.downloadDirectory.slice(0, 1000) : '',
@@ -302,6 +305,7 @@ async function writeAppState(input) {
     allowHttp: typeof input.allowHttp === 'boolean' ? input.allowHttp : previous.allowHttp,
     allowLocalNetwork: typeof input.allowLocalNetwork === 'boolean' ? input.allowLocalNetwork : previous.allowLocalNetwork,
     allowPopups: typeof input.allowPopups === 'boolean' ? input.allowPopups : previous.allowPopups,
+    allowExternalProtocols: typeof input.allowExternalProtocols === 'boolean' ? input.allowExternalProtocols : previous.allowExternalProtocols,
     downloadsEnabled: typeof input.downloadsEnabled === 'boolean' ? input.downloadsEnabled : previous.downloadsEnabled,
     downloadBaseUrl: typeof input.downloadBaseUrl === 'string' ? cleanOptionalHttpsUrl(input.downloadBaseUrl, previous.downloadBaseUrl) : previous.downloadBaseUrl,
     downloadDirectory: typeof input.downloadDirectory === 'string' && path.isAbsolute(input.downloadDirectory) ? input.downloadDirectory.slice(0, 1000) : previous.downloadDirectory,
@@ -1174,6 +1178,78 @@ ipcMain.handle('cs2:install', async (event, input = {}) => {
 });
 
 let cs2InstallRunning = false;
+async function runtimeArchive() {
+  const prefs = await loadAppState();
+  let archive = prefs.cs2Archive;
+  if (!archive || !fsSync.existsSync(archive)) archive = path.join(app.getPath('userData'), 'cs2-bot-improver-v1.4.7.zip');
+  if (!fsSync.existsSync(archive)) {
+    const response = await net.fetch('https://github.com/ed0ard/CS2-Bot-Improver/releases/download/v1.4.7/CS2BotImprover.zip');
+    if (!response.ok) throw new Error('共享运行库下载失败，请从人机增强页面选择官方 ZIP 后重试。');
+    const temp = archive + '.tmp';
+    await fs.writeFile(temp, Buffer.from(await response.arrayBuffer()));
+    await fs.rename(temp, archive);
+  }
+  const digest = crypto.createHash('sha256').update(await fs.readFile(archive)).digest('hex');
+  if (digest !== require('./cs2-payload-manifest.json').archiveSha256) throw new Error('共享运行库来源包校验失败，请重新选择官方人机增强 ZIP。');
+  return archive;
+}
+function requireGameClosed() {
+  const processes = spawnSync('tasklist.exe', ['/FO', 'CSV', '/NH'], { encoding: 'utf8', windowsHide: true });
+  if (processes.status !== 0) throw new Error('无法检查游戏运行状态，请稍后重试。');
+  if (/"(?:cs2|Panel v1\.[^"]*)\.exe"/i.test(processes.stdout)) throw new Error('请先关闭 CS2 和人机增强 Panel。');
+}
+ipcMain.handle('inventory:install', async (event, input = {}) => {
+  ensureTrusted(event);
+  if (input.cleanOtherPlugins !== true || typeof input.keepBackup !== 'boolean') return { cancelled: true };
+  const root = normalizeCs2Directory(input.directory);
+  if (!root || path.basename(root).toLowerCase() !== 'csgo' || path.basename(path.dirname(root)).toLowerCase() !== 'game' || !fsSync.existsSync(path.join(root, 'gameinfo.gi'))) throw new Error('请选择有效的 CS2 game\\csgo 目录。');
+  if (cs2InstallRunning) throw new Error('插件安装或卸载正在进行，请稍候。');
+  cs2InstallRunning = true;
+  try {
+    requireGameClosed();
+    const runtime = await runtimeArchive();
+    requireGameClosed();
+    const result = await installInventory({ root, archive: path.join(__dirname, '..', 'assets/plugins/InventorySimulator-v3.7.2.zip'), runtimeArchive: runtime, keepBackup: input.keepBackup });
+    await saveAppState({ cs2Directory: root });
+    return result;
+  } finally { cs2InstallRunning = false; }
+});
+ipcMain.handle('inventory:inspect-uninstall', async (event, input = {}) => {
+  ensureTrusted(event);
+  const root = normalizeCs2Directory(input.directory);
+  if (!root) throw new Error('请先选择 CS2 游戏目录。');
+  return inspectUninstall({ root, plugin: 'inventory', keepConfig: input.keepConfig !== false });
+});
+ipcMain.handle('inventory:uninstall', async (event, input = {}) => {
+  ensureTrusted(event);
+  if (input.confirmed !== true) return { cancelled: true };
+  const root = normalizeCs2Directory(input.directory);
+  if (!root) throw new Error('请先选择 CS2 游戏目录。');
+  if (cs2InstallRunning) throw new Error('插件安装或卸载正在进行，请稍候。');
+  cs2InstallRunning = true;
+  try { requireGameClosed(); return await uninstallPayload({ root, plugin: 'inventory', keepConfig: input.keepConfig !== false, fingerprint: input.fingerprint }); }
+  finally { cs2InstallRunning = false; }
+});
+ipcMain.handle('inventory:open-folder', async (event, directory) => {
+  ensureTrusted(event);
+  const root = normalizeCs2Directory(directory);
+  if (!root || !fsSync.existsSync(path.join(root, 'gameinfo.gi'))) throw new Error('请选择有效的 CS2 游戏目录。');
+  const target = path.join(root, 'cfg');
+  const { checked } = require('./cs2-uninstaller.cjs');
+  if (!await checked(root, 'cfg/rain-alley-inventory.cfg')) throw new Error('请先完成库存插件安装。');
+  const error = await shell.openPath(target); if (error) throw new Error(error);
+});
+ipcMain.handle('inventory:launch', async event => {
+  ensureTrusted(event);
+  await shell.openExternal('steam://run/730//-insecure%20+map%20de_dust2%20+exec%20rain-alley-inventory.cfg');
+  return true;
+});
+ipcMain.handle('cs2:status', async (event, directory) => {
+  ensureTrusted(event);
+  const root = normalizeCs2Directory(directory);
+  if (!root) return {};
+  return { bots: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/BotAI/BotAI.dll')), inventory: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll')) };
+});
 ipcMain.handle('app:open-source-notices', async (event) => {
   ensureTrusted(event);
   return fs.readFile(path.join(app.getAppPath(), 'THIRD_PARTY_NOTICES.md'), 'utf8');
@@ -1462,6 +1538,13 @@ ipcMain.handle('site:inject-linkswift', async (event, tabId) => {
 ipcMain.handle('site:register-tab', (event, tabId) => { ensureTrusted(event); if (typeof tabId !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(tabId)) throw new Error('网页标签地址无效。'); websiteTabIds.add(tabId); return true; });
 ipcMain.handle('site:activate', (event, tabId) => { ensureTrusted(event); if (typeof tabId !== 'string') return null; return activateWebsiteTab(tabId); });
 ipcMain.handle('site:open', async (event, value, approved, tabId) => { ensureTrusted(event); return openWebsite(value, approved === true, tabId); });
+ipcMain.handle('site:open-external-protocol', async (event, value, approved) => {
+  ensureTrusted(event);
+  if (approved !== true) throw new Error('请先确认外部应用地址。');
+  const url = externalProtocol(value, appState?.allowExternalProtocols);
+  try { await shell.openExternal(url); } catch { throw new Error('未能打开对应应用，请确认电脑已安装该应用并注册此协议。'); }
+  return true;
+});
 ipcMain.handle('site:set-bounds', (event, value, tabId) => { ensureTrusted(event); return websiteBounds(value, tabId); });
 ipcMain.handle('site:close', (event, tabId) => { ensureTrusted(event); const result = closeWebsite(typeof tabId === 'string' ? tabId : ''); windowRef?.webContents.send('desktop:site-closed', { tabId }); return result; });
 ipcMain.handle('site:clear-data', async (event) => {

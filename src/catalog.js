@@ -1,4 +1,5 @@
 import { celebrate } from './celebration.js';
+import { inventoryMarkup } from './inventory-ui.js';
 import { features, featureCategory, featureCategoryName } from './features.js';
 import { analyzeInput, getProvider, isSharePage, parseUrl } from './netdisk.js';
 
@@ -53,7 +54,7 @@ const iconSvg = (feature) => `<svg viewBox="0 0 24 24" aria-hidden="true">${icon
 const actionSvg = (name) => `<svg viewBox="0 0 24 24" aria-hidden="true">${actionIcons[name] || actionIcons.view}</svg>`;
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const typeLabel = (feature) => featureCategoryName(feature);
-const state = { username: null, displayName: '', installed: new Set(['street-postcard']), selected: 'street-postcard', profileUsername: null, profile: null, preferences: { muted: true, lightweight: false, theme: 'dark', favorites: [], history: [], navigationPolicy: 'allowlist', allowedHosts: [], blockedHosts: [], allowHttp: false, allowLocalNetwork: false, allowPopups: false, downloadsEnabled: true, downloadBaseUrl: 'https://vault.600318.xyz/', downloadDirectory: '', allowedPermissions: [], closeToTray: true, webBookmarks: [] }, ready: false };
+const state = { username: null, displayName: '', installed: new Set(['street-postcard']), selected: 'street-postcard', profileUsername: null, profile: null, preferences: { muted: true, lightweight: false, theme: 'dark', favorites: [], history: [], navigationPolicy: 'allowlist', allowedHosts: [], blockedHosts: [], allowHttp: false, allowLocalNetwork: false, allowPopups: false, allowExternalProtocols: false, downloadsEnabled: true, downloadBaseUrl: 'https://vault.600318.xyz/', downloadDirectory: '', allowedPermissions: [], closeToTray: true, webBookmarks: [] }, ready: false };
 let filter = 'all';
 let collectionMode = 'favorites';
 let routeStack = ['rainalley://app/home'];
@@ -670,7 +671,8 @@ async function navigateAddress(rawAddress, approved = false, fromHistory = false
   }
   let url;
   try { url = new URL(address); } catch { toast('请输入完整网址，例如 https://example.com/'); return; }
-  if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) { toast('只支持 HTTP 或 HTTPS 网页，其他地址类型不允许打开。'); return; }
+  if (!['https:', 'http:'].includes(url.protocol)) { showSiteWarning(url.toString()); return; }
+  if (url.username || url.password) { toast('网页地址不能包含账号密码。'); return; }
   const settings = state.preferences;
   if (isPrivateHost(url.hostname) && !settings.allowLocalNetwork) { showLocalNetworkWarning(url.toString()); return; }
   const blocked = settings.blockedHosts.some((host) => url.hostname === host || url.hostname.endsWith(`.${host}`));
@@ -691,6 +693,7 @@ async function navigateAddress(rawAddress, approved = false, fromHistory = false
 
 function showSiteWarning(url) {
   const target = new URL(url);
+  if (!['https:', 'http:'].includes(target.protocol)) { showProtocolWarning(url); return; }
   if (isPrivateHost(target.hostname) && !state.preferences.allowLocalNetwork) { toast('本机和局域网地址默认禁止访问。可在设置里明确开启。'); return; }
   desktop?.setWebsiteBounds({ x: 0, y: 0, width: 0, height: 0 }, activeSiteTabId || null).catch(() => {});
   siteWarningOverlay.dataset.kind = 'site';
@@ -762,6 +765,11 @@ function showLocalNetworkWarning(url) {
 }
 
 async function openPendingSite() {
+  if (siteWarningOverlay.dataset.kind === 'external-protocol') {
+    const target = pendingSiteUrl; pendingSiteUrl = ''; siteWarningOverlay.hidden = true;
+    try { await desktop.openExternalProtocol(target, true); } catch (cause) { toast(cause?.message || '未找到可打开该地址的应用。', 'error'); }
+    scheduleSiteBounds(); return;
+  }
   if (siteWarningOverlay.dataset.kind === 'clear-browser-data' || siteWarningOverlay.dataset.kind === 'clear-app-data') {
     const kind = siteWarningOverlay.dataset.kind;
     siteWarningOverlay.hidden = true;
@@ -982,6 +990,9 @@ function renderDetail(feature) {
   $('#cs2ShareComment').hidden = feature.id !== 'cs2-bots';
   if (feature.id === 'cs2-bots') {
     actions.innerHTML = `<p class="cs2-download-note">一键安装会从官方 Release 获取并校验插件包。安装前可确认清理其他插件，并选择是否保留备份。</p><button class="action-secondary" id="downloadCs2Package" type="button">${actionSvg('open')}查看官方分享与下载说明</button><button class="action-secondary" id="netdiskCs2Package" type="button">${actionSvg('open')}用网盘工具获取下载地址</button><div class="cs2-install-controls"><label>CS2 游戏目录<input id="cs2Directory" type="text" readonly placeholder="自动识别或选择 CS2 安装目录" /></label><button class="action-secondary" id="chooseCs2Directory" type="button">选择目录</button><label>官方 ZIP 文件（可选）<input id="cs2Archive" type="text" readonly placeholder="留空时自动从官方 Release 下载" /></label><button class="action-secondary" id="chooseCs2Archive" type="button">选择 ZIP</button><p class="cs2-download-note" id="cs2ArchiveHint" role="status">选择后会自动记住，下次无需重复查找。</p><button class="action-primary" id="installCs2Package" type="button">${actionSvg('check')}一键安装并打开 Panel</button><button class="action-secondary" id="openCs2Panel" type="button">打开 Panel</button><div class="cs2-uninstall-section"><div><strong>卸下人机增强</strong><p>按官方清单移除插件文件，保留其他内容。卸载前会预览范围，并自动保存恢复备份。</p></div><button class="action-secondary cs2-danger" id="uninstallCs2Package" type="button">卸载插件…</button><p id="cs2UninstallResult" role="status" hidden></p></div></div><a class="detail-inline-note" href="${escapeHtml(feature.source)}" target="_blank" rel="noreferrer">官方源码与发布说明 · ed0ard/CS2-Bot-Improver v1.4.7</a>`;
+  } else if (feature.id === 'cs2-inventory') {
+    actions.innerHTML = inventoryMarkup(feature);
+    bindInventoryControls();
   } else if (feature.id === 'netdisk-links') {
     actions.innerHTML = `<button class="action-primary" id="openNetdiskToolButton" type="button">${actionSvg('open')}打开网盘地址工具</button><a class="detail-inline-note" href="${escapeHtml(feature.source)}" target="_blank" rel="noreferrer">查看 LinkSwift 上游项目</a>`;
   } else if (feature.builtin) {
@@ -1009,7 +1020,18 @@ function renderDetail(feature) {
     archiveInput.value = saved?.path || '';
     $('#cs2ArchiveHint').textContent = saved?.path ? (saved.available ? '已自动选好上次的 ZIP。' : '上次的 ZIP 已移动或删除，请重新选择。') : '选择后会自动记住，下次无需重复查找。';
   }).catch(() => {});
-  void desktop.findCs2Directory?.().then((value) => { if (value && $('#cs2Directory')) { selectedCs2Directory = value; $('#cs2Directory').value = value; } }).catch(() => {});
+  void desktop.findCs2Directory?.().then(async value => {
+    if (!value || !$('#cs2Directory')) return;
+    selectedCs2Directory = value; $('#cs2Directory').value = value;
+    const current = await desktop.getCs2Status(value);
+    if (!$('#cs2Directory')) return;
+    for (const [id, present] of [['cs2-bots', current.bots], ['cs2-inventory', current.inventory]]) present ? state.installed.add(id) : state.installed.delete(id);
+    $('#detailStatus').textContent = current.bots ? '已安装' : '可以使用';
+    $('#detailStatus').classList.toggle('is-installed', Boolean(current.bots));
+    $('#detailState').textContent = current.bots ? '已安装' : '可以使用';
+    updateInstallationSummary();
+    await desktop.saveState({ installedFeatures: [...state.installed] });
+  }).catch(() => {});
   $('#installCs2Package')?.addEventListener('click', async (event) => {
     const button = event.currentTarget;
     if (!$('#cs2Directory').value) { toast('先选择 CS2 游戏目录。', 'warning'); return; }
@@ -1017,7 +1039,7 @@ function renderDetail(feature) {
     const originalLabel = button.innerHTML;
     button.textContent = $('#cs2Archive').value ? '正在校验并安装…' : '正在获取官方插件并安装…';
     try {
-      const cleanOtherPlugins = await cs2InstallChoice('清理其他 CS2 插件？', '安装人机增强插件前，需要移除 addons 文件夹内未包含在官方安装包中的插件。选择“否”将取消一键安装。', [{ label: '否，取消安装', value: false }, { label: '是，继续安装', value: true, primary: true }]);
+      const cleanOtherPlugins = await cs2InstallChoice('清理其他 CS2 插件？', '将清理其他插件，保留雨巷来信的饰品工坊与共享运行库。选择“否”会取消安装。请先关闭 CS2 和 Panel。', [{ label: '否，取消安装', value: false }, { label: '是，继续安装', value: true, primary: true }]);
       if (!cleanOtherPlugins) { toast('安装已取消，游戏目录没有更改。'); return; }
       const keepBackup = await cs2InstallChoice('保留文件备份？', '备份会保存在 CS2 游戏目录下的雨巷来信备份文件夹。', [{ label: '取消安装', value: null }, { label: '不保留备份', value: false }, { label: '保留备份', value: true, primary: true }]);
       if (keepBackup === null) { toast('安装已取消，游戏目录没有更改。'); return; }
@@ -1036,7 +1058,7 @@ function renderDetail(feature) {
     try {
       const keepConfig = await cs2InstallChoice('保留人机配置？', '保留配置方便以后重新安装；选择一并移除时，配置会随插件移入恢复备份。玩家自己添加且不在官方清单中的文件始终保留。', [{ label: '取消卸载', value: null }, { label: '一并移除配置', value: false }, { label: '保留配置', value: true, primary: true }]);
       if (keepConfig === null) return;
-      const removeShared = await cs2InstallChoice('如何处理共享运行库？', 'CounterStrikeSharp 和 Metamod 可能被其他插件使用。默认保留它们；仅在确认不再使用其他插件时选择一并移除。', [{ label: '取消卸载', value: null }, { label: '一并移除运行库', value: true }, { label: '保留运行库', value: false, primary: true }]);
+      const removeShared = await cs2InstallChoice('如何处理共享运行库？', 'CounterStrikeSharp 和 Metamod 可能被其他插件使用。饰品工坊仍在时会自动保留共享运行库；其余情况建议保留。', [{ label: '取消卸载', value: null }, { label: '一并移除运行库', value: true }, { label: '保留运行库', value: false, primary: true }]);
       if (removeShared === null) return;
       button.textContent = '正在扫描文件…';
       const plan = await desktop.inspectCs2Uninstall(directory, removeShared, keepConfig);
@@ -1074,7 +1096,7 @@ function cs2InstallChoice(title, message, choices) {
     const heading = document.createElement('h2'); heading.id = 'cs2ModalTitle'; heading.textContent = title;
     const copy = document.createElement('p'); copy.id = 'cs2ModalDescription'; copy.textContent = message;
     dialog.setAttribute('aria-describedby', copy.id);
-    const finish = value => { overlay.remove(); previousFocus?.focus(); resolve(value); };
+    const finish = value => { overlay.remove(); previousFocus?.focus(); scheduleSiteBounds(); resolve(value); };
     const actions = document.createElement('div'); actions.className = 'cs2-modal-actions';
     for (const choice of choices) {
       const button = document.createElement('button'); button.type = 'button'; button.textContent = choice.label;
@@ -1091,6 +1113,7 @@ function cs2InstallChoice(title, message, choices) {
         else if (!event.shiftKey && document.activeElement === buttons.at(-1)) { event.preventDefault(); buttons[0]?.focus(); }
       }
     });
+    scheduleSiteBounds();
     actions.querySelector('button')?.focus();
   });
 }
@@ -1112,7 +1135,7 @@ function scheduleSiteBounds() {
   if (boundsRaf) cancelAnimationFrame(boundsRaf);
   boundsRaf = requestAnimationFrame(() => {
     boundsRaf = 0;
-    if (!siteFrameShell || sitePage.hidden || document.visibilityState === 'hidden') {
+    if (!siteFrameShell || sitePage.hidden || document.visibilityState === 'hidden' || document.querySelector('[aria-modal="true"]:not([hidden]), .cs2-modal-overlay')) {
       desktop?.setWebsiteBounds({ x: 0, y: 0, width: 0, height: 0 }).catch(() => {});
       return;
     }
@@ -1353,6 +1376,7 @@ function populateSettings() {
   $('#allowHttpSetting').checked = prefs.allowHttp === true;
   $('#allowLocalNetworkSetting').checked = prefs.allowLocalNetwork === true;
   $('#allowPopupsSetting').checked = prefs.allowPopups === true;
+  $('#allowExternalProtocolsSetting').checked = prefs.allowExternalProtocols === true;
   $('#downloadsEnabledSetting').checked = prefs.downloadsEnabled === true;
   $('#downloadBaseUrlSetting').value = prefs.downloadBaseUrl || '';
   $('#downloadDirectorySetting').value = prefs.downloadDirectory || '';
@@ -1385,6 +1409,7 @@ async function saveSettings({ quiet = false } = {}) {
   const next = {
     theme: $('#themeSelect').value, closeToTray: $('#closeToTraySetting').checked,
     navigationPolicy: $('#navigationPolicySetting').value, allowedHosts, blockedHosts,
+    allowExternalProtocols: $('#allowExternalProtocolsSetting').checked,
     allowHttp, allowLocalNetwork: $('#allowLocalNetworkSetting').checked, allowPopups: $('#allowPopupsSetting').checked,
     downloadBaseUrl, downloadsEnabled: $('#downloadsEnabledSetting').checked,
     downloadDirectory: state.preferences.downloadDirectory || '', allowedPermissions,
@@ -2042,3 +2067,81 @@ boot().catch((cause) => {
   authScreen.hidden = false;
   setAuthMessage(cause?.message || '页面初始化遇到问题，请重启应用后重试。');
 });
+
+function showProtocolWarning(url) {
+  if (['file:', 'javascript:', 'data:', 'blob:', 'about:', 'vbscript:'].includes(new URL(url).protocol)) { toast('只支持 HTTP 或 HTTPS 网页及已开启的外部应用协议，不支持本地文件或脚本地址。', 'warning'); return; }
+  if (!state.preferences.allowExternalProtocols) { toast('外部应用跳转已关闭，可在设置中开启“允许任意外部应用协议”。', 'warning'); scheduleSiteBounds(); return; }
+  pendingSiteUrl = url;
+  siteWarningOverlay.dataset.kind = 'external-protocol';
+  $('#siteWarningTitle').textContent = '打开外部应用？';
+  $('#siteWarningText').textContent = '此链接将交给电脑上对应的应用处理。地址可能包含导入资料或密钥，请确认来源可信。';
+  $('#siteWarningUrl').textContent = url;
+  $('#siteWarningOpen').textContent = '确认打开应用';
+  siteWarningOverlay.hidden = false;
+  scheduleSiteBounds();
+  $('#siteWarningCancel').focus({ preventScroll: true });
+}
+function bindInventoryControls() {
+  const field = () => $('#inventoryDirectory');
+  const status = () => $('#inventoryStatus');
+  const refresh = async () => {
+    if (!field()?.value) { if (status()) status().textContent = '请选择 CS2 游戏目录。'; return; }
+    const result = await desktop.getCs2Status(field().value);
+    if (!status()) return;
+    status().textContent = '饰品工坊：' + (result.inventory ? '已安装' : '未安装') + ' · 人机增强：' + (result.bots ? '已安装' : '未安装');
+    if ($('#inventoryLaunch')) $('#inventoryLaunch').disabled = !result.inventory;
+    for (const [key, present] of [['cs2-inventory', result.inventory], ['cs2-bots', result.bots]]) present ? state.installed.add(key) : state.installed.delete(key);
+    $('#detailStatus').textContent = result.inventory ? '已安装' : '可以使用';
+    $('#detailStatus').classList.toggle('is-installed', Boolean(result.inventory));
+    $('#detailState').textContent = result.inventory ? '已安装' : '可以使用';
+    updateInstallationSummary();
+    await desktop.saveState({ installedFeatures: [...state.installed] });
+  };
+  void desktop.findCs2Directory().then(value => { if (value && field()) field().value = value; return refresh(); }).catch(cause => { if (status()) status().textContent = cause.message; });
+  $('#inventoryChoose').addEventListener('click', async () => {
+    try { const value = await desktop.chooseCs2Directory(); if (value && field()) { field().value = value; await refresh(); } } catch (cause) { toast(cause.message, 'error'); }
+  });
+  $('#inventoryLaunch').addEventListener('click', () => desktop.launchInventoryGame().catch(cause => toast(cause.message, 'error')));
+  $('#inventoryCopy').addEventListener('click', () => desktop.copyText('exec rain-alley-inventory.cfg').then(() => toast('已复制，请在本机地图控制台执行，再使用 !ws。')).catch(cause => toast(cause.message, 'error')));
+  $('#inventoryWebsite').addEventListener('click', () => navigateAddress('https://inventory.cstrike.app/').catch(cause => toast(cause.message, 'error')));
+  $('#inventoryFolder').addEventListener('click', () => desktop.openInventoryFolder(field()?.value).catch(cause => toast(cause.message, 'error')));
+  const busy = value => { for (const id of ['inventoryInstall', 'inventoryUninstall', 'inventoryChoose']) if ($('#' + id)) $('#' + id).disabled = value; };
+  $('#inventoryInstall').addEventListener('click', async () => {
+    const directory = field()?.value;
+    if (!directory) { toast('请先选择 CS2 游戏目录。', 'warning'); return; }
+    busy(true);
+    try {
+      const cleanOtherPlugins = await cs2InstallChoice('清理其他 CS2 插件？', '安装饰品工坊会清理其他插件，保留雨巷来信的人机增强与共享运行库。选择“否”会取消安装。请先关闭 CS2 和 Panel。', [{ label: '否，取消安装', value: false }, { label: '是，继续安装', value: true, primary: true }]);
+      if (!cleanOtherPlugins) return;
+      const keepBackup = await cs2InstallChoice('保留文件备份？', '备份保存在所选游戏目录下。即使不保留备份，安装失败时也会尝试恢复原文件。', [{ label: '取消安装', value: null }, { label: '不保留备份', value: false }, { label: '保留备份', value: true, primary: true }]);
+      if (keepBackup === null) return;
+      if (status()) status().textContent = '正在校验资源、准备运行库并安装，请稍候…';
+      const result = await desktop.installInventory(directory, { cleanOtherPlugins, keepBackup });
+      if (result.cancelled) return;
+      await refresh();
+      const message = '饰品工坊已安装。进入本机自建地图后输入 !ws。' + (result.backup ? '备份：' + result.backup : '') + (result.cleanupPending?.length ? '部分临时文件待系统释放后清理。' : '');
+      if (status()) status().textContent += '。' + message;
+      toast(message, 'success', 7000);
+    } catch (cause) { if (status()) status().textContent = cause.message; toast(cause.message, 'error', 7000); }
+    finally { busy(false); }
+  });
+  $('#inventoryUninstall').addEventListener('click', async () => {
+    const directory = field()?.value;
+    if (!directory) { toast('请先选择 CS2 游戏目录。', 'warning'); return; }
+    busy(true);
+    try {
+      const keepConfig = await cs2InstallChoice('保留饰品工坊配置？', '库存 JSON 与自行添加的文件始终保留。共享运行库和人机增强不会移除。', [{ label: '取消卸载', value: null }, { label: '移除工坊配置', value: false }, { label: '保留配置', value: true, primary: true }]);
+      if (keepConfig === null) return;
+      const plan = await desktop.inspectInventoryUninstall(directory, keepConfig);
+      if (!plan.files.length) { toast('此目录没有可卸载的工坊文件。'); return; }
+      const confirmed = await cs2InstallChoice('确认卸载饰品工坊？', '将移走 ' + plan.files.length + ' 个文件；其中 ' + plan.changed + ' 个与官方包不同。所有移除文件都会保存到恢复备份。人机增强与共享运行库继续保留。', [{ label: '取消卸载', value: false }, { label: '确认卸载', value: true, danger: true }]);
+      if (!confirmed) return;
+      const result = await desktop.uninstallInventory(directory, { keepConfig, confirmed, fingerprint: plan.fingerprint });
+      await refresh();
+      if (status()) status().textContent += '。恢复备份：' + result.backup;
+      toast('饰品工坊已卸载。恢复备份：' + result.backup, 'success', 7000);
+    } catch (cause) { toast(cause.message, 'error', 7000); }
+    finally { busy(false); }
+  });
+}
+new MutationObserver(scheduleSiteBounds).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'] });

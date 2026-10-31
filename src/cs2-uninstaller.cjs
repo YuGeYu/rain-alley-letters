@@ -3,12 +3,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const manifest = require('./cs2-payload-manifest.json');
 const hash = data => crypto.createHash('sha256').update(data).digest('hex');
-const pluginNames = new Set(['BotAI', 'BotAimImprover', 'BotBuy', 'BotControllerImpl', 'BotHiderImpl', 'BotRandomizer', 'BotState', 'NadeSystem', 'RoundDamageRecap'].map(n => n.toLowerCase()));
-function shared(relative) {
-  const p = relative.toLowerCase();
-  if (p.startsWith('addons/counterstrikesharp/plugins/')) return !pluginNames.has(p.split('/')[3]);
-  return p.startsWith('addons/counterstrikesharp/') || p.startsWith('addons/metamod/') || (p.startsWith('addons/metamod') && p.endsWith('.vdf') && p.split('/').length === 2);
-}
+const { shared } = require('./cs2-ownership.cjs');
 async function stat(file, io) {
   try { return await io.lstat(file); } catch (e) { if (e.code === 'ENOENT') return null; throw e; }
 }
@@ -33,13 +28,18 @@ function cleanGameinfo(text, removeShared) {
   // an old upstream gameinfo.gi over a file updated by Steam.
   return text.replace(/^[ \t]*"?Game"?[ \t]+"?csgo[\/](overrides[\/]botprofile\.vpk|addons[\/]metamod)"?[ \t]*(?:\/\/[^\r\n]*)?(?:\r?\n|$)/gim, (line, entry) => entry.toLowerCase().startsWith('addons') && !removeShared ? line : '');
 }
-async function inspectUninstall({ root, removeShared = false, keepConfig = true, io = fs }) {
+async function inspectUninstall({ root, removeShared = false, keepConfig = true, io = fs, plugin = 'bots' }) {
   if (!path.isAbsolute(root) || path.basename(root).toLowerCase() !== 'csgo' || path.basename(path.dirname(root)).toLowerCase() !== 'game') throw new Error('请选择 CS2 的 game\\csgo 目录。');
+  if (plugin === 'inventory' || await checked(root, 'addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll', io)) removeShared = false;
   const gameinfo = await checked(root, 'gameinfo.gi', io);
   if (!gameinfo?.isFile()) throw new Error('未找到 gameinfo.gi，请重新选择游戏目录。');
   const files = [];
   let changed = 0, retainedShared = 0, retainedConfig = 0;
-  for (const item of manifest.files) {
+  const payload = plugin === 'inventory' ? require('./inventory-payload-manifest.json') : manifest;
+  const config = 'cfg/rain-alley-inventory.cfg';
+  const candidates = [...payload.files];
+  if (plugin === 'inventory' && !keepConfig && await checked(root, config, io)) candidates.push({ path: config });
+  for (const item of candidates) {
     if (item.path === 'gameinfo.gi') continue;
     const info = await checked(root, item.path, io);
     if (!info) continue;
@@ -51,13 +51,14 @@ async function inspectUninstall({ root, removeShared = false, keepConfig = true,
     files.push({ path: item.path, digest });
   }
   const original = await io.readFile(path.join(root, 'gameinfo.gi'));
-  const cleaned = Buffer.from(cleanGameinfo(original.toString('utf8'), removeShared));
+  const cleaned = plugin === 'inventory' ? original : Buffer.from(cleanGameinfo(original.toString('utf8'), removeShared));
   const editGameinfo = !original.equals(cleaned);
-  const fingerprint = hash(JSON.stringify({ root, removeShared, keepConfig, files, gameinfo: hash(original) }));
+  const fingerprint = hash(JSON.stringify({ root, plugin, removeShared, keepConfig, files, gameinfo: hash(original) }));
   return { root, removeShared, keepConfig, files, changed, retainedShared, retainedConfig, editGameinfo, gameinfoDigest: hash(original), fingerprint };
 }
-async function uninstallPayload({ root, removeShared = false, keepConfig = true, fingerprint, io = fs }) {
-  const plan = await inspectUninstall({ root, removeShared, keepConfig, io });
+async function uninstallPayload({ root, removeShared = false, keepConfig = true, fingerprint, io = fs, plugin = 'bots' }) {
+  const plan = await inspectUninstall({ root, removeShared, keepConfig, io, plugin });
+  removeShared = plan.removeShared;
   if (!fingerprint || fingerprint !== plan.fingerprint) throw new Error('文件在预览后发生变化，请重新扫描并确认卸载。');
   if (!plan.files.length && !plan.editGameinfo) return { removed: 0, backup: null, directory: root };
   const backup = path.join(root, `.rain-alley-uninstall-${crypto.randomUUID()}`);
@@ -96,4 +97,4 @@ async function uninstallPayload({ root, removeShared = false, keepConfig = true,
   }
   return { removed: plan.files.length, gameinfoEdited: plan.editGameinfo, directory: root, backup, retainedShared: plan.retainedShared };
 }
-module.exports = { inspectUninstall, uninstallPayload, cleanGameinfo };
+module.exports = { inspectUninstall, uninstallPayload, cleanGameinfo, checked };

@@ -15,7 +15,9 @@
     "prepare:opensource": "node tools/prepare-open-source.cjs",
     "test": "node --test tools/site-policy.test.cjs tools/netdisk.test.cjs tools/cs2-transaction.test.cjs tools/cs2-uninstall.test.cjs && node tools/renderer-smoke.cjs && node tools/_ui-runtime-check.cjs && node tools/cs2-install-runtime-check.cjs && node tools/spectrum-runtime-check.cjs && node --check src/celebration.js && node --check src/catalog.js && node --check src/renderer.js && node --check src/main.cjs && node --check src/preload.cjs && node --check src/site-preload.cjs && node --check src/netdisk-resolver.cjs && node --check src/features.js",
     "dist": "npm run prepare-assets && electron-builder --dir --win --x64 && node tools/build-direct-installer.cjs",
-    "pack": "electron-builder --dir --win --x64"
+    "pack": "electron-builder --dir --win --x64",
+    "test:inventory": "node --test tools/inventory-coexist.test.cjs && node tools/inventory-runtime-check.cjs",
+    "preview:inventory": "node tools/inventory-runtime-check.cjs --preview"
   },
   "devDependencies": {
     "electron": "^45.0.0",

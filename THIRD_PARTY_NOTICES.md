@@ -6,6 +6,7 @@ Copyright (C) 2026 雨巷来信工作室。雨巷来信自己的代码采用 GNU
 
 ## 随应用分发
 
+- Inventory Simulator v3.7.2，Ian Lucas，MIT：https://github.com/ianlucas/cs2-css-inventory-simulator/tree/v3.7.2 。官方 ZIP 原样保存在 assets/plugins/InventorySimulator-v3.7.2.zip，许可全文为同目录 InventorySimulator-LICENSE.txt。应用只增加安装、共存、卸载与便捷入口，不改动其 DLL。共享运行库按需从经过校验的外部官方包提取，不随应用附带。
 - LinkSwift 1.1.3，hmjz100 等作者：https://github.com/hmjz100/LinkSwift/tree/v1.1.3 。AGPL-3.0-or-later。原用户脚本、版权头和许可位于 src/linkswift/；雨巷来信的隔离会话、GM API 和 IPC 适配位于 src/main.cjs、src/site-preload.cjs 等文件。修改与适配记录见 docs/开源说明.md。
 - jQuery 3.6.0，OpenJS Foundation 及贡献者，MIT。
 - SweetAlert2 11.4.8，Tristan Edwards、Limon Monte 及贡献者，MIT。
