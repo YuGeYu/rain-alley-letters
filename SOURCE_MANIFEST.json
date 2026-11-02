@@ -1,5 +1,5 @@
 {
-  "preparedAt": "2026-10-31T19:44:50.108Z",
+  "preparedAt": "2026-11-02T17:45:21.740Z",
   "uploaded": false,
   "files": [
     {
@@ -14,18 +14,18 @@
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 3639,
-      "sha256": "6e96786a1ee3b71bde0447c57ca434f8e2d0871e8a592e72b738498b6cde17f5"
+      "bytes": 4648,
+      "sha256": "079c1631ed1492254d2244127cb887ff179d1c57226bfdc6d3b91330bd335a61"
     },
     {
       "path": "README.md",
-      "bytes": 6972,
-      "sha256": "c7578fc5985ff33d5382ddc78e9a6bb2e0e0e2a79872309485ddb2060643664c"
+      "bytes": 7414,
+      "sha256": "8889d16baa5a3fd43791fa31689c420ba140ea5eb8f376bb368955d1e39a758c"
     },
     {
       "path": "package.json",
-      "bytes": 2899,
-      "sha256": "cfa87394969552c94c9f6bf6b39f8db7232a462562112e51ded84caf7562258f"
+      "bytes": 3089,
+      "sha256": "43b6428b69ee28c8f8ac2c998f2c93dc61792765afaf2842a09cf43deccddc27"
     },
     {
       "path": "package-lock.json",
@@ -59,8 +59,8 @@
     },
     {
       "path": "src/catalog.js",
-      "bytes": 135389,
-      "sha256": "24ad7a27257020962ccc35114d2feaa641ff39d5906210933f6982703d027e3d"
+      "bytes": 152244,
+      "sha256": "2728f2caaaa7b610964263a2a79715ccb8039d97697fc4f8c639c07cabf40b3e"
     },
     {
       "path": "src/celebration.js",
@@ -74,13 +74,13 @@
     },
     {
       "path": "src/cs2-installer.cjs",
-      "bytes": 8682,
-      "sha256": "9556fadd591b231f9d1ad1dcc3919caf2e5260f2923fdc58c0a8215d8ce09800"
+      "bytes": 9026,
+      "sha256": "46541fdfd79c1b89bdba260715696e00cddea85be27e81b94c19ce6522f7d3b6"
     },
     {
       "path": "src/cs2-ownership.cjs",
-      "bytes": 1908,
-      "sha256": "58d31121ba5ac85dc7b547a3d8579800256a03078dbf48523694500ad41305c6"
+      "bytes": 2639,
+      "sha256": "aa7b0f17625c6eeb0a923fe2f211c42855734121156d86e77c6330d8f8ec7f23"
     },
     {
       "path": "src/cs2-payload-manifest.json",
@@ -89,8 +89,28 @@
     },
     {
       "path": "src/cs2-uninstaller.cjs",
-      "bytes": 7053,
-      "sha256": "65496a860b482bda2698a18d60ca08c78d3f02527e91bae2a119ec7de145f094"
+      "bytes": 7831,
+      "sha256": "fb0fa557b1379c9a4832014ca26f999dca2f7eaa8be793589c2dd199cea502a7"
+    },
+    {
+      "path": "src/demo-gui.cjs",
+      "bytes": 4966,
+      "sha256": "73d434ecfa1451e14456ccc2bfbb35206c7bb96d565a9321293cdd98a9fe075f"
+    },
+    {
+      "path": "src/demo-installer.cjs",
+      "bytes": 2515,
+      "sha256": "7f44dd6f576736638f9facef2200d24c8c5b35021a9ba1749b0ebe6f07260198"
+    },
+    {
+      "path": "src/demo-payload-manifest.json",
+      "bytes": 4121,
+      "sha256": "f92f1fa97cc85dc17ddd35a8f582a82dc844cc14787b1f820c58d93df17385b0"
+    },
+    {
+      "path": "src/demo-ui.js",
+      "bytes": 9839,
+      "sha256": "16d1e6fc029434e147b4a6e24a9755211846089954b999e37da1314817436afc"
     },
     {
       "path": "src/developer-vault.cjs",
@@ -104,13 +124,13 @@
     },
     {
       "path": "src/features.js",
-      "bytes": 6425,
-      "sha256": "0201ca0e1835bb4ae44d596ede5a20e19545df5f22e1ab7cfd30014c88f408d2"
+      "bytes": 6691,
+      "sha256": "6701a4f7c043fb2a5e6a8da0a66faf9d5203629dcba8582f01ea324df682462b"
     },
     {
       "path": "src/index.html",
-      "bytes": 30866,
-      "sha256": "851aa1a64b2c0169c79acee983c2c06976a8ac734d638a8d0cf3ff0717eb22f1"
+      "bytes": 32457,
+      "sha256": "c338a2232119b22998bc35fd872f4f3a828875e594093855ff1cc24c1ac8d60e"
     },
     {
       "path": "src/inventory-installer.cjs",
@@ -124,8 +144,8 @@
     },
     {
       "path": "src/inventory-ui.js",
-      "bytes": 1997,
-      "sha256": "013980c8386121d32216087fc198f140aeecca3224fbf0ba0c9e7896469df5e1"
+      "bytes": 2014,
+      "sha256": "53060dd70e8ac048741f199f442d6739c93d39f122dd57b64d2bb85dce7b9c94"
     },
     {
       "path": "src/linkswift/AGPL-3.0-or-later.txt",
@@ -199,8 +219,13 @@
     },
     {
       "path": "src/main.cjs",
-      "bytes": 94873,
-      "sha256": "2fa63de73b912e95e098943f7f2a2dfb88d3ba4f71db9e6dbe2ddae24317b1a4"
+      "bytes": 108104,
+      "sha256": "3c947788714ed3eb68c2a4a6c8e2d6d63aa815b73455a19ece88bb4ec6e34b41"
+    },
+    {
+      "path": "src/management-ui.js",
+      "bytes": 9307,
+      "sha256": "ca66621474134b5a7e5dc096884c10261c8ad11857896a0d1716ce3f9e8710de"
     },
     {
       "path": "src/netdisk-resolver.cjs",
@@ -214,8 +239,8 @@
     },
     {
       "path": "src/preload.cjs",
-      "bytes": 6822,
-      "sha256": "ba19a5663f5a9aae68c4d0e4f8dc4e953bc16def38ee62c1a9cc25fbc2290807"
+      "bytes": 8216,
+      "sha256": "1b5ffd6b06063af2ef13e059ab40bb9ce4ff8349b9c819f82454385645d5fe88"
     },
     {
       "path": "src/renderer.js",
@@ -244,8 +269,13 @@
     },
     {
       "path": "src/styles.css",
-      "bytes": 113286,
-      "sha256": "7f6cdfb0f2e87e873186ea2add11ef1916ec3cef0a4e3b018ec3558ea606d488"
+      "bytes": 125213,
+      "sha256": "201b2f6cde5cefe3321bb9a5d72ad335da844093d58fc78d3bbe1c3bd1f90783"
+    },
+    {
+      "path": "src/tool-launcher.cjs",
+      "bytes": 2225,
+      "sha256": "ef8974261216f807db5c7f0995250c85736dcddf3b6cd909841bfef23e634c36"
     },
     {
       "path": "assets/installer-header.bmp",
@@ -263,6 +293,31 @@
       "sha256": "c399a013da2247af837a0be8798c68d6a174e941d348b94cde648cd4f4aadd38"
     },
     {
+      "path": "assets/plugins/demotracer-css-v1.6.6.zip",
+      "bytes": 2917653,
+      "sha256": "acfe88175564f68d869a02c687196d7f02be5756f0543463e402406894532241"
+    },
+    {
+      "path": "assets/plugins/DemoTracer-DESKTOP-LICENSE.txt",
+      "bytes": 1487,
+      "sha256": "3b2606648961e6ef5fb460cf8414f3fdce8b886e81cba1c52fc6bb5d6abacd3e"
+    },
+    {
+      "path": "assets/plugins/DemoTracer-LICENSE.txt",
+      "bytes": 34523,
+      "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef"
+    },
+    {
+      "path": "assets/plugins/DemoTracer-THIRD_PARTY_NOTICES.md",
+      "bytes": 4273,
+      "sha256": "db12e8d08fa06deed53edbb37869a757c7566361b1614226fb5630c5498da0fa"
+    },
+    {
+      "path": "assets/plugins/DemoTracer-TRADEMARKS.md",
+      "bytes": 1156,
+      "sha256": "e70342c7716bf2f1040b966e5fc1dc8bacfeb31f1af3e170f37a33f69e2776de"
+    },
+    {
       "path": "assets/plugins/InventorySimulator-LICENSE.txt",
       "bytes": 1075,
       "sha256": "6a86b76d8990a9ea81a839d4426971831e34a4413ce9aa50ad052b1c21e638c8"
@@ -276,6 +331,11 @@
       "path": "assets/rain-alley.ico",
       "bytes": 381038,
       "sha256": "5929059f99c232cf09e59a947dd30f3fcc7991c2c4e6afb40e53bedc07f953e9"
+    },
+    {
+      "path": "assets/rain-alley.png",
+      "bytes": 8376,
+      "sha256": "b5c2a775a6a844e27259de172f49943132fb9a2edeb62b7ef7868dd2467c4b64"
     },
     {
       "path": "design-system/default/MASTER.md",
@@ -303,9 +363,34 @@
       "sha256": "b8b89edf32c7dbf8b8e97756941b51ca02da9d13cf421bbc96f4a3d4f1fd699a"
     },
     {
+      "path": "docs/Demo重玩与下载记录交付报告-20261102.md",
+      "bytes": 1349,
+      "sha256": "79b402a598c760f8e96b40d424fb535b3f50dcf330e5ca3ddd0a5687d2defda5"
+    },
+    {
+      "path": "docs/Demo重玩与下载记录开发记录-20261102.md",
+      "bytes": 3629,
+      "sha256": "1898bcf650688c2f17eba252b8930af83904d93fbd7f31d58d7a9848afbdca49"
+    },
+    {
+      "path": "docs/优化记录-20261102-工具跳转与Demo管理.md",
+      "bytes": 2176,
+      "sha256": "b2ce41191bee34a9e3af298e417ac148a02cef57adda4d11ee05d8f69d3f170c"
+    },
+    {
       "path": "docs/开源说明.md",
       "bytes": 4030,
       "sha256": "6e2861afe93de6131d3d22b616473414a54c33ea9a09be864acde81ea2a083fd"
+    },
+    {
+      "path": "docs/独立工具标签与留言评论发布报告-20261102.md",
+      "bytes": 2464,
+      "sha256": "ba2314c4fb78a43d7eecdb1afd3a76bf4c68cefa19e0b10a8f042962771cbb49"
+    },
+    {
+      "path": "docs/独立工具标签与留言评论开发记录-20261102.md",
+      "bytes": 3281,
+      "sha256": "f6258fa53e1acbb252d731e44d5bf2a49af5d9bb79434e8d9d3f776af6ae603c"
     },
     {
       "path": "docs/网站上架与视频全屏修复-20261101.md",
@@ -313,9 +398,19 @@
       "sha256": "a1082d88f8caee468de5073c1ada3e8b417ab463663f17cd6e703c4e9e91a34c"
     },
     {
+      "path": "docs/部署交付报告-20261103.md",
+      "bytes": 1949,
+      "sha256": "d7c0373079a66c2117d02011806a0f8c05854accf71ca28f6c461a1aec4f771d"
+    },
+    {
       "path": "docs/饰品工坊与网页跳转开发记录-20261101.md",
       "bytes": 5486,
       "sha256": "11d00b53c22e08d73beedd38cfdb14cdaa89367ddb3b640536ad4beca083f19d"
+    },
+    {
+      "path": "tools/auth-runtime.cjs",
+      "bytes": 9075,
+      "sha256": "fdf1e94b5db4d8518a1f445094d966f09b3f7baca5a741584b287d6d70ed456b"
     },
     {
       "path": "tools/build-direct-installer.cjs",
@@ -329,8 +424,8 @@
     },
     {
       "path": "tools/create-assets.cjs",
-      "bytes": 6628,
-      "sha256": "db3e4dcb679a882778fa7361fa9ebf328cce92a9f6c6a639405a8d8d21c4ef15"
+      "bytes": 7728,
+      "sha256": "687fc282d06bdb77d4a3812f65c9add684dd5972012cd41cf06139099643e166"
     },
     {
       "path": "tools/create-installer-script.cjs",
@@ -339,8 +434,8 @@
     },
     {
       "path": "tools/cs2-install-runtime-check.cjs",
-      "bytes": 13943,
-      "sha256": "315532212f44dc777f5ead2e93971b0ebcd79148504244d7e38530848c6bb402"
+      "bytes": 13981,
+      "sha256": "5353064d3fd71db4a562907ec7c2957c0f91d2ddf14b9a658205bb2bdae7d954"
     },
     {
       "path": "tools/cs2-transaction.test.cjs",
@@ -356,6 +451,21 @@
       "path": "tools/cs2-uninstall.test.cjs",
       "bytes": 4330,
       "sha256": "854d03e8d673797b32c83868a29fb9b66a6cc115714d97d97df855673cfe5f56"
+    },
+    {
+      "path": "tools/demo-coexist.test.cjs",
+      "bytes": 5262,
+      "sha256": "e44189972e5e38bb63d0aabbb27b85ffeaa04f46b74ffc9a802896e5a89bfabd"
+    },
+    {
+      "path": "tools/demo-gui.test.cjs",
+      "bytes": 1299,
+      "sha256": "2446abbb35d32e2aebd35211f1b394fb546d0b580a42d4887e9aeb6abdebd40a"
+    },
+    {
+      "path": "tools/demo-runtime-check.cjs",
+      "bytes": 9311,
+      "sha256": "aad100fdbc9b0721b7128c8f8db0cc9c42da6c533aa7cf154c312bfb629d6d5e"
     },
     {
       "path": "tools/direct-installer.nsi",
@@ -383,19 +493,24 @@
       "sha256": "29ba72f15f9bc26ed04cd48063c2c59d6774c3ac2042c595d37db889b084cdc9"
     },
     {
+      "path": "tools/management-runtime.cjs",
+      "bytes": 6722,
+      "sha256": "80671c89d2be8b68d6563b0eaafc4a8e487cf93f031db23db8d5064bd6d740c8"
+    },
+    {
       "path": "tools/netdisk.test.cjs",
       "bytes": 4368,
       "sha256": "eeb0427a77c59e7533ebb810126c6bf3008eefd287a99e18b5f0acb32294ce4a"
     },
     {
       "path": "tools/packaged-start-check.cjs",
-      "bytes": 6920,
-      "sha256": "6f5267572ee19b52a547554eacbeeac934b76984955a6859b152b8121814f50f"
+      "bytes": 6973,
+      "sha256": "157c9e31bd47686008d17ecb49dd52ff3a8f0b492e18813acc0b2a814656fc47"
     },
     {
       "path": "tools/prepare-open-source.cjs",
-      "bytes": 3942,
-      "sha256": "a687ab7e24912fcdbd18c7b37f30f30971c403bf17a449efed38c9bdb1313897"
+      "bytes": 4155,
+      "sha256": "4fb5a9a8fbe648a0e73cdc5de05b2524e430703ff00eba9d379839ad268f9005"
     },
     {
       "path": "tools/preview-community.cjs",
@@ -403,9 +518,19 @@
       "sha256": "160ea448909bcaa2a99fa5b79af549e3e7e684b9db7c18d8cb8b03c792cfebed"
     },
     {
+      "path": "tools/preview-home-motion.cjs",
+      "bytes": 5396,
+      "sha256": "c969b906a042af84a7a26468eefb17ebe5ac4629c93616f3268ee65c218ffc7b"
+    },
+    {
       "path": "tools/renderer-smoke.cjs",
       "bytes": 7742,
       "sha256": "13717f10a0d78e374a31341dc905a72e28586062a9549d557b37bf5847821d60"
+    },
+    {
+      "path": "tools/single-instance-runtime.cjs",
+      "bytes": 3529,
+      "sha256": "5d89ba57a36b923f42c90ff9ab9199007e73b2d5d1610bde53d72a782e684e10"
     },
     {
       "path": "tools/site-policy.test.cjs",
@@ -423,19 +548,34 @@
       "sha256": "43dd143edd99f30f33f4cdfe5b3d120d3620b2168586d153127977e48657b953"
     },
     {
+      "path": "tools/tool-launcher.test.cjs",
+      "bytes": 2360,
+      "sha256": "cc9b458fc4ec13c1fe3a775f041d5da1a3de253ab27f8c71b35d9b9863ffef94"
+    },
+    {
+      "path": "tools/tool-tabs-community-runtime.cjs",
+      "bytes": 6261,
+      "sha256": "e84bfafbcd4ec347a3c579bd3793361d88b3ea8fe9ad7d5c829059038149983f"
+    },
+    {
+      "path": "tools/verify-thread-deployment.cjs",
+      "bytes": 3461,
+      "sha256": "2b687590b0d5d3e464f03076f0f9ef8b64faed12674cbdd51a08d31cb759f3f2"
+    },
+    {
       "path": "tools/website-fullscreen-runtime-check.cjs",
       "bytes": 8140,
       "sha256": "46be3a1095863ff3e401c0adec15e7f9ce6fb4392c3def783f3006178e422e8d"
     },
     {
       "path": "tools/_ui-runtime-check.cjs",
-      "bytes": 68847,
-      "sha256": "8174c8dfb9fe1b10493c4b8a4f0b914ef39930775c08c691210451aac94bd95f"
+      "bytes": 69278,
+      "sha256": "1d16efa826c176109eae354b930aada09872d2ad4729e9f07207e7a343735c69"
     },
     {
       "path": "cloudflare/auth-api/package.json",
-      "bytes": 502,
-      "sha256": "1eebf2c8374322acd0686488fce8d17149153e53e477b0c6be04aec0d84da15a"
+      "bytes": 526,
+      "sha256": "8d12b207254a1f5cb3eef5890a2c94da1c6f58b57e4b20e57bc1f4b875b933e0"
     },
     {
       "path": "cloudflare/auth-api/package-lock.json",
@@ -459,13 +599,23 @@
     },
     {
       "path": "cloudflare/auth-api/src/community.test.mjs",
-      "bytes": 4513,
-      "sha256": "8d3b69e7b2d30edad502fe6d7488f0f7c0020890ddf46aeb6a92e2b21c949d3e"
+      "bytes": 8443,
+      "sha256": "c32cd4b3b7fbecf039cd0f5ca2fcc1eed6020ab0454d15d70eecd09797b805aa"
     },
     {
       "path": "cloudflare/auth-api/src/index.js",
-      "bytes": 23229,
-      "sha256": "a8144da6af7be232ca5138af1708dc7ab69b1a26f03c4369180bf2cdb72a46f1"
+      "bytes": 29401,
+      "sha256": "ff1608e33eda63890d8e875143769f4656b1f6a83ee6cdc9c523084207521b73"
+    },
+    {
+      "path": "cloudflare/auth-api/src/management.js",
+      "bytes": 8421,
+      "sha256": "867c67274bcea9488b708485868f78fdea304e2e5281817d6417847798c95da9"
+    },
+    {
+      "path": "cloudflare/auth-api/src/management.test.mjs",
+      "bytes": 3682,
+      "sha256": "cd70518efdb26f27c97d754eaa7457f45cb2d14448571fa4a53f1e75e180925c"
     },
     {
       "path": "cloudflare/auth-api/src/security.test.mjs",
@@ -486,6 +636,16 @@
       "path": "cloudflare/auth-api/migrations/0003_root_and_community_lock.sql",
       "bytes": 712,
       "sha256": "ba21e0b339271036ee7e019a12e8204e564744b3f3611f9430275866f14cfcc0"
+    },
+    {
+      "path": "cloudflare/auth-api/migrations/0004_comment_threads.sql",
+      "bytes": 1085,
+      "sha256": "8a79b3bea3074b008be501fd8ac783dfce033ab436e75a06605a673de1007ed8"
+    },
+    {
+      "path": "cloudflare/auth-api/migrations/0005_account_management.sql",
+      "bytes": 1118,
+      "sha256": "bbbcf9cd47eced188cf71d82c2d222bb982e21d8efa8bf4b225f79c7ea46bc52"
     },
     {
       "path": "installer.nsi",

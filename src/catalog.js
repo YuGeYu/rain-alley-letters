@@ -1,5 +1,7 @@
 import { celebrate } from './celebration.js';
+import { openManagement, closeManagement } from './management-ui.js';
 import { inventoryMarkup } from './inventory-ui.js';
+import { demoMarkup, bindDemoControls } from './demo-ui.js';
 import { features, featureCategory, featureCategoryName } from './features.js';
 import { analyzeInput, getProvider, isSharePage, parseUrl } from './netdisk.js';
 
@@ -74,6 +76,37 @@ let pendingCredentials = null;
 let credentialDataUrl = null;
 let lastCredentialPath = null;
 let commentRequest = 0;
+let replyTarget = null;
+let loadedComments = [];
+let commentsBefore = null;
+let mountedToolId = '';
+const detailTemplate = [...detailPage.childNodes].map(node => node.cloneNode(true));
+const toolSurfaces = new Map();
+
+function selectToolTab(feature) {
+  let tab = browserTabs.find(item => item.featureId === feature.id && item.kind === 'tool');
+  if (!tab) { tab = createSiteTab(feature.name); tab.kind = 'tool'; tab.featureId = feature.id; }
+  activeBrowserTabId = tab.id;
+  activeSiteTabId = '';
+  renderBrowserTabs();
+  return tab;
+}
+function mountTool(feature) {
+  if (mountedToolId === feature.id) return false;
+  if (mountedToolId) {
+    const fragment = document.createDocumentFragment();
+    fragment.append(...detailPage.childNodes);
+    toolSurfaces.set(mountedToolId, { fragment, replyTarget, loadedComments, commentsBefore, scroll: window.scrollY });
+  } else detailPage.replaceChildren();
+  const saved = toolSurfaces.get(feature.id);
+  mountedToolId = feature.id;
+  ++commentRequest;
+  replyTarget = saved?.replyTarget || null; loadedComments = saved?.loadedComments || []; commentsBefore = saved?.commentsBefore || null;
+  if (saved) detailPage.append(saved.fragment);
+  else detailPage.append(...detailTemplate.map(node => node.cloneNode(true)));
+  $('#detailBack')?.addEventListener('click', goCollection);
+  return !saved;
+}
 let boundsRaf = 0;
 let catalogPage = 0;
 let catalogFilteredItems = [];
@@ -89,7 +122,7 @@ let settingsRevision = 0;
 const envelopeAnimationTimers = new WeakMap();
 document.addEventListener('visibilitychange', () => { document.documentElement.dataset.effectsPaused = String(document.hidden); });
 desktop?.onSuspend?.(() => { document.documentElement.dataset.effectsPaused = 'true'; document.dispatchEvent(new Event('alley:suspend-effects')); });
-desktop?.onResume?.(() => { document.documentElement.dataset.effectsPaused = 'false'; });
+desktop?.onResume?.(() => { document.documentElement.dataset.effectsPaused = 'false'; scheduleSiteBounds(); });
 desktop?.onSiteFullscreenExited?.(() => scheduleSiteBounds());
 
 function celebrateMilestone(key) {
@@ -117,7 +150,7 @@ function renderBrowserTabs() {
     const full = String(tab.title || tab.hostname || '新标签页');
     const points = [...full];
     const label = points.length > shortAt ? `${points.slice(0, shortAt - 1).join('')}…` : full;
-    return `<div class="browser-tab${selected ? ' is-active' : ''}" role="presentation" draggable="true" data-sort-tab="${escapeHtml(tab.id)}"><button class="browser-tab-label" type="button" role="tab" data-browser-tab="${escapeHtml(tab.id)}" aria-controls="sitePage" aria-selected="${selected}" aria-label="切换到 ${escapeHtml(full)}" title="${escapeHtml(full)}"><i class="browser-tab-mark" aria-hidden="true"></i><span>${escapeHtml(label)}</span></button><button class="browser-tab-close" type="button" data-close-browser-tab="${escapeHtml(tab.id)}" aria-label="关闭标签页：${escapeHtml(full)}" title="关闭标签页">×</button></div>`;
+    return `<div class="browser-tab${selected ? ' is-active' : ''}" role="presentation" draggable="true" data-sort-tab="${escapeHtml(tab.id)}"><button class="browser-tab-label" type="button" role="tab" data-browser-tab="${escapeHtml(tab.id)}" aria-controls="${tab.kind === 'tool' ? (tab.featureId === 'netdisk-links' ? 'netdiskToolPage' : 'detailPage') : 'sitePage'}" aria-selected="${selected}" aria-label="切换到 ${escapeHtml(full)}" title="${escapeHtml(full)}"><i class="browser-tab-mark" aria-hidden="true"></i><span>${escapeHtml(label)}</span></button><button class="browser-tab-close" type="button" data-close-browser-tab="${escapeHtml(tab.id)}" aria-label="关闭标签页：${escapeHtml(full)}" title="关闭标签页">×</button></div>`;
   }).join('');
   for (const id of ['home', 'collection', 'profile']) {
     const button = $(`[data-browser-tab="${id}"]`);
@@ -141,7 +174,7 @@ function createSiteTab(title = '新标签页') {
 
 async function ensureActiveWebsiteTab(title = '新标签页') {
   let tab = browserTabs.find((item) => item.id === activeBrowserTabId);
-  if (!tab) tab = createSiteTab(title);
+  if (!tab || tab.kind === 'tool') tab = createSiteTab(title);
   await desktop?.registerWebsiteTab(tab.id).catch(() => {});
   await desktop?.activateWebsiteTab(tab.id).catch(() => {});
   activeSiteTabId = tab.id;
@@ -155,6 +188,7 @@ async function activateBrowserTab(id) {
   if (id === 'profile') { openProfile(); return; }
   const tab = browserTabs.find((item) => item.id === id);
   if (!tab) return;
+  if (tab.kind === 'tool') { await openFeature(tab.featureId); return; }
   activeBrowserTabId = tab.id;
   activeSiteTabId = tab.id;
   try {
@@ -185,8 +219,9 @@ async function activateBrowserTab(id) {
 async function closeBrowserTab(id) {
   const index = browserTabs.findIndex((tab) => tab.id === id);
   if (index < 0) return;
-  browserTabs.splice(index, 1);
-  await desktop.closeWebsite(id).catch(() => {});
+  const [closed] = browserTabs.splice(index, 1);
+  if (closed.kind !== 'tool') await desktop.closeWebsite(id).catch(() => {});
+  else { toolSurfaces.delete(closed.featureId); if (mountedToolId === closed.featureId) { mountedToolId = ''; detailPage.replaceChildren(...detailTemplate.map(node => node.cloneNode(true))); } }
   if (activeBrowserTabId !== id) { renderBrowserTabs(); return; }
   const next = browserTabs[Math.min(index, browserTabs.length - 1)];
   await activateBrowserTab(next?.id || activePinnedBrowserTabId);
@@ -336,10 +371,39 @@ function renderDownloads(items) {
   }).join('');
 }
 
+let downloadsOpening = false;
+let downloadsBackground;
+let downloadsPreviousFocus;
+function closeDownloadsDialog() {
+  $('#downloadsOverlay').hidden = true;
+  downloadsBackground?.remove(); downloadsBackground = null;
+  downloadsPreviousFocus?.focus({ preventScroll: true });
+  scheduleSiteBounds();
+}
 async function showDownloads() {
-  if (!sitePage.hidden) await desktop.setWebsiteBounds({ x: 0, y: 0, width: 0, height: 0 }, activeSiteTabId).catch(() => {});
+  if (downloadsOpening || !$('#downloadsOverlay').hidden) return;
+  downloadsOpening = true;
+  downloadsPreviousFocus = document.activeElement;
+  try {
+  if (!sitePage.hidden) {
+    const tabId = activeSiteTabId;
+    const capture = await desktop.captureWebsiteBackground(tabId).catch(() => null);
+    if (sitePage.hidden || tabId !== activeSiteTabId) return;
+    if (capture) {
+      downloadsBackground = document.createElement('img');
+      downloadsBackground.className = 'website-modal-background'; downloadsBackground.alt = '';
+      downloadsBackground.src = capture.dataUrl;
+      const b = capture.bounds;
+      Object.assign(downloadsBackground.style, { left: b.x + 'px', top: b.y + 'px', width: b.width + 'px', height: b.height + 'px' });
+      await downloadsBackground.decode().catch(() => {});
+      document.body.append(downloadsBackground);
+    }
+    await desktop.setWebsiteBounds({ x: 0, y: 0, width: 0, height: 0 }, tabId).catch(() => {});
+  }
   $('#downloadsOverlay').hidden = false;
+  $('#downloadsClose').focus({ preventScroll: true });
   renderDownloads(await desktop.listDownloads().catch(() => []));
+  } finally { downloadsOpening = false; }
 }
 
 async function openWebBookmark(value) {
@@ -355,7 +419,7 @@ function animateHomeEnvelope(id) {
   const previousAnimation = envelopeAnimationTimers.get(card);
   if (previousAnimation) previousAnimation.resolve();
   card.classList.remove('is-opening');
-  if (reduceMotion.matches) return Promise.resolve();
+  if (reduceMotion.matches || state.preferences.lightweight || document.visibilityState === 'hidden') return Promise.resolve();
   void card.offsetWidth;
   card.classList.add('is-opening');
   // Navigation waits for the card animation so the letter remains visible throughout the reveal.
@@ -584,6 +648,7 @@ function updateInstallationSummary() {
 }
 
 function showPage(page) {
+  closeManagement();
   // A fullscreen native view can occlude the renderer and pause its RAF.
   // Hide it immediately when leaving the site, before scheduling layout.
   if (page !== 'site') desktop?.setWebsiteBounds({ x: 0, y: 0, width: 0, height: 0 }).catch(() => {});
@@ -600,7 +665,7 @@ function showPage(page) {
   if (page === 'scene') activePinnedBrowserTabId = activeBrowserTabId = 'home';
   else if (page === 'collection') activePinnedBrowserTabId = activeBrowserTabId = 'collection';
   else if (page === 'profile') activePinnedBrowserTabId = activeBrowserTabId = 'profile';
-  else if (!['site', 'new-tab'].includes(page)) activeBrowserTabId = activePinnedBrowserTabId;
+  else if (!['site', 'new-tab', 'detail', 'netdisk'].includes(page)) activeBrowserTabId = activePinnedBrowserTabId;
   document.body.dataset.page = page;
   document.documentElement.dataset.page = page;
   const appShell = $('#appShell');
@@ -615,6 +680,7 @@ function showPage(page) {
   }
   const route = page === 'scene' ? 'rainalley://app/home'
     : page === 'collection' ? collectionAddress()
+      : page === 'management' ? 'rainalley://app/management'
       : page === 'settings' ? 'rainalley://app/settings'
         : page === 'profile' ? `rainalley://app/profile/${encodeURIComponent(state.profileUsername || state.username || '')}`
           : page === 'detail' ? `rainalley://app/feature/${encodeURIComponent(state.selected || '')}`
@@ -667,6 +733,7 @@ async function navigateAddress(rawAddress, approved = false, fromHistory = false
       setCollectionMode('all'); showCollection({ focus: false }); setFilter(filter);
     }
     else if (segments[0] === 'settings') showSettings();
+    else if (segments[0] === 'management') { showPage('management'); openManagement(desktop, cs2InstallChoice, () => showPage('scene')); }
     else if (segments[0] === 'profile' && segments[1]) openProfile(segments[1]);
     else if (segments[0] === 'feature' && segments[1] && features.some((feature) => feature.id === segments[1])) openFeature(segments[1]);
     else toast('这个雨巷页面地址不存在。');
@@ -847,6 +914,7 @@ function showCollection({ focus = true } = {}) {
 
 function showNetdiskTool() {
   stopPreview();
+  selectToolTab(features.find(item => item.id === 'netdisk-links'));
   closeSiteAndHide();
   showPage('netdisk');
   $('#netdiskInput')?.focus({ preventScroll: true });
@@ -948,6 +1016,7 @@ function deliveryLabel(feature) {
 async function openFeature(featureId) {
   const feature = features.find((item) => item.id === featureId);
   if (!feature) return;
+  if (feature.kind !== 'website' || !feature.siteUrl || feature.availability !== 'ready') selectToolTab(feature);
   stopPreview();
   state.selected = feature.id;
   renderFeatures();
@@ -955,6 +1024,7 @@ async function openFeature(featureId) {
     state.preferences.selectedFeature = feature.id;
     await savePreferences({ selectedFeature: feature.id, history: historyWith(feature.id) });
   } catch { /* opening a feature is still available if its local preference cannot be saved */ }
+  if (feature.kind !== 'website' || !feature.siteUrl || feature.availability !== 'ready') selectToolTab(feature);
 
   if (feature.id === 'netdisk-links') {
     showNetdiskTool();
@@ -964,7 +1034,7 @@ async function openFeature(featureId) {
   if (feature.kind === 'website') {
     if (!feature.siteUrl || feature.availability !== 'ready') {
       showPage('detail');
-      renderDetail(feature);
+      if (mountTool(feature)) renderDetail(feature);
       return;
     }
     showSite(feature);
@@ -972,10 +1042,14 @@ async function openFeature(featureId) {
   }
   closeSiteAndHide();
   showPage('detail');
-  renderDetail(feature);
+  if (mountTool(feature)) renderDetail(feature);
+  else { renderCommunityStatus(); void loadComments(feature.id); }
 }
 
 function renderDetail(feature) {
+  // Async tool work must update its own retained surface after a tab switch.
+  const nodes = new Map([...detailPage.querySelectorAll('[id]')].map(node => ['#' + node.id, node]));
+  const $ = selector => nodes.get(selector) || detailPage.querySelector(selector);
   const installed = state.installed.has(feature.id);
   $('#detailIcon').innerHTML = iconSvg(feature);
   $('#detailKind').textContent = typeLabel(feature);
@@ -996,7 +1070,14 @@ function renderDetail(feature) {
     actions.innerHTML = `<p class="cs2-download-note">一键安装会从官方 Release 获取并校验插件包。安装前可确认清理其他插件，并选择是否保留备份。</p><button class="action-secondary" id="downloadCs2Package" type="button">${actionSvg('open')}查看官方分享与下载说明</button><button class="action-secondary" id="netdiskCs2Package" type="button">${actionSvg('open')}用网盘工具获取下载地址</button><div class="cs2-install-controls"><label>CS2 游戏目录<input id="cs2Directory" type="text" readonly placeholder="自动识别或选择 CS2 安装目录" /></label><button class="action-secondary" id="chooseCs2Directory" type="button">选择目录</button><label>官方 ZIP 文件（可选）<input id="cs2Archive" type="text" readonly placeholder="留空时自动从官方 Release 下载" /></label><button class="action-secondary" id="chooseCs2Archive" type="button">选择 ZIP</button><p class="cs2-download-note" id="cs2ArchiveHint" role="status">选择后会自动记住，下次无需重复查找。</p><button class="action-primary" id="installCs2Package" type="button">${actionSvg('check')}一键安装并打开 Panel</button><button class="action-secondary" id="openCs2Panel" type="button">打开 Panel</button><div class="cs2-uninstall-section"><div><strong>卸下人机增强</strong><p>按官方清单移除插件文件，保留其他内容。卸载前会预览范围，并自动保存恢复备份。</p></div><button class="action-secondary cs2-danger" id="uninstallCs2Package" type="button">卸载插件…</button><p id="cs2UninstallResult" role="status" hidden></p></div></div><a class="detail-inline-note" href="${escapeHtml(feature.source)}" target="_blank" rel="noreferrer">官方源码与发布说明 · ed0ard/CS2-Bot-Improver v1.4.7</a>`;
   } else if (feature.id === 'cs2-inventory') {
     actions.innerHTML = inventoryMarkup(feature);
-    bindInventoryControls();
+    bindInventoryControls($('#detailActions'));
+  } else if (feature.id === 'cs2-demo') {
+    actions.innerHTML = demoMarkup();
+    bindDemoControls(actions, { desktop, choose: cs2InstallChoice, toast, onStatus: async result => {
+      for (const [id, present] of [['cs2-demo', result.demo], ['cs2-bots', result.bots], ['cs2-inventory', result.inventory]]) present ? state.installed.add(id) : state.installed.delete(id);
+      status.textContent = result.demo ? '已安装' : '可以使用'; status.classList.toggle('is-installed', Boolean(result.demo));
+      $('#detailState').textContent = status.textContent; updateInstallationSummary(); await desktop.saveState({ installedFeatures: [...state.installed] });
+    } });
   } else if (feature.id === 'netdisk-links') {
     actions.innerHTML = `<button class="action-primary" id="openNetdiskToolButton" type="button">${actionSvg('open')}打开网盘地址工具</button><a class="detail-inline-note" href="${escapeHtml(feature.source)}" target="_blank" rel="noreferrer">查看 LinkSwift 上游项目</a>`;
   } else if (feature.builtin) {
@@ -1009,6 +1090,7 @@ function renderDetail(feature) {
     actions.innerHTML = `<span class="action-disabled">暂时没有可用的安装包</span>`;
   }
   $('#previewProgress').hidden = true;
+  for (const node of detailPage.querySelectorAll('[id]')) nodes.set('#' + node.id, node);
   $('#commentsPanel').hidden = feature.kind === 'website';
   if (feature.kind !== 'website') loadComments(feature.id);
   $('#viewStreetButton')?.addEventListener('click', showScene);
@@ -1029,7 +1111,7 @@ function renderDetail(feature) {
     selectedCs2Directory = value; $('#cs2Directory').value = value;
     const current = await desktop.getCs2Status(value);
     if (!$('#cs2Directory')) return;
-    for (const [id, present] of [['cs2-bots', current.bots], ['cs2-inventory', current.inventory]]) present ? state.installed.add(id) : state.installed.delete(id);
+    for (const [id, present] of [['cs2-demo', current.demo], ['cs2-bots', current.bots], ['cs2-inventory', current.inventory]]) present ? state.installed.add(id) : state.installed.delete(id);
     $('#detailStatus').textContent = current.bots ? '已安装' : '可以使用';
     $('#detailStatus').classList.toggle('is-installed', Boolean(current.bots));
     $('#detailState').textContent = current.bots ? '已安装' : '可以使用';
@@ -1043,7 +1125,7 @@ function renderDetail(feature) {
     const originalLabel = button.innerHTML;
     button.textContent = $('#cs2Archive').value ? '正在校验并安装…' : '正在获取官方插件并安装…';
     try {
-      const cleanOtherPlugins = await cs2InstallChoice('清理其他 CS2 插件？', '将清理其他插件，保留雨巷来信的饰品工坊与共享运行库。选择“否”会取消安装。请先关闭 CS2 和 Panel。', [{ label: '否，取消安装', value: false }, { label: '是，继续安装', value: true, primary: true }]);
+      const cleanOtherPlugins = await cs2InstallChoice('清理其他 CS2 插件？', '将清理其他插件，保留雨巷来信的饰品工坊、Demo 重玩与共享运行库。选择“否”会取消安装。请先关闭 CS2 和 Panel。', [{ label: '否，取消安装', value: false }, { label: '是，继续安装', value: true, primary: true }]);
       if (!cleanOtherPlugins) { toast('安装已取消，游戏目录没有更改。'); return; }
       const keepBackup = await cs2InstallChoice('保留文件备份？', '备份会保存在 CS2 游戏目录下的雨巷来信备份文件夹。', [{ label: '取消安装', value: null }, { label: '不保留备份', value: false }, { label: '保留备份', value: true, primary: true }]);
       if (keepBackup === null) { toast('安装已取消，游戏目录没有更改。'); return; }
@@ -1062,7 +1144,7 @@ function renderDetail(feature) {
     try {
       const keepConfig = await cs2InstallChoice('保留人机配置？', '保留配置方便以后重新安装；选择一并移除时，配置会随插件移入恢复备份。玩家自己添加且不在官方清单中的文件始终保留。', [{ label: '取消卸载', value: null }, { label: '一并移除配置', value: false }, { label: '保留配置', value: true, primary: true }]);
       if (keepConfig === null) return;
-      const removeShared = await cs2InstallChoice('如何处理共享运行库？', 'CounterStrikeSharp 和 Metamod 可能被其他插件使用。饰品工坊仍在时会自动保留共享运行库；其余情况建议保留。', [{ label: '取消卸载', value: null }, { label: '一并移除运行库', value: true }, { label: '保留运行库', value: false, primary: true }]);
+      const removeShared = await cs2InstallChoice('如何处理共享运行库？', 'CounterStrikeSharp 和 Metamod 可能被其他插件使用。饰品工坊或 Demo 重玩仍在时会自动保留共享运行库；其余情况建议保留。', [{ label: '取消卸载', value: null }, { label: '一并移除运行库', value: true }, { label: '保留运行库', value: false, primary: true }]);
       if (removeShared === null) return;
       button.textContent = '正在扫描文件…';
       const plan = await desktop.inspectCs2Uninstall(directory, removeShared, keepConfig);
@@ -1152,6 +1234,9 @@ function scheduleSiteBounds() {
 }
 
 async function showSite(feature) {
+  const existing = browserTabs.find(tab => tab.featureId === feature.id && tab.kind !== 'tool');
+  if (existing) return activateBrowserTab(existing.id);
+  const tab = createSiteTab(feature.name); tab.featureId = feature.id;
   return openSiteUrl(feature.siteUrl, feature.name, feature.approvedByUser === true);
 }
 
@@ -1279,6 +1364,9 @@ function requestMoreCatalog() {
 }
 
 function updateAccountPresentation() {
+  let entry = $('#managementEntry');
+  if (!entry) { entry = document.createElement('button'); entry.id = 'managementEntry'; entry.textContent = '雨巷后台'; $('#accountPopover').prepend(entry); entry.addEventListener('click', () => { $('#accountPopover').hidden = true; showPage('management'); openManagement(desktop, cs2InstallChoice, () => showPage('scene')); }); }
+  entry.hidden = !['root','admin'].includes(state.role);
   const displayName = state.displayName || state.username || '雨巷来客';
   $('#accountName').textContent = displayName;
   $('#accountAvatar').textContent = [...displayName][0] || '雨';
@@ -1480,34 +1568,72 @@ function stopPreview() {
   }
 }
 
+function setReplyTarget(comment = null) {
+  replyTarget = comment;
+  let context = $('#commentReplyContext');
+  if (!context) { context = document.createElement('div'); context.id = 'commentReplyContext'; context.className = 'comment-reply-context'; $('#commentForm').before(context); }
+  context.replaceChildren(); context.hidden = !comment;
+  if (comment) {
+    const text = document.createElement('span'); text.textContent = `回复 ${comment.username}：${comment.body}`;
+    const cancel = document.createElement('button'); cancel.type = 'button'; cancel.textContent = '取消回复'; cancel.dataset.cancelReply = 'true';
+    context.append(text, cancel);
+  }
+  $('#commentInput').placeholder = comment ? '写下你的回复 · 最多 500 字' : '写下你的使用想法 · 最多 500 字';
+  renderCommunityStatus();
+}
 function renderComments(comments) {
+  loadedComments = comments;
   const list = $('#commentList');
-  $('#commentCount').textContent = `${comments.length} 条`;
+  $('#commentCount').textContent = `${comments.filter(c => !c.rootId).length} 则留言 · ${comments.filter(c => c.rootId && !c.deleted).length} 条评论`;
   list.replaceChildren();
   if (!comments.length) {
     const empty = document.createElement('p');
     empty.className = 'comment-empty'; empty.textContent = '还没有留言。来说第一句吧。'; list.append(empty); return;
   }
-  for (const comment of comments) {
+  const byId = new Map(comments.map(c => [c.id, c]));
+  const makeItem = (comment, root) => {
     const item = document.createElement('article'); item.className = 'comment-item';
+    item.dataset.commentId = comment.id;
+    if (comment.rootId) item.classList.add('comment-reply');
     const heading = document.createElement('div');
     const author = document.createElement('strong'); author.textContent = String(comment.username || '雨巷来客');
     const date = document.createElement('time');
     const seconds = Number(comment.createdAt);
     date.dateTime = Number.isFinite(seconds) ? new Date(seconds * 1000).toISOString() : '';
     date.textContent = Number.isFinite(seconds) ? new Date(seconds * 1000).toLocaleDateString('zh-CN') : '';
-    const body = document.createElement('p'); body.textContent = String(comment.body || '');
-    heading.append(author, date); item.append(heading, body); list.append(item);
+    const body = document.createElement('p'); body.textContent = comment.deleted ? '这条内容已删除。' : String(comment.body || '');
+    heading.append(author, date); item.append(heading);
+    if (comment.replyToId) {
+      const quoted = byId.get(comment.replyToId);
+      const quote = document.createElement('blockquote'); quote.textContent = !quoted || quoted.deleted ? '引用的内容已删除' : `${quoted.username}：${quoted.body}`; item.append(quote);
+    }
+    item.append(body);
+    const actions = document.createElement('footer'); actions.className = 'comment-actions';
+    if (!comment.deleted && !root.deleted) { const reply = document.createElement('button'); reply.type = 'button'; reply.textContent = '回复'; reply.dataset.replyComment = comment.id; actions.append(reply); }
+    if (comment.canDelete && !comment.deleted) { const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = '删除'; remove.className = 'comment-delete'; remove.dataset.deleteComment = comment.id; actions.append(remove); }
+    item.append(actions); return item;
+  };
+  for (const root of comments.filter(c => !c.rootId)) {
+    const thread = makeItem(root, root); thread.classList.add('comment-thread');
+    const replies = document.createElement('section'); replies.className = 'comment-replies'; replies.setAttribute('aria-label', '这则留言的评论');
+    for (const comment of comments.filter(c => c.rootId === root.id)) replies.append(makeItem(comment, root));
+    if (replies.childElementCount) thread.append(replies);
+    list.append(thread);
   }
+  if (commentsBefore) { const more = document.createElement('button'); more.type = 'button'; more.dataset.moreComments = 'true'; more.className = 'action-secondary'; more.textContent = '更早的留言'; list.append(more); }
 }
 
 let communityUntil = 0;
 let communityBusy = false;
 let communityUnlimited = false;
+let communityMuteUntil = 0;
+let communityMuteReason = '';
 let communityTimer;
 function setCommunityStatus(value) {
   if (!value) return;
   communityUnlimited = value.unlimited === true;
+  communityMuteUntil = Date.now() + Math.max(0, ((value.mutedUntil || 0) - value.serverNow) * 1000);
+  communityMuteReason = value.muteReason || '';
   communityUntil = communityUnlimited ? 0 : Date.now() + Math.max(0, (value.nextAllowedAt - value.serverNow) * 1000);
   renderCommunityStatus();
 }
@@ -1517,18 +1643,25 @@ function renderCommunityStatus() {
   if (!button) return;
   const remaining = Math.max(0, Math.ceil((communityUntil - Date.now()) / 1000));
   button.disabled = communityBusy || remaining > 0;
-  button.textContent = communityBusy ? '正在寄出…' : remaining ? `等待 ${String(Math.floor(remaining / 3600)).padStart(2,'0')}:${String(Math.floor(remaining % 3600 / 60)).padStart(2,'0')}:${String(remaining % 60).padStart(2,'0')}` : '寄出留言';
+  button.textContent = communityBusy ? '正在寄出…' : remaining ? `等待 ${String(Math.floor(remaining / 3600)).padStart(2,'0')}:${String(Math.floor(remaining % 3600 / 60)).padStart(2,'0')}:${String(remaining % 60).padStart(2,'0')}` : replyTarget ? '寄出回复' : '寄出留言';
   const hint = $('#communityLockHint');
-  if (hint) hint.textContent = communityUnlimited ? '雨巷主理人 · 留言与评论不限频次' : remaining ? '留言与评论共用一小时等待时间，其他功能仍可正常使用。' : '留言与评论共用一小时等待时间，成功寄出后开始计时。';
+  if (hint) hint.textContent = communityMuteUntil > Date.now() ? `暂时禁言至 ${new Date(communityMuteUntil).toLocaleString('zh-CN')}。${communityMuteReason}` : communityUnlimited ? '雨巷主理人 · 留言与评论不限频次' : remaining ? '留言与评论共用一小时等待时间，其他功能仍可正常使用。' : '留言与评论共用一小时等待时间，成功寄出后开始计时。';
   if (remaining) communityTimer = setTimeout(renderCommunityStatus, 1000);
 }
-async function loadComments(featureId) {
+async function loadComments(featureId, append = false) {
   const request = ++commentRequest;
   try {
-    const result = await desktop.getComments(featureId);
+    const previousRoots = append ? 0 : loadedComments.filter(c => !c.rootId).length;
+    const result = await desktop.getComments(featureId, append ? commentsBefore : undefined);
+    while (!append && result?.nextBefore && (result.comments || []).filter(c => !c.rootId).length < previousRoots) {
+      if (request !== commentRequest || state.selected !== featureId) return;
+      const next = await desktop.getComments(featureId, result.nextBefore);
+      result.comments.push(...(next.comments || [])); result.nextBefore = next.nextBefore;
+    }
     if (request !== commentRequest || state.selected !== featureId) return;
     setCommunityStatus(result?.community);
-    renderComments(Array.isArray(result?.comments) ? result.comments : []);
+    commentsBefore = result?.nextBefore || null;
+    renderComments(append ? [...loadedComments, ...(result?.comments || [])] : (result?.comments || []));
   } catch (cause) {
     if (request !== commentRequest) return;
     $('#commentList').innerHTML = `<p class="comment-empty">${escapeHtml(cause?.message || '留言暂时无法载入。')}</p>`;
@@ -1541,14 +1674,28 @@ function setAuthMessage(message, success = false) {
 }
 
 function setAuthMode(mode) {
+  if (authBusy) return;
   const register = mode === 'register';
   registerForm.hidden = !register;
   loginForm.hidden = register;
-  $('#authTitle').innerHTML = register ? '实用工具，<br /><span>从这里开始。</span>' : '欢迎回来，<br /><span>雨巷来信。</span>';
-  $('.auth-lede').innerHTML = register ? '登录后即可使用桌面功能、网页收藏与工具集合。<br />也可以一键创建账号并保存本机凭据。' : '带上账号图片里的账号和密码，<br />继续使用你的工具集合。';
+  $('#authTitle').innerHTML = register ? '初次见面，<span>欢迎来信。</span>' : '欢迎回来，<span>雨巷来信。</span>';
+  $('.auth-lede').textContent = register ? '创建自己的账号，让常用工具与收藏有处安放。' : '登录你的账号，继续使用熟悉的工具与收藏。';
+  $$('[data-auth-view]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.authView === mode)));
+  resetAuthPasswords();
+  $$('.auth-form [aria-invalid]').forEach(input => input.removeAttribute('aria-invalid'));
   setAuthMessage('');
-  (register ? $('#registerSubmit') : $('#loginUsername')).focus({ preventScroll: true });
+  (register ? $('#registerUsername') : $('#loginUsername')).focus({ preventScroll: true });
 }
+function resetAuthPasswords() {
+  for (const id of ['loginPassword','registerPassword','registerPasswordConfirm']) { const input = $('#'+id); input.value=''; input.type='password'; }
+  $$('[data-password-toggle]').forEach(button=>{button.textContent='显示';button.setAttribute('aria-label','显示密码');button.setAttribute('aria-pressed','false');});
+}
+function setAuthBusy(value) {
+  authBusy=value;
+  $$('.auth-content button, .auth-form input').forEach(element=>element.disabled=value);
+  $('.auth-content').setAttribute('aria-busy',String(value));
+}
+function invalidAuthField(id,message) { const input=$('#'+id);input.setAttribute('aria-invalid','true');setAuthMessage(message);input.focus(); }
 
 function credentialImage(username, password) {
   const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 680;
@@ -1584,13 +1731,14 @@ function openCredentialDialog(dataUrl, savedPath, saveError = '') {
 
 async function savePendingCredentials() {
   if (!pendingCredentials) return;
+  if ($('#credentialRetryButton').disabled) return;
+  $('#credentialRetryButton').disabled=true;$('#credentialDoneButton').disabled=true;
   try {
     const result = await desktop.saveCredentialImage(pendingCredentials.dataUrl, pendingCredentials.username);
     lastCredentialPath = result.path;
     $('#credentialsPath').textContent = result.path;
     $('#credentialRetryButton').hidden = true;
     $('#credentialOpenButton').hidden = false;
-    pendingCredentials = null;
     credentialsOverlay.dataset.celebrate = 'true';
     setAuthMessage('新账号已经登录，账号图片已保存到本机图片文件夹。', true);
   } catch (cause) {
@@ -1598,9 +1746,16 @@ async function savePendingCredentials() {
     $('#credentialRetryButton').hidden = false;
     $('#credentialOpenButton').hidden = true;
   }
+  finally { $('#credentialRetryButton').disabled=false;$('#credentialDoneButton').disabled=$('#credentialTextButton').dataset.saving==='true'; }
 }
 
 function enterHome(profile) {
+  if (state.username && state.username !== profile.username) {
+    browserTabs = browserTabs.filter(tab => tab.kind !== 'tool');
+    toolSurfaces.clear(); mountedToolId = ''; replyTarget = null; loadedComments = []; commentsBefore = null;
+    ++commentRequest;
+    detailPage.replaceChildren(...detailTemplate.map(node => node.cloneNode(true)));
+  }
   state.username = profile.username;
   state.role = profile.role || 'player';
   setCommunityStatus(profile.community || { unlimited: state.role === 'root', nextAllowedAt: 0, serverNow: Date.now() / 1000 });
@@ -1624,31 +1779,48 @@ function enterHome(profile) {
 async function submitLogin(event) {
   event.preventDefault();
   if (authBusy) return;
-  authBusy = true; $('#loginSubmit').disabled = true; setAuthMessage('正在验证账号…');
+  if (!/^[A-Za-z0-9_-]{4,24}$/.test($('#loginUsername').value.trim())) return invalidAuthField('loginUsername','请输入 4–24 位有效账号。');
+  if (!$('#loginPassword').value) return invalidAuthField('loginPassword','请输入密码。');
+  setAuthBusy(true); setAuthMessage('正在验证账号…');
   try {
     const username = $('#loginUsername').value.trim();
     const password = $('#loginPassword').value;
     const profile = await desktop.login({ username, password });
-    $('#loginPassword').value = '';
+    resetAuthPasswords();
     enterHome(profile);
     toast(profile.recoveryWarning || '欢迎回到雨巷来信。');
   } catch (cause) { setAuthMessage(cause?.message || '登录暂时没有完成，请稍后重试。'); }
-  finally { authBusy = false; $('#loginSubmit').disabled = false; }
+  finally { setAuthBusy(false); }
 }
 
 async function submitRegister(event) {
   event.preventDefault();
   if (authBusy) return;
-  authBusy = true; $('#registerSubmit').disabled = true; $('#registerSubmit span').textContent = '正在为你准备账号…'; setAuthMessage('正在创建账号并安全登录…');
+  const username=$('#registerUsername').value.trim(), password=$('#registerPassword').value;
+  if (!/^[A-Za-z0-9_-]{4,24}$/.test(username) || username.toLowerCase()==='__deleted__') return invalidAuthField('registerUsername','账号需为 4–24 位字母、数字、下划线或短横线。');
+  if (password.length<12 || password.length>128) return invalidAuthField('registerPassword','密码长度需为 12–128 位。');
+  if (password!==$('#registerPasswordConfirm').value) return invalidAuthField('registerPasswordConfirm','两次输入的密码不一致，请重新确认。');
+  setAuthBusy(true); setAuthMessage('正在创建账号…');
+  try { const profile=await desktop.registerAccount({username,password});resetAuthPasswords();enterHome(profile);toast('账号已创建，欢迎来到雨巷。','success'); }
+  catch(cause) { setAuthMessage(cause?.message || '注册未完成，请稍后重试。'); }
+  finally { setAuthBusy(false); }
+}
+async function submitQuickRegister(event) {
+  event.preventDefault();
+  if (authBusy) return;
+  setAuthBusy(true); setAuthMessage('正在生成账号并安全登录…');
   try {
     const credentials = await desktop.registerAccount();
     enterHome(credentials.profile);
     const dataUrl = credentialImage(credentials.username, credentials.password);
-    pendingCredentials = { username: credentials.username, password: credentials.password, dataUrl };
+    pendingCredentials = { username: credentials.username, dataUrl };
+    $('#credentialTextStatus').textContent = '';
+    $('#credentialTextButton').disabled = false;
+    $('#credentialTextButton').textContent = '保存为 TXT 文本';
     openCredentialDialog(dataUrl, '正在保存账号图片…');
     await savePendingCredentials();
   } catch (cause) { setAuthMessage(cause?.message || '注册暂时没有完成，请稍后重试。'); }
-  finally { authBusy = false; $('#registerSubmit').disabled = false; $('#registerSubmit span').textContent = '一键注册并进入主页'; }
+  finally { setAuthBusy(false); }
 }
 
 function showAuth() {
@@ -1656,7 +1828,7 @@ function showAuth() {
   credentialsOverlay.hidden = true;
   showPage('none');
   authScreen.hidden = false;
-  setAuthMode('register');
+  setAuthMode('login');
 }
 
 async function boot() {
@@ -1723,6 +1895,13 @@ async function boot() {
   };
   featureGrid?.addEventListener('keydown', activateWithKeyboard);
   historyGrid?.addEventListener('keydown', activateWithKeyboard);
+  // Local tool links use the same policy, tabs and error feedback as the address bar.
+  document.addEventListener('click', event => {
+    const link = event.target.closest('a[href]');
+    if (!link || event.defaultPrevented || !/^https?:/i.test(link.getAttribute('href') || '')) return;
+    event.preventDefault();
+    navigateAddress(link.href).catch(cause => toast(cause?.message || '页面暂时无法打开。', 'error'));
+  });
   document.addEventListener('click', (event) => {
     const button = event.target.closest('[data-filter]');
     if (!button) return;
@@ -1845,7 +2024,6 @@ async function boot() {
     showCollection({ focus: false });
   }));
   $('#sceneResetButton')?.addEventListener('click', showScene);
-  $('#detailBack').addEventListener('click', goCollection);
   siteBookmarkButton?.addEventListener('click', () => toggleWebBookmark());
   siteLinkSwiftButton?.addEventListener('click', enableLinkSwift);
   $('#netdiskBack')?.addEventListener('click', goCollection);
@@ -1870,8 +2048,15 @@ async function boot() {
   $('#exitButton')?.addEventListener('click', () => desktop?.quit());
   $('#closeButton')?.addEventListener('click', () => desktop?.closeToTray());
   $('#downloadFolderButton')?.addEventListener('click', () => showDownloads().catch((cause) => toast(cause?.message || '无法读取下载记录。', 'error')));
-  const closeDownloads = () => { $('#downloadsOverlay').hidden = true; if (!sitePage.hidden) scheduleSiteBounds(); };
+  const closeDownloads = closeDownloadsDialog;
   $('#downloadsClose')?.addEventListener('click', closeDownloads);
+  $('#downloadsOverlay')?.addEventListener('keydown', event => {
+    if (event.key !== 'Tab') return;
+    const buttons = [...$('#downloadsOverlay').querySelectorAll('button:not(:disabled)')];
+    const first = buttons[0], last = buttons.at(-1);
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+  });
   $('#downloadsOverlay')?.addEventListener('click', (event) => { if (event.target.id === 'downloadsOverlay') closeDownloads(); });
   $('#downloadsFolderOpen')?.addEventListener('click', async () => { try { await desktop.openDownloadDirectory(); } catch (cause) { toast(cause?.message || '下载文件夹不可用，请在设置中重新选择。', 'error'); } });
   $('#downloadsList')?.addEventListener('click', async (event) => {
@@ -1897,21 +2082,42 @@ async function boot() {
   desktop?.developerAvailable?.().then(available => { developerButton.hidden = !available; }).catch(() => {});
   developerButton.addEventListener('click', async () => {
     if (authBusy) return;
-    authBusy = true; developerButton.disabled = true; setAuthMessage('正在使用本机保存的主理人账号…');
+    setAuthBusy(true); setAuthMessage('正在使用本机保存的主理人账号…');
     try { enterHome(await desktop.developerLogin()); toast('欢迎回来，雨巷主理人。'); }
     catch (cause) { setAuthMessage(cause?.message || '主理人登录未完成，请稍后重试。'); }
-    finally { authBusy = false; developerButton.disabled = false; }
+    finally { setAuthBusy(false); }
   });
   registerForm.addEventListener('submit', submitRegister);
+  $('#quickRegisterButton').addEventListener('click', submitQuickRegister);
+  $$('[data-password-toggle]').forEach(button=>button.addEventListener('click',()=>{const input=$('#'+button.dataset.passwordToggle);const visible=input.type==='password';input.type=visible?'text':'password';button.textContent=visible?'隐藏':'显示';button.setAttribute('aria-label',visible?'隐藏密码':'显示密码');button.setAttribute('aria-pressed',String(visible));}));
+  $$('.auth-form input').forEach(input=>input.addEventListener('input',()=>input.removeAttribute('aria-invalid')));
   $$('[data-auth-view]').forEach((button) => button.addEventListener('click', () => setAuthMode(button.dataset.authView)));
   $('#credentialRetryButton').addEventListener('click', savePendingCredentials);
   $('#credentialDoneButton').addEventListener('click', () => {
+    if ($('#credentialTextButton').dataset.saving === 'true' || $('#credentialRetryButton').disabled) return;
     credentialsOverlay.hidden = true;
     if (credentialsOverlay.dataset.celebrate) { delete credentialsOverlay.dataset.celebrate; celebrateMilestone('account-created'); }
     pendingCredentials = null;
+    desktop.forgetGeneratedCredentials?.().catch(()=>{});
     credentialDataUrl = null;
     $('#credentialsImage').removeAttribute('src');
     $('#openCollectionButton')?.focus({ preventScroll: true });
+  });
+  $('#credentialTextButton').addEventListener('click', async () => {
+    const button=$('#credentialTextButton');
+    if (!pendingCredentials || button.dataset.saving==='true') return;
+    button.dataset.saving='true';button.disabled=true;$('#credentialDoneButton').disabled=true;
+    $('#credentialTextStatus').textContent='正在保存 TXT 文本…';
+    try { const result=await desktop.saveCredentialText();lastCredentialPath=result.path;$('#credentialTextStatus').textContent='TXT 已保存：'+result.path;button.textContent='TXT 已保存';$('#credentialOpenButton').hidden=false; }
+    catch(cause) { $('#credentialTextStatus').textContent='TXT 保存失败：'+(cause?.message || '请重试。');button.disabled=false; }
+    finally { delete button.dataset.saving;$('#credentialDoneButton').disabled=$('#credentialRetryButton').disabled; }
+  });
+  credentialsOverlay.addEventListener('keydown',event=>{
+    if(event.key!=='Tab')return;
+    const buttons=[...credentialsOverlay.querySelectorAll('button')].filter(button=>!button.hidden&&!button.disabled);
+    if(!buttons.length){event.preventDefault();return;}
+    if(event.shiftKey&&document.activeElement===buttons[0]){event.preventDefault();buttons.at(-1).focus();}
+    else if(!event.shiftKey&&document.activeElement===buttons.at(-1)){event.preventDefault();buttons[0].focus();}
   });
   $('#credentialOpenButton').addEventListener('click', async () => {
     try { if (lastCredentialPath) await desktop.showCredentialImage(lastCredentialPath); }
@@ -1937,7 +2143,8 @@ async function boot() {
     try { await desktop.logout(); state.username = null; showAuth(); }
     catch (cause) { toast(cause?.message || '切换账号暂时没有完成。'); }
   });
-  $('#commentForm').addEventListener('submit', async (event) => {
+  document.addEventListener('submit', async (event) => {
+    if (event.target.id !== 'commentForm') return;
     event.preventDefault();
     const feature = features.find((item) => item.id === state.selected);
     const body = $('#commentInput').value.trim();
@@ -1945,14 +2152,30 @@ async function boot() {
     communityBusy = true;
     const submit = $('#commentSubmit'); submit.disabled = true; submit.textContent = '正在寄出…';
     try {
-      const result = await desktop.addComment(feature.id, body);
+      const result = await desktop.addComment(feature.id, body, replyTarget?.id);
       setCommunityStatus(result?.community);
-      $('#commentInput').value = '';
+      if (state.selected !== feature.id) return;
+      $('#commentInput').value = ''; setReplyTarget();
       await loadComments(feature.id);
       if (result?.comment && !$('#commentList .comment-item')) renderComments([result.comment]);
       toast('留言已经寄出。');
-    } catch (cause) { toast(cause?.message || '留言暂时没有寄出，请稍后再试。'); await loadComments(feature.id); }
+    } catch (cause) { toast(cause?.message || '留言暂时没有寄出，请稍后再试。'); if (state.selected === feature.id) await loadComments(feature.id); }
     finally { communityBusy = false; renderCommunityStatus(); }
+  });
+  document.addEventListener('click', async event => {
+    if (event.target.closest('[data-cancel-reply]')) { setReplyTarget(); return; }
+    const reply = event.target.closest('[data-reply-comment]');
+    if (reply) { setReplyTarget(loadedComments.find(c => String(c.id) === reply.dataset.replyComment)); $('#commentInput').focus(); return; }
+    const more = event.target.closest('[data-more-comments]');
+    if (more) { more.disabled = true; await loadComments(state.selected, true); return; }
+    const remove = event.target.closest('[data-delete-comment]');
+    if (!remove) return;
+    const featureId = state.selected; const id = Number(remove.dataset.deleteComment);
+    const confirmed = await cs2InstallChoice('删除这条内容？', '删除后将无法恢复。其他人的评论会保留，引用处会显示内容已删除。', [{ label: '保留内容', value: false }, { label: '确认删除', value: true, danger: true }]);
+    if (!confirmed) return;
+    remove.disabled = true;
+    try { await desktop.deleteComment(featureId, id); if (state.selected === featureId) { if (replyTarget?.id === id) setReplyTarget(); await loadComments(featureId); } toast('内容已删除。'); }
+    catch (cause) { toast(cause?.message || '删除失败，请稍后再试。', 'error'); remove.disabled = false; }
   });
   new ResizeObserver(scheduleSiteBounds).observe(siteFrameShell);
   window.addEventListener('resize', scheduleSiteBounds);
@@ -2049,13 +2272,16 @@ async function boot() {
       return;
     }
   } catch (cause) {
+    setAuthMode('login');
     setAuthMessage(cause?.message || '暂时无法连接账号服务。请检查网络后重试。');
+    return;
   }
   authScreen.hidden = false;
-  setAuthMode('register');
+  setAuthMode('login');
 }
 
 function goBack() {
+  if (!$('#downloadsOverlay').hidden) { closeDownloadsDialog(); return; }
   if (!credentialsOverlay.hidden) { $('#credentialDoneButton').click(); return; }
   if (!authScreen.hidden) return;
   if (!sitePage.hidden) { closeSiteAndHome(); return; }
@@ -2085,7 +2311,9 @@ function showProtocolWarning(url) {
   scheduleSiteBounds();
   $('#siteWarningCancel').focus({ preventScroll: true });
 }
-function bindInventoryControls() {
+function bindInventoryControls(surface) {
+  const nodes = new Map([...surface.querySelectorAll('[id]'), ...detailPage.querySelectorAll('[id]')].map(node => ['#' + node.id, node]));
+  const $ = selector => nodes.get(selector) || surface.querySelector(selector);
   const field = () => $('#inventoryDirectory');
   const status = () => $('#inventoryStatus');
   const refresh = async () => {
@@ -2094,7 +2322,7 @@ function bindInventoryControls() {
     if (!status()) return;
     status().textContent = '饰品工坊：' + (result.inventory ? '已安装' : '未安装') + ' · 人机增强：' + (result.bots ? '已安装' : '未安装');
     if ($('#inventoryLaunch')) $('#inventoryLaunch').disabled = !result.inventory;
-    for (const [key, present] of [['cs2-inventory', result.inventory], ['cs2-bots', result.bots]]) present ? state.installed.add(key) : state.installed.delete(key);
+    for (const [key, present] of [['cs2-demo', result.demo], ['cs2-inventory', result.inventory], ['cs2-bots', result.bots]]) present ? state.installed.add(key) : state.installed.delete(key);
     $('#detailStatus').textContent = result.inventory ? '已安装' : '可以使用';
     $('#detailStatus').classList.toggle('is-installed', Boolean(result.inventory));
     $('#detailState').textContent = result.inventory ? '已安装' : '可以使用';
@@ -2115,7 +2343,7 @@ function bindInventoryControls() {
     if (!directory) { toast('请先选择 CS2 游戏目录。', 'warning'); return; }
     busy(true);
     try {
-      const cleanOtherPlugins = await cs2InstallChoice('清理其他 CS2 插件？', '安装饰品工坊会清理其他插件，保留雨巷来信的人机增强与共享运行库。选择“否”会取消安装。请先关闭 CS2 和 Panel。', [{ label: '否，取消安装', value: false }, { label: '是，继续安装', value: true, primary: true }]);
+      const cleanOtherPlugins = await cs2InstallChoice('清理其他 CS2 插件？', '安装饰品工坊会清理其他插件，保留雨巷来信的人机增强、Demo 重玩与共享运行库。选择“否”会取消安装。请先关闭 CS2 和 Panel。', [{ label: '否，取消安装', value: false }, { label: '是，继续安装', value: true, primary: true }]);
       if (!cleanOtherPlugins) return;
       const keepBackup = await cs2InstallChoice('保留文件备份？', '备份保存在所选游戏目录下。即使不保留备份，安装失败时也会尝试恢复原文件。', [{ label: '取消安装', value: null }, { label: '不保留备份', value: false }, { label: '保留备份', value: true, primary: true }]);
       if (keepBackup === null) return;

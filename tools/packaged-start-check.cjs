@@ -94,22 +94,23 @@ async function main() {
       await sleep(100);
     }
     assert.ok(ready, 'The packaged app did not reach the first-run authentication screen.');
-    // First-run registration is one-click, so inspect its current notice and action instead of a removed username field.
+    // First run now opens the standard login; quick registration is secondary.
     const screen = await evaluate(`(() => ({
       title: document.title,
       authVisible: !document.querySelector('#authScreen').hidden,
       registerVisible: !document.querySelector('#registerForm').hidden,
+      loginVisible: !document.querySelector('#loginForm').hidden,
       authLedeFont: getComputedStyle(document.querySelector('.auth-lede')).fontSize,
-      privacyNoteFont: getComputedStyle(document.querySelector('.privacy-note')).fontSize,
+      privacyNoteFont: getComputedStyle(document.querySelector('.auth-form-help')).fontSize,
       registerButtonFont: getComputedStyle(document.querySelector('#registerSubmit')).fontSize,
       bodyBackground: getComputedStyle(document.body).backgroundColor,
       pageBackground: getComputedStyle(document.documentElement).getPropertyValue('--bg').trim(),
       storedAccount: window.alleyDesktop.getState().then((state) => state.username),
     }))()`);
     assert.ok(screen.title.includes('雨巷来信'), 'Packaged app title is incorrect.');
-    assert.ok(screen.authVisible && screen.registerVisible, 'The first-run register screen is not visible.');
+    assert.ok(screen.authVisible && screen.loginVisible && !screen.registerVisible, 'The first-run login screen is not visible.');
     assert.equal(screen.authLedeFont, '14px', `Packaged authentication description is too small: ${screen.authLedeFont}.`);
-    assert.equal(screen.privacyNoteFont, '14px', `Packaged privacy notice is too small: ${screen.privacyNoteFont}.`);
+    assert.equal(screen.privacyNoteFont, '12px', `Packaged secondary help font is unexpected: ${screen.privacyNoteFont}.`);
     assert.equal(screen.registerButtonFont, '14px', `Packaged register button text is too small: ${screen.registerButtonFont}.`);
     assert.equal(screen.pageBackground, '#000000', 'Packaged default theme is not pure black.');
     assert.equal(await evaluate('window.alleyDesktop.getState().then((state) => state.username)'), null, 'The isolated first-run profile unexpectedly contains an account.');

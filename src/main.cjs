@@ -21,6 +21,7 @@ const crypto = require('node:crypto');
 const { installOfficialPayload } = require('./cs2-installer.cjs');
 const { inspectUninstall, uninstallPayload } = require('./cs2-uninstaller.cjs');
 const { installInventory } = require('./inventory-installer.cjs');
+const { installDemo } = require('./demo-installer.cjs');
 const { externalProtocol } = require('./external-protocol.cjs');
 const { spawn, spawnSync } = require('node:child_process');
 const fsSync = require('node:fs');
@@ -34,6 +35,9 @@ protocol.registerSchemesAsPrivileged([{ scheme: 'rainalley', privileges: { stand
 
 app.setAppUserModelId('cn.rainalley.letters');
 app.setName('雨巷来信');
+// Electron's lock is scoped to the current user-data directory. Production
+// shortcuts share the default profile; isolated development previews stay separate.
+if (!app.requestSingleInstanceLock()) app.exit(0);
 // The client is a static SVG/CSS workspace with no WebGL surface. Keeping
 // Chromium's hardware compositor enabled only adds a GPU process and cache
 // pressure on machines where this app should remain idle.
@@ -79,6 +83,17 @@ let appStateWriteQueue = Promise.resolve();
 let apiBaseUrl = '';
 let linkSwiftValues = {};
 let linkSwiftValuesPromise;
+const toolLauncher = require('./tool-launcher.cjs').createToolLauncher();
+const toolOperations = new Set();
+function handleToolOperation(channel, handler) {
+  ipcMain.handle(channel, async (event, ...args) => {
+    ensureTrusted(event);
+    const resource = channel.startsWith('demo:gui-') ? 'demo-gui' : 'cs2';
+    if (toolOperations.has(resource)) throw new Error('相关工具正在启动、安装或卸载，请等待当前操作完成。');
+    toolOperations.add(resource);
+    try { return await handler(event, ...args); } finally { toolOperations.delete(resource); }
+  });
+}
 const linkSwiftRequests = new Map();
 const linkSwiftContents = new Map();
 const linkSwiftAuthWindows = new Set();
@@ -420,6 +435,16 @@ function ensureTrusted(event) {
   if (!windowRef || event.sender !== windowRef.webContents) throw new Error('不允许的桌面调用。');
 }
 
+let generatedCredentials = null;
+async function registerCustomAccount(input) {
+  const username = typeof input?.username === 'string' ? input.username.trim() : '';
+  const password = typeof input?.password === 'string' ? input.password : '';
+  if (!/^[A-Za-z0-9_-]{4,24}$/.test(username) || username.toLowerCase() === '__deleted__') throw new Error('账号需为 4–24 位字母、数字、下划线或短横线。');
+  if (password.length < 12 || password.length > 128) throw new Error('密码长度需为 12–128 位。');
+  const response = await requestApi('/api/register', { method: 'POST', body: { username, password } });
+  generatedCredentials = null;
+  return persistSession(response.account.username, response.session.token, response.session.expiresAt, response.account.role);
+}
 async function createAccount() {
   for (let attempt = 0; attempt < 6; attempt += 1) {
     const username = `YX${randomReadable(8, USERNAME_ALPHABET)}`;
@@ -427,6 +452,7 @@ async function createAccount() {
     try {
       const response = await requestApi('/api/register', { method: 'POST', body: { username, password } });
       const profile = await persistSession(response.account.username, response.session.token, response.session.expiresAt, response.account.role);
+      generatedCredentials = { username: response.account.username, password };
       return { username: response.account.username, password, profile };
     } catch (cause) {
       if (attempt < 5 && /已被使用/u.test(cause.message)) continue;
@@ -838,7 +864,9 @@ async function registerAppProtocol() {
 }
 
 function repairAppShortcuts(icon) {
-  const shortcuts = [path.join(app.getPath('desktop'), '雨巷来信.lnk'), path.join(app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs', '雨巷来信', '雨巷来信.lnk')];
+  const pinned = path.join(app.getPath('appData'), 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar');
+  const matchingPins = fsSync.existsSync(pinned) ? fsSync.readdirSync(pinned).filter(name => name.endsWith('.lnk')).map(name => path.join(pinned, name)).filter(file => { try { return path.resolve(shell.readShortcutLink(file).target).toLowerCase() === process.execPath.toLowerCase(); } catch { return false; } }) : [];
+  const shortcuts = [...matchingPins, path.join(app.getPath('desktop'), '雨巷来信.lnk'), path.join(app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs', '雨巷来信', '雨巷来信.lnk')];
   for (const file of shortcuts) {
     try {
       if (fsSync.existsSync(file) && path.resolve(shell.readShortcutLink(file).target).toLowerCase() !== process.execPath.toLowerCase()) continue;
@@ -849,7 +877,9 @@ function repairAppShortcuts(icon) {
 }
 
 function shellIconPath() {
-  const target = path.join(app.getPath('userData'), 'rain-alley-shell.ico');
+  // Content-address the path so Explorer cannot reuse a stale Electron icon cache entry.
+  const bytes = fsSync.readFileSync(path.join(__dirname, '..', 'assets', 'rain-alley.ico'));
+  const target = path.join(app.getPath('userData'), 'rain-alley-shell-' + crypto.createHash('sha256').update(bytes).digest('hex').slice(0, 12) + '.ico');
   fsSync.mkdirSync(path.dirname(target), { recursive: true });
   fsSync.copyFileSync(path.join(__dirname, '..', 'assets', 'rain-alley.ico'), target);
   return target;
@@ -884,7 +914,8 @@ function createWindow() {
   });
   // Give both native window icons and Explorer relaunch metadata a stable
   // filesystem path, including when assets are packaged in ASAR.
-  const appIcon = nativeImage.createFromPath(shellIconPath());
+  // Decode the PNG explicitly; Windows shell ICO extraction is separate from HWND icons.
+  const appIcon = nativeImage.createFromPath(path.join(__dirname, '..', 'assets', 'rain-alley.png'));
   if (!appIcon.isEmpty()) windowRef.setIcon(appIcon);
   // Explicit shell relaunch metadata prevents Explorer from choosing the
   // development Electron executable as this window's taskbar identity.
@@ -914,7 +945,7 @@ function createWindow() {
     else windowRef.minimize();
   });
   windowRef.on('closed', () => { windowRef = null; });
-  windowRef.on('show', () => { windowRef?.webContents.send('desktop:show-home'); });
+  windowRef.on('show', () => { windowRef?.webContents.send('desktop:resume'); });
   windowRef.on('minimize', () => {
     hideWebsiteViews();
     windowRef?.webContents.send('desktop:suspend');
@@ -973,7 +1004,7 @@ ipcMain.handle('account:resume', async (event) => {
     throw cause;
   }
 });
-ipcMain.handle('account:register', async (event) => { ensureTrusted(event); return createAccount(); });
+ipcMain.handle('account:register', async (event, input) => { ensureTrusted(event); return input === undefined ? createAccount() : registerCustomAccount(input); });
 ipcMain.handle('account:login', async (event, input) => {
   ensureTrusted(event);
   const username = typeof input?.username === 'string' ? input.username.trim() : '';
@@ -1000,7 +1031,16 @@ ipcMain.handle('account:developer-login', async (event) => {
   return persistSession(response.account.username, response.session.token, response.session.expiresAt, response.account.role);
 });
 ipcMain.handle('account:update', async (event, input) => { ensureTrusted(event); return updateAccount(input); });
+ipcMain.handle('account:management', async (event, input = {}) => {
+  ensureTrusted(event);
+  if (!authSession?.token) throw new Error('请重新登录后进入后台。');
+  if (input.action === 'list') return requestApi('/api/management/users?' + new URLSearchParams({ q: String(input.q || ''), after: String(input.after || '') }), { token: authSession.token });
+  if (input.action === 'audit') return requestApi('/api/management/audit', { token: authSession.token });
+  if (!/^[A-Za-z0-9_-]{4,24}$/.test(input.username || '')) throw new Error('账号格式无效。');
+  return requestApi('/api/management/users/' + encodeURIComponent(input.username), { method: input.action === 'delete' ? 'DELETE' : 'PATCH', body: input, token: authSession.token });
+});
 ipcMain.handle('account:logout', async (event) => {
+  generatedCredentials = null;
   ensureTrusted(event);
   if (authSession?.token) {
     try { await requestApi('/api/logout', { method: 'POST', token: authSession.token }); } catch { /* clearing the local session remains available offline */ }
@@ -1012,6 +1052,20 @@ ipcMain.handle('account:save-credential-image', async (event, value) => {
   ensureTrusted(event);
   return saveCredentialImage(value?.dataUrl, value?.username);
 });
+ipcMain.handle('account:save-credential-text', async (event) => {
+  ensureTrusted(event);
+  const credentials = generatedCredentials;
+  if (!credentials || authSession?.username !== credentials.username) throw new Error('本次账号凭据已关闭，请使用已保存的账号图片。');
+  const folder = getCredentialFolder();
+  await fs.mkdir(folder, { recursive: true });
+  const file = path.join(folder, `${credentials.username}-${new Date().toISOString().replace(/[:.]/g, '-')}.txt`);
+  // UTF-8 BOM and CRLF keep Chinese labels readable in Windows text editors.
+  // Only export the in-memory generated account; never accept a path/password from a webpage.
+  const text = '\uFEFF雨巷来信 · 私密账号凭据\r\n\r\n账号：' + credentials.username + '\r\n密码：' + credentials.password + '\r\n\r\n请勿公开分享此文件。修改密码后，本文件中的旧密码将失效。\r\n';
+  await fs.writeFile(file, text, { encoding: 'utf8', flag: 'wx', mode: 0o600 });
+  return { path: file };
+});
+ipcMain.handle('account:forget-generated-credentials', (event) => { ensureTrusted(event); generatedCredentials = null; });
 ipcMain.handle('account:latest-credential-image', async (event) => {
   ensureTrusted(event);
   try {
@@ -1037,15 +1091,21 @@ ipcMain.handle('account:show-credential-image', async (event, value) => {
   shell.showItemInFolder(absolute);
   return true;
 });
-ipcMain.handle('module:get-comments', async (event, featureId) => {
+ipcMain.handle('module:get-comments', async (event, featureId, before) => {
   ensureTrusted(event);
   if (!authSession?.token || typeof featureId !== 'string' || !/^[a-z0-9-]{2,40}$/.test(featureId)) throw new Error('登录后才能查看留言。');
-  return requestApi(`/api/modules/${encodeURIComponent(featureId)}/comments`, { token: authSession.token });
+  if (before != null && (!Number.isSafeInteger(before) || before < 1)) throw new Error('留言游标无效。');
+  return requestApi(`/api/modules/${encodeURIComponent(featureId)}/comments${before == null ? '' : '?before=' + before}`, { token: authSession.token });
 });
 ipcMain.handle('module:add-comment', async (event, input) => {
   ensureTrusted(event);
   if (!authSession?.token || typeof input?.featureId !== 'string' || !/^[a-z0-9-]{2,40}$/.test(input.featureId)) throw new Error('登录后才能寄出留言。');
-  return requestApi(`/api/modules/${encodeURIComponent(input.featureId)}/comments`, { method: 'POST', body: { body: input.body }, token: authSession.token });
+  return requestApi(`/api/modules/${encodeURIComponent(input.featureId)}/comments`, { method: 'POST', body: { body: input.body, replyToId: input.replyToId }, token: authSession.token });
+});
+ipcMain.handle('module:delete-comment', async (event, input) => {
+  ensureTrusted(event);
+  if (!authSession?.token || !/^[a-z0-9-]{2,40}$/.test(input?.featureId || '') || !Number.isSafeInteger(input?.id) || input.id < 1) throw new Error('删除请求无效，请重新登录后再试。');
+  return requestApi(`/api/modules/${encodeURIComponent(input.featureId)}/comments/${input.id}`, { method: 'DELETE', token: authSession.token });
 });
 ipcMain.handle('profile:get-public', async (event, username) => {
   ensureTrusted(event);
@@ -1193,20 +1253,16 @@ ipcMain.handle('cs2:get-archive', async (event) => {
   const available = saved && await fs.stat(saved).then((info) => info.isFile()).catch(() => false);
   return { path: saved || '', available: Boolean(available) };
 });
-ipcMain.handle('cs2:open-panel', async (event, directory) => {
+handleToolOperation('cs2:open-panel', async (event, directory) => {
   ensureTrusted(event);
   if (typeof directory !== 'string') throw new Error('CS2 游戏目录无效。');
   const root = normalizeCs2Directory(directory);
   if (!root) throw new Error('CS2 游戏目录无效。');
   const target = path.join(root, 'Panel v1.4.7.exe');
   if (!fsSync.existsSync(target)) throw new Error('所选游戏目录中还没有 Panel，请先安装官方插件包。');
-  return new Promise((resolve, reject) => {
-    const child = spawn(target, [], { detached: true, stdio: 'ignore', windowsHide: false });
-    child.once('error', () => reject(new Error('Panel 无法启动，请在游戏目录中检查文件权限。')));
-    child.once('spawn', () => { child.unref(); resolve(true); });
-  });
+  return toolLauncher.launch('panel', target, /^Panel v1\..*\.exe$/i, '人机增强 Panel');
 });
-ipcMain.handle('cs2:install', async (event, input = {}) => {
+handleToolOperation('cs2:install', async (event, input = {}) => {
   ensureTrusted(event);
   let root = typeof input.directory === 'string' ? normalizeCs2Directory(input.directory) : '';
   let archive = typeof input.archive === 'string' && input.archive.trim() ? path.resolve(input.archive) : '';
@@ -1250,7 +1306,7 @@ function requireGameClosed() {
   if (processes.status !== 0) throw new Error('无法检查游戏运行状态，请稍后重试。');
   if (/"(?:cs2|Panel v1\.[^"]*)\.exe"/i.test(processes.stdout)) throw new Error('请先关闭 CS2 和人机增强 Panel。');
 }
-ipcMain.handle('inventory:install', async (event, input = {}) => {
+handleToolOperation('inventory:install', async (event, input = {}) => {
   ensureTrusted(event);
   if (input.cleanOtherPlugins !== true || typeof input.keepBackup !== 'boolean') return { cancelled: true };
   const root = normalizeCs2Directory(input.directory);
@@ -1266,13 +1322,108 @@ ipcMain.handle('inventory:install', async (event, input = {}) => {
     return result;
   } finally { cs2InstallRunning = false; }
 });
+handleToolOperation('demo:install', async (event, input = {}) => {
+  ensureTrusted(event);
+  if (input.cleanOtherPlugins !== true || typeof input.keepBackup !== 'boolean') return { cancelled: true };
+  const root = normalizeCs2Directory(input.directory);
+  if (!root || path.basename(root).toLowerCase() !== 'csgo' || path.basename(path.dirname(root)).toLowerCase() !== 'game' || !fsSync.existsSync(path.join(root, 'gameinfo.gi'))) throw new Error('请选择有效的 CS2 game\\csgo 目录。');
+  if (cs2InstallRunning) throw new Error('插件安装或卸载正在进行，请稍候。');
+  cs2InstallRunning = true;
+  try {
+    requireGameClosed();
+    const runtime = await runtimeArchive(); requireGameClosed();
+    const result = await installDemo({ root, archive: path.join(__dirname, '..', 'assets/plugins/demotracer-css-v1.6.6.zip'), runtimeArchive: runtime, keepBackup: input.keepBackup });
+    await saveAppState({ cs2Directory: root }); return result;
+  } finally { cs2InstallRunning = false; }
+});
+ipcMain.handle('demo:inspect-uninstall', async (event, input = {}) => {
+  ensureTrusted(event); const root = normalizeCs2Directory(input.directory);
+  if (!root) throw new Error('请选择游戏目录。');
+  return inspectUninstall({ root, plugin: 'demo', keepConfig: input.keepConfig !== false });
+});
+handleToolOperation('demo:uninstall', async (event, input = {}) => {
+  ensureTrusted(event); if (input.confirmed !== true) return { cancelled: true };
+  const root = normalizeCs2Directory(input.directory); if (!root) throw new Error('请选择游戏目录。');
+  if (cs2InstallRunning) throw new Error('插件安装或卸载正在进行，请稍候。');
+  cs2InstallRunning = true;
+  try { requireGameClosed(); return await uninstallPayload({ root, plugin: 'demo', keepConfig: input.keepConfig !== false, fingerprint: input.fingerprint }); }
+  finally { cs2InstallRunning = false; }
+});
+handleToolOperation('demo:launch-game', async event => {
+  ensureTrusted(event); return toolLauncher.launchGame(url => shell.openExternal(url), 'steam://run/730//-insecure%20-console%20+map%20de_dust2');
+});
+const demoGui = require('./demo-gui.cjs');
+const demoGuiRecord = () => path.join(app.getPath('userData'), 'demotracer-gui.json');
+const demoLocalData = () => process.env.LOCALAPPDATA || app.getPath('appData');
+ipcMain.handle('demo:gui-status', async event => { ensureTrusted(event); return demoGui.findGui(demoGuiRecord(), demoLocalData()); });
+handleToolOperation('demo:gui-locate', async event => {
+  ensureTrusted(event); const result = await dialog.showOpenDialog(windowRef, { title: '选择已安装的 cs2-demotracer-gui.exe', properties: ['openFile'], filters: [{ name: '已安装的 DemoTracer', extensions: ['exe'] }] });
+  return result.canceled ? null : demoGui.rememberGui(demoGuiRecord(), result.filePaths[0]);
+});
+let demoGuiInstalling = false;
+handleToolOperation('demo:gui-install', async (event, download = false) => {
+  ensureTrusted(event); if (demoGuiInstalling) throw new Error('DemoTracer GUI 正在安装，请稍候。');
+  demoGuiInstalling = true;
+  try {
+    const existing = await demoGui.findGui(demoGuiRecord(), demoLocalData());
+    if (existing) { await demoGui.launchGui(existing); return { executable: existing, alreadyInstalled: true }; }
+    let installer;
+    if (download === true) {
+      installer = path.join(app.getPath('userData'), 'demotracer-gui-v1.6.6.exe');
+      if (!fsSync.existsSync(installer)) {
+        try {
+          const response = await net.fetch('https://github.com/unicbm/demotracer/releases/download/v1.6.6/demotracer-gui-v1.6.6.exe');
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          const bytes = Buffer.from(await response.arrayBuffer());
+          if (crypto.createHash('sha256').update(bytes).digest('hex') !== require('./demo-payload-manifest.json').guiSha256) throw new Error('文件校验失败');
+          await fs.mkdir(path.dirname(installer), { recursive: true }); await fs.writeFile(installer, bytes);
+        } catch (cause) { throw new Error('官方 GUI 下载失败，已停止且不会自动重试。请手动从官方 v1.6.6 Release 下载 demotracer-gui-v1.6.6.exe，再使用“选择安装包并安装”。' + cause.message); }
+      }
+    } else {
+      const result = await dialog.showOpenDialog(windowRef, { title: '选择官方 demotracer-gui-v1.6.6.exe 安装包', properties: ['openFile'], filters: [{ name: '官方安装包', extensions: ['exe'] }] });
+      if (result.canceled) return { cancelled: true }; installer = result.filePaths[0];
+    }
+    const target = await demoGui.installGui(installer, path.join(demoLocalData(), 'Programs', 'DemoTracer'), demoGuiRecord());
+    await demoGui.launchGui(target); return { executable: target };
+  } finally { demoGuiInstalling = false; }
+});
+ipcMain.handle('demo:gui-folder', async event => {
+  ensureTrusted(event); const target = await demoGui.findGui(demoGuiRecord(), demoLocalData());
+  if (!target) throw new Error('请先安装或定位 DemoTracer。');
+  const error = await shell.openPath(path.dirname(target)); if (error) throw new Error(error); return true;
+});
+handleToolOperation('demo:gui-uninstall', async event => {
+  ensureTrusted(event); if (demoGuiInstalling) throw new Error('DemoTracer 正在安装或卸载，请稍候。');
+  demoGuiInstalling = true;
+  try {
+    const target = await demoGui.findGui(demoGuiRecord(), demoLocalData());
+    if (!target) throw new Error('未找到 DemoTracer，请先重新检测或定位程序。');
+    toolLauncher.assertClosed(/^cs2-demotracer-gui\.exe$/i, 'DemoTracer');
+    const answer = await dialog.showMessageBox(windowRef, { type: 'warning', title: '卸载 DemoTracer GUI', message: '卸载 DemoTracer GUI？', detail: '请先关闭 DemoTracer。将打开官方卸载程序；请保留个人数据，不要勾选删除 Demo 或回放库。CS2 回放插件单独管理。', buttons: ['取消', '打开官方卸载程序'], defaultId: 0, cancelId: 0 });
+    if (answer.response !== 1) return { cancelled: true };
+    toolLauncher.assertClosed(/^cs2-demotracer-gui\.exe$/i, 'DemoTracer');
+    return await demoGui.uninstallGui(target, demoGuiRecord());
+  } finally { demoGuiInstalling = false; }
+});
+handleToolOperation('demo:gui-launch', async event => {
+  ensureTrusted(event); const target = await demoGui.findGui(demoGuiRecord(), demoLocalData());
+  if (!target) throw new Error('未找到已安装的 DemoTracer，请先安装或定位程序。');
+  return demoGui.launchGui(target);
+});
+ipcMain.handle('demo:open-folder', async (event, directory) => {
+  ensureTrusted(event); const root = normalizeCs2Directory(directory);
+  if (!root) throw new Error('请选择游戏目录。');
+  const relative = 'addons/counterstrikesharp/plugins/DemoTracer';
+  if (!await require('./cs2-uninstaller.cjs').checked(root, relative)) throw new Error('请先安装 Demo 重玩插件。');
+  const error = await shell.openPath(path.join(root, relative)); if (error) throw new Error(error);
+});
 ipcMain.handle('inventory:inspect-uninstall', async (event, input = {}) => {
   ensureTrusted(event);
   const root = normalizeCs2Directory(input.directory);
   if (!root) throw new Error('请先选择 CS2 游戏目录。');
   return inspectUninstall({ root, plugin: 'inventory', keepConfig: input.keepConfig !== false });
 });
-ipcMain.handle('inventory:uninstall', async (event, input = {}) => {
+handleToolOperation('inventory:uninstall', async (event, input = {}) => {
   ensureTrusted(event);
   if (input.confirmed !== true) return { cancelled: true };
   const root = normalizeCs2Directory(input.directory);
@@ -1291,16 +1442,15 @@ ipcMain.handle('inventory:open-folder', async (event, directory) => {
   if (!await checked(root, 'cfg/rain-alley-inventory.cfg')) throw new Error('请先完成库存插件安装。');
   const error = await shell.openPath(target); if (error) throw new Error(error);
 });
-ipcMain.handle('inventory:launch', async event => {
+handleToolOperation('inventory:launch', async event => {
   ensureTrusted(event);
-  await shell.openExternal('steam://run/730//-insecure%20+map%20de_dust2%20+exec%20rain-alley-inventory.cfg');
-  return true;
+  return toolLauncher.launchGame(url => shell.openExternal(url), 'steam://run/730//-insecure%20+map%20de_dust2%20+exec%20rain-alley-inventory.cfg');
 });
 ipcMain.handle('cs2:status', async (event, directory) => {
   ensureTrusted(event);
   const root = normalizeCs2Directory(directory);
   if (!root) return {};
-  return { bots: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/BotAI/BotAI.dll')), inventory: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll')) };
+  return { demo: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/DemoTracer/DemoTracer.dll')), bots: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/BotAI/BotAI.dll')), inventory: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll')) };
 });
 ipcMain.handle('app:open-source-notices', async (event) => {
   ensureTrusted(event);
@@ -1312,7 +1462,7 @@ ipcMain.handle('cs2:inspect-uninstall', async (event, input = {}) => {
   if (!root) throw new Error('请先选择 CS2 游戏目录。');
   return inspectUninstall({ root, keepConfig: input.keepConfig !== false, removeShared: input.removeShared === true });
 });
-ipcMain.handle('cs2:uninstall', async (event, input = {}) => {
+handleToolOperation('cs2:uninstall', async (event, input = {}) => {
   ensureTrusted(event);
   if (input.confirmed !== true) return { cancelled: true };
   const root = typeof input.directory === 'string' ? normalizeCs2Directory(input.directory) : null;
@@ -1337,11 +1487,7 @@ async function runCs2Install(root, archive, keepBackup) {
     const result = await installOfficialPayload({ root, archive, keepBackup });
     const panelTarget = path.join(root, 'Panel v1.4.7.exe');
     let panelOpened = false;
-    await new Promise((resolve) => {
-      const panel = spawn(panelTarget, [], { cwd: root, detached: true, stdio: 'ignore', windowsHide: false });
-      panel.once('error', resolve);
-      panel.once('spawn', () => { panel.unref(); panelOpened = true; resolve(); });
-    });
+    try { await toolLauncher.launch('panel', panelTarget, /^Panel v1\..*\.exe$/i, '人机增强 Panel'); panelOpened = true; } catch { /* installation succeeded; manual launch remains available */ }
     return { ...result, panel: panelTarget, panelOpened };
   } finally { cs2InstallRunning = false; }
 }
@@ -1598,6 +1744,16 @@ ipcMain.handle('site:open-external-protocol', async (event, value, approved) => 
   return true;
 });
 ipcMain.handle('site:set-bounds', (event, value, tabId) => { ensureTrusted(event); return websiteBounds(value, tabId); });
+// Native child views sit above DOM dialogs. Capture before hiding the child so
+// the current page remains visible under the modal without accepting input.
+ipcMain.handle('site:capture-background', async (event, tabId) => {
+  ensureTrusted(event); const view = websiteViews.get(tabId || activeWebsiteId);
+  if (!view || view.webContents.isDestroyed() || tabId !== activeWebsiteId) return null;
+  const bounds = view.getBounds(); if (!bounds.width || !bounds.height) return null;
+  const snapshot = await view.webContents.capturePage();
+  if (view.webContents.isDestroyed() || tabId !== activeWebsiteId) return null;
+  return { dataUrl: snapshot.toDataURL(), bounds };
+});
 ipcMain.handle('site:close', (event, tabId) => { ensureTrusted(event); const result = closeWebsite(typeof tabId === 'string' ? tabId : ''); windowRef?.webContents.send('desktop:site-closed', { tabId }); return result; });
 ipcMain.handle('site:clear-data', async (event) => {
   ensureTrusted(event);
@@ -1632,4 +1788,10 @@ app.whenReady().then(async () => {
 
 app.on('before-quit', () => { quitting = true; closeWebsite(); });
 app.on('window-all-closed', () => { if (quitting) app.quit(); });
-app.on('second-instance', showHome);
+app.on('second-instance', () => {
+  if (!app.isReady()) return; // The first startup will create and show its window.
+  if (!windowRef || windowRef.isDestroyed()) { createWindow(); return; }
+  if (windowRef.isMinimized()) windowRef.restore();
+  windowRef.show(); windowRef.focus();
+  // Preserve the current tool, form and native view instead of navigating home.
+});

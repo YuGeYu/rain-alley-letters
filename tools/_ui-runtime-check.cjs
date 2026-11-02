@@ -111,8 +111,8 @@ function createTestApp(base) {
   let preload = fs.readFileSync(preloadPath, 'utf8');
   const replacements = [
     ["resumeAccount: () => ipcRenderer.invoke('account:resume'),", "resumeAccount: async () => ({ username: 'RAINTEST', installedFeatures: ['street-postcard'] }),"],
-    ["getComments: (featureId) => ipcRenderer.invoke('module:get-comments', featureId),", "getComments: async () => ({ comments: [] }),"],
-    ["addComment: (featureId, body) => ipcRenderer.invoke('module:add-comment', { featureId, body }),", "addComment: async (_featureId, body) => ({ comment: { username: 'RAINTEST', body, createdAt: Math.floor(Date.now() / 1000) } }),"],
+    ["getComments: (featureId, before) => ipcRenderer.invoke('module:get-comments', featureId, before),", "getComments: async () => ({ comments: [] }),"],
+    ["addComment: (featureId, body, replyToId) => ipcRenderer.invoke('module:add-comment', { featureId, body, replyToId }),", "addComment: async (_featureId, body) => ({ comment: { username: 'RAINTEST', body, createdAt: Math.floor(Date.now() / 1000) } }),"],
     ["getPublicProfile: (username) => ipcRenderer.invoke('profile:get-public', username),", "getPublicProfile: async (username) => ({ account: { username, createdAt: 1790000000 }, profile: username.toLowerCase() === 'raintest' ? { displayName: '测试来客', bio: '用于窗口运行检查。', html: '<h2>自己的页面</h2><p>公开资料预览。</p>', css: '' } : { displayName: '另一位来客', bio: '只读资料。', html: '<p>访客页面</p>', css: '' } }),"],
     ["savePublicProfile: (profile) => ipcRenderer.invoke('profile:save-own', profile),", "savePublicProfile: async (profile) => ({ profile }),"],
     ["updateAccount: (value) => ipcRenderer.invoke('account:update', value),", "updateAccount: async (value) => ({ username: value.newUsername || 'RAINTEST' }),"],
@@ -349,6 +349,9 @@ async function testInterface(appRoot, base) {
       overflowY: getComputedStyle(list).overflowY, scrollWidth: list.scrollWidth, clientWidth: list.clientWidth
     } })()`);
     assertResult(catalog.ids.length > 0 && catalog.overflowY === 'auto', 'Filtered envelope list layout is invalid.');
+    // Earlier tool checks now leave independent tabs open. Close them before
+    // the website-only tab count and overflow checks below.
+    await cdp.evaluate("(async () => { while (document.querySelector('#websiteTabs [data-close-browser-tab]')) { document.querySelector('#websiteTabs [data-close-browser-tab]').click(); await new Promise(resolve => setTimeout(resolve, 35)); } })()");
     await cdp.evaluate("document.querySelector('#featureGrid [data-feature-id=\"pig-daily\"]').click()");
     await waitFor(cdp, "document.body.dataset.page === 'site' && document.querySelector('#sitePlaceholder').hidden", 'The embedded website page did not open.');
     const initialSiteHistory = await cdp.evaluate("({ back: document.querySelector('#addressBack').disabled, forward: document.querySelector('#addressForward').disabled })");

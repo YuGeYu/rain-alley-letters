@@ -16,4 +16,7 @@ function retainedRuntime(relative) {
   const p = relative.replaceAll('\\', '/').toLowerCase();
   return runtimeFiles.has(p) || p.startsWith('addons/counterstrikesharp/configs/') || p.startsWith('addons/counterstrikesharp/logs/') || p.startsWith('addons/counterstrikesharp/dotnet/');
 }
-module.exports = { shared, owned, retainedRuntime, botPlugins, botAddons };
+const demoFiles = new Set(require('./demo-payload-manifest.json').files.map(x => x.path.toLowerCase()));
+function demoOwned(relative) { const p = relative.replaceAll('\\', '/').toLowerCase(); return demoFiles.has(p) || /^addons\/(?:dtr-controller|dtr-hider)\//.test(p) || /^addons\/counterstrikesharp\/(?:plugins|configs\/plugins)\/(?:demotracer|dtrhider)\//.test(p); }
+function demoOverlap(relative) { const p = relative.replaceAll('\\', '/').toLowerCase(); return p.startsWith('addons/counterstrikesharp/plugins/botrandomizer/') || p.startsWith('addons/counterstrikesharp/shared/botrandomizerapi/') || p.startsWith('addons/counterstrikesharp/shared/0harmony/'); }
+module.exports = { shared, owned: relative => owned(relative) || demoOwned(relative), retainedRuntime, botPlugins, botAddons, demoOverlap };

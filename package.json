@@ -17,7 +17,9 @@
     "dist": "npm run prepare-assets && electron-builder --dir --win --x64 && node tools/build-direct-installer.cjs",
     "pack": "electron-builder --dir --win --x64",
     "test:inventory": "node --test tools/inventory-coexist.test.cjs && node tools/inventory-runtime-check.cjs",
-    "preview:inventory": "node tools/inventory-runtime-check.cjs --preview"
+    "preview:inventory": "node tools/inventory-runtime-check.cjs --preview",
+    "test:demo": "node --test tools/demo-coexist.test.cjs tools/demo-gui.test.cjs && node tools/demo-runtime-check.cjs",
+    "preview:demo": "node tools/demo-runtime-check.cjs --preview"
   },
   "devDependencies": {
     "electron": "^45.0.0",

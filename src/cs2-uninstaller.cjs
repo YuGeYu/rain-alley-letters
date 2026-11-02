@@ -3,7 +3,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const manifest = require('./cs2-payload-manifest.json');
 const hash = data => crypto.createHash('sha256').update(data).digest('hex');
-const { shared } = require('./cs2-ownership.cjs');
+const { shared, demoOverlap } = require('./cs2-ownership.cjs');
 async function stat(file, io) {
   try { return await io.lstat(file); } catch (e) { if (e.code === 'ENOENT') return null; throw e; }
 }
@@ -30,12 +30,14 @@ function cleanGameinfo(text, removeShared) {
 }
 async function inspectUninstall({ root, removeShared = false, keepConfig = true, io = fs, plugin = 'bots' }) {
   if (!path.isAbsolute(root) || path.basename(root).toLowerCase() !== 'csgo' || path.basename(path.dirname(root)).toLowerCase() !== 'game') throw new Error('请选择 CS2 的 game\\csgo 目录。');
-  if (plugin === 'inventory' || await checked(root, 'addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll', io)) removeShared = false;
+  const demoPresent = Boolean(await checked(root, 'addons/counterstrikesharp/plugins/DemoTracer/DemoTracer.dll', io));
+  const botsPresent = Boolean(await checked(root, 'addons/counterstrikesharp/plugins/BotAI/BotAI.dll', io));
+  if (plugin !== 'bots' || demoPresent || await checked(root, 'addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll', io)) removeShared = false;
   const gameinfo = await checked(root, 'gameinfo.gi', io);
   if (!gameinfo?.isFile()) throw new Error('未找到 gameinfo.gi，请重新选择游戏目录。');
   const files = [];
   let changed = 0, retainedShared = 0, retainedConfig = 0;
-  const payload = plugin === 'inventory' ? require('./inventory-payload-manifest.json') : manifest;
+  const payload = plugin === 'demo' ? require('./demo-payload-manifest.json') : plugin === 'inventory' ? require('./inventory-payload-manifest.json') : manifest;
   const config = 'cfg/rain-alley-inventory.cfg';
   const candidates = [...payload.files];
   if (plugin === 'inventory' && !keepConfig && await checked(root, config, io)) candidates.push({ path: config });
@@ -44,14 +46,20 @@ async function inspectUninstall({ root, removeShared = false, keepConfig = true,
     const info = await checked(root, item.path, io);
     if (!info) continue;
     if (!info.isFile()) throw new Error(`插件文件结构异常：${item.path}`);
-    if (!removeShared && shared(item.path)) { retainedShared++; continue; }
+    if ((plugin === 'bots' && demoPresent || plugin === 'demo' && botsPresent) && demoOverlap(item.path)) { retainedShared++; continue; }
+    if (plugin === 'demo' && demoOverlap(item.path)) {
+      // Harmony is also required by other CSS plugins; retain the small shared
+      // assembly rather than guessing at third-party ownership.
+      if (item.path.toLowerCase().includes('/shared/0harmony/')) { retainedShared++; continue; }
+    }
+    if (plugin !== 'demo' && !removeShared && shared(item.path)) { retainedShared++; continue; }
     if (keepConfig && (item.path.startsWith('cfg/') || /(?:config|bot_info|map_whitelist|charm_placements).*\.json$/i.test(item.path))) { retainedConfig++; continue; }
     const digest = hash(await io.readFile(path.join(root, item.path)));
     if (digest !== item.sha256) changed++;
     files.push({ path: item.path, digest });
   }
   const original = await io.readFile(path.join(root, 'gameinfo.gi'));
-  const cleaned = plugin === 'inventory' ? original : Buffer.from(cleanGameinfo(original.toString('utf8'), removeShared));
+  const cleaned = plugin !== 'bots' ? original : Buffer.from(cleanGameinfo(original.toString('utf8'), removeShared));
   const editGameinfo = !original.equals(cleaned);
   const fingerprint = hash(JSON.stringify({ root, plugin, removeShared, keepConfig, files, gameinfo: hash(original) }));
   return { root, removeShared, keepConfig, files, changed, retainedShared, retainedConfig, editGameinfo, gameinfoDigest: hash(original), fingerprint };

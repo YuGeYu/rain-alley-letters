@@ -62,6 +62,15 @@ function pixelIcon(size) {
 }
 
 function writeIco() {
+  // Electron runtime icons use PNG, independently of Explorer ICO resources.
+  const zlib = require("node:zlib");
+  const size = 256, rgba = pixelIcon(size);
+  const crc = bytes => { let n = 0xffffffff; for (const b of bytes) { n ^= b; for (let i = 0; i < 8; i++) n = (n >>> 1) ^ ((n & 1) ? 0xedb88320 : 0); } return (n ^ 0xffffffff) >>> 0; };
+  const chunk = (name, data) => { const type = Buffer.from(name), out = Buffer.alloc(data.length + 12); out.writeUInt32BE(data.length); type.copy(out, 4); data.copy(out, 8); out.writeUInt32BE(crc(Buffer.concat([type, data])), out.length - 4); return out; };
+  const ihdr = Buffer.alloc(13); ihdr.writeUInt32BE(size); ihdr.writeUInt32BE(size, 4); ihdr[8] = 8; ihdr[9] = 6;
+  const pixels = Buffer.alloc(size * (size * 4 + 1));
+  for (let y = 0; y < size; y++) Buffer.from(rgba.buffer, y * size * 4, size * 4).copy(pixels, y * (size * 4 + 1) + 1);
+  fs.writeFileSync(path.join(outDir, "rain-alley.png"), Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]), chunk("IHDR", ihdr), chunk("IDAT", zlib.deflateSync(pixels)), chunk("IEND", Buffer.alloc(0))]));
   const sizes = [16, 20, 24, 32, 40, 48, 64, 128, 256];
   const images = [];
   for (const size of sizes) {

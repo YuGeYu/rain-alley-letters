@@ -1,0 +1,41 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {fixture,seed} from './community.test.mjs';
+import {handleRequest} from './index.js';
+const req=(path,token,body,method='PATCH')=>new Request('https://test.local/api/'+path,{method,headers:{authorization:'Bearer '+token,'content-type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});
+test('management privileges, mute expiry, rename persistence, protected staff and account deletion',async()=>{
+ const f=fixture();try{
+ const root=await seed(f,'RainAlleyRoot','root'), admin=await seed(f,'AdminUser'), player=await seed(f,'PlayerOne'), other=await seed(f,'PlayerTwo');
+ const call=(target,body,token=root,method='PATCH')=>handleRequest(req('management/users/'+target,token,body,method),f);
+ assert.equal((await handleRequest(req('management/users',player,null,'GET'),f)).status,403);
+ assert.equal((await call('AdminUser',{action:'role',role:'admin'})).status,200);
+ assert.equal((await call('PlayerOne',{action:'role',role:'admin'},admin)).status,409);
+ assert.equal((await call('RainAlleyRoot',{action:'mute',minutes:10},admin)).status,403);
+ assert.equal((await call('AdminUser',{action:'mute',minutes:10},admin)).status,409);
+ let rows=await (await handleRequest(req('management/users',admin,null,'GET'),f)).json();
+ assert.deepEqual(rows.users.map(x=>x.username),['PlayerOne','PlayerTwo']);
+ assert.ok(!JSON.stringify(rows).includes('password_hash'));
+ assert.equal((await call('PlayerOne',{action:'mute',minutes:10,reason:'测试禁言'},admin)).status,200);
+ assert.equal((await call('PlayerTwo',{action:'mute',minutes:43201},admin)).status,400);
+ assert.equal((await handleRequest(req('modules/tool-one/comments',player,{body:'blocked'},'POST'),f)).status,403);
+ assert.equal((await handleRequest(req('account',player,{currentPassword:'TestingPassword#123',newUsername:'RenamedPlayer'},'PUT'),f)).status,200);
+ assert.equal((await handleRequest(req('modules/tool-two/comments',player,{body:'still blocked'},'POST'),f)).status,403);
+ f.db.prepare('UPDATE account_status SET muted_until=1 WHERE username=?').run('RenamedPlayer');
+ assert.equal((await handleRequest(req('modules/tool-one/comments',player,{body:'expired'},'POST'),f)).status,201);
+ const post=f.db.prepare('SELECT id FROM comments WHERE username=?').get('RenamedPlayer');
+ assert.equal((await handleRequest(req('modules/tool-one/comments',other,{body:'keep reply',replyToId:post.id},'POST'),f)).status,201);
+ assert.equal((await call('RenamedPlayer',{confirmUsername:'wrong'},admin,'DELETE')).status,400);
+ assert.equal((await call('RenamedPlayer',{confirmUsername:'RenamedPlayer'},admin,'DELETE')).status,200);
+ assert.equal(f.db.prepare('SELECT COUNT(*) n FROM comments WHERE username=?').get('PlayerTwo').n,1);
+ assert.equal((await handleRequest(req('session',player,null,'GET'),f)).status,401);
+ assert.equal((await call('AdminUser',{action:'role',role:'player'})).status,200);
+ assert.equal((await call('PlayerTwo',{action:'mute',minutes:10},admin)).status,403);
+ assert.equal((await call('PlayerTwo',{action:'status',disabled:true})).status,200);
+ assert.equal((await handleRequest(req('session',other,null,'GET'),f)).status,401);
+ assert.equal((await handleRequest(req('login','',{username:'PlayerTwo',password:'TestingPassword#123'},'POST'),f)).status,403);
+ assert.equal((await call('PlayerTwo',{action:'status',disabled:false})).status,200);
+ assert.equal((await call('PlayerTwo',{action:'sessions'})).status,200);
+ assert.equal((await handleRequest(req('session',other,null,'GET'),f)).status,401);
+ assert.ok(f.db.prepare('SELECT COUNT(*) n FROM management_audit').get().n>=7);
+ }finally{f.db.close();}
+});

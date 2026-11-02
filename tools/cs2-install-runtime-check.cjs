@@ -28,8 +28,8 @@ function createTestApp(base) {
   const preloadPath = path.join(appRoot, 'src', 'preload.cjs');
   let preload = fs.readFileSync(preloadPath, 'utf8');
   preload = preload.replace("resumeAccount: () => ipcRenderer.invoke('account:resume'),", "resumeAccount: async () => ({ username: 'CS2RUNTIME' }),");
-  preload = preload.replace("getComments: (featureId) => ipcRenderer.invoke('module:get-comments', featureId),", "getComments: async () => ({ comments: [] }),");
-  preload = preload.replace("addComment: (featureId, body) => ipcRenderer.invoke('module:add-comment', { featureId, body }),", "addComment: async (_featureId, body) => ({ comment: { username: 'CS2RUNTIME', body, createdAt: Math.floor(Date.now() / 1000) } }),");
+  preload = preload.replace("getComments: (featureId, before) => ipcRenderer.invoke('module:get-comments', featureId, before),", "getComments: async () => ({ comments: [] }),");
+  preload = preload.replace("addComment: (featureId, body, replyToId) => ipcRenderer.invoke('module:add-comment', { featureId, body, replyToId }),", "addComment: async (_featureId, body) => ({ comment: { username: 'CS2RUNTIME', body, createdAt: Math.floor(Date.now() / 1000) } }),");
   preload = preload.replace("openWebsite: (url, approvedByUser = false, tabId) => ipcRenderer.invoke('site:open', url, approvedByUser === true, tabId),", "openWebsite: async (url, _approved, tabId) => ({ id: tabId || 'test-tab', url, title: '测试分享页', loading: false }),");
   assert.ok(preload.includes("title: '测试分享页'"), 'The isolated website-view test hook was not installed.');
   fs.writeFileSync(preloadPath, preload, 'utf8');

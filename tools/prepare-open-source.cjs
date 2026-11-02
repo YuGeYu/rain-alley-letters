@@ -28,7 +28,8 @@ for (const name of files) {
   if (suspicious.some(pattern => pattern.test(data.toString('utf8')))) throw new Error('Possible secret: ' + name);
   const bundledInventory = name === 'assets/plugins/InventorySimulator-v3.7.2.zip' && crypto.createHash('sha256').update(data).digest('hex') === require('../src/inventory-payload-manifest.json').archiveSha256;
   const bundledRuntime = name === 'assets/plugins/cs2-shared-runtime.zip' && crypto.createHash('sha256').update(data).digest('hex') === require('../src/shared-runtime-manifest.json').archiveSha256;
-  if (!bundledInventory && !bundledRuntime && ['.exe', '.dll', '.zip', '.vpk', '.db', '.sqlite', '.enc', '.pem', '.key'].includes(path.extname(name).toLowerCase())) throw new Error('Private or external binary file: ' + name);
+  const bundledDemo = name === 'assets/plugins/demotracer-css-v1.6.6.zip' && crypto.createHash('sha256').update(data).digest('hex') === require('../src/demo-payload-manifest.json').archiveSha256;
+  if (!bundledDemo && !bundledInventory && !bundledRuntime && ['.exe', '.dll', '.zip', '.vpk', '.db', '.sqlite', '.enc', '.pem', '.key'].includes(path.extname(name).toLowerCase())) throw new Error('Private or external binary file: ' + name);
   manifest.push({ path: name, bytes: data.length, sha256: crypto.createHash('sha256').update(data).digest('hex') });
 }
 fs.mkdirSync(out, { recursive: true });

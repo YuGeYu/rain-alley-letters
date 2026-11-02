@@ -6,6 +6,8 @@ Copyright (C) 2026 雨巷来信工作室。雨巷来信自己的代码采用 GNU
 
 ## 随应用分发
 
+- DemoTracer Playback Bundle v1.6.6，unicbm 及贡献者，回放组件 AGPL-3.0-only。官方 ZIP 原样位于 assets/plugins/demotracer-css-v1.6.6.zip，许可见同目录 DemoTracer-LICENSE.txt，文件与归档 SHA-256 见 src/demo-payload-manifest.json。对应完整源码及构建说明：https://github.com/unicbm/demotracer/tree/v1.6.6 。来源组件的许可和致谢记录随源码保留。安装适配不修改 DLL；与人机增强共存时使用回放包匹配的 BotRandomizer/API/Harmony，避免旧版覆盖。
+
 - Inventory Simulator v3.7.2，Ian Lucas，MIT：https://github.com/ianlucas/cs2-css-inventory-simulator/tree/v3.7.2 。官方 ZIP 原样保存在 assets/plugins/InventorySimulator-v3.7.2.zip，许可全文为同目录 InventorySimulator-LICENSE.txt。应用只增加安装、共存、卸载与便捷入口，不改动其 DLL。共享运行库从已校验的 CS2BotImprover v1.4.7 包提取，随应用放在 assets/plugins/cs2-shared-runtime.zip，文件清单和校验值见 src/shared-runtime-manifest.json。包含 CounterStrikeSharp（GPL-3.0，https://github.com/roflmuffin/CounterStrikeSharp）、Metamod:Source（GPL 及上游例外，https://github.com/alliedmodders/metamod-source）与 .NET（MIT 及第三方许可，包内 dotnet/LICENSE.txt、ThirdPartyNotices.txt）；依赖与 API 保持原文件。
 - LinkSwift 1.1.3，hmjz100 等作者：https://github.com/hmjz100/LinkSwift/tree/v1.1.3 。AGPL-3.0-or-later。原用户脚本、版权头和许可位于 src/linkswift/；雨巷来信的隔离会话、GM API 和 IPC 适配位于 src/main.cjs、src/site-preload.cjs 等文件。修改与适配记录见 docs/开源说明.md。
 - jQuery 3.6.0，OpenJS Foundation 及贡献者，MIT。
@@ -18,6 +20,8 @@ Copyright (C) 2026 雨巷来信工作室。雨巷来信自己的代码采用 GNU
 Electron 采用 MIT，分发的 Electron 运行时包含 LICENSE.electron.txt 和 LICENSES.chromium.html，Chromium 等组件保留各自许可；请在最终安装包中保留这些文件。electron-builder、NSIS 等构建工具及其插件保留各自许可，不因本项目选择 AGPL 而改变许可。
 
 ## 外部获取，不随项目分发
+
+DemoTracer GUI v1.6.6 使用专有许可，允许个人和商业免费使用，但不授予再分发权。雨巷不附带该安装程序或 GUI 二进制，仅提供用户主动选择官方安装包或从官方 Release 获取、校验、安装及启动的入口。许可副本见 assets/plugins/DemoTracer-DESKTOP-LICENSE.txt。官方下载：https://github.com/unicbm/demotracer/releases/tag/v1.6.6 。GUI、回放插件版本应匹配，WebView2 由用户设备提供。
 
 CS2-Bot-Improver v1.4.7，ed0ard 及贡献者：
 https://github.com/ed0ard/CS2-Bot-Improver/tree/v1.4.7

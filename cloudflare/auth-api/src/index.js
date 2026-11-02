@@ -1,3 +1,4 @@
+import { management } from './management.js';
 // Cloudflare Workers Web Crypto rejects PBKDF2 iteration counts above 100,000.
 const PASSWORD_ITERATIONS = 100_000;
 const SESSION_SECONDS = 60 * 60 * 24 * 30;
@@ -114,8 +115,12 @@ async function authenticate(env, request) {
     "SELECT accounts.username, accounts.role, sessions.token_hash, sessions.expires_at AS expiresAt FROM sessions JOIN accounts ON accounts.username = sessions.username WHERE sessions.token_hash = ?1 AND sessions.expires_at > ?2",
   ).bind(tokenHash, now).first();
   if (!row) return null;
+  const status = await env.DB.prepare('SELECT disabled FROM account_status WHERE username=?1').bind(row.username).first();
+  if (status?.disabled) return null;
+  await env.DB.prepare('INSERT INTO account_status(username,last_seen_at) VALUES(?1,?2) ON CONFLICT(username) DO UPDATE SET last_seen_at=excluded.last_seen_at').bind(row.username,now).run();
   if (!equalBytes(fromHex(row.token_hash), fromHex(tokenHash))) return null;
-  return { username: row.username, role: row.role || 'player', tokenHash, expiresAt: Number(row.expiresAt) };
+  const moderator = row.role !== 'root' && await env.DB.prepare('SELECT username FROM community_moderators WHERE username = ?1').bind(row.username).first();
+  return { username: row.username, role: row.role === 'root' ? 'root' : moderator ? 'admin' : 'player', tokenHash, expiresAt: Number(row.expiresAt) };
 }
 
 async function throttle(env, scope, limit, periodSeconds) {
@@ -145,6 +150,7 @@ async function register(env, request) {
   const username = typeof input?.username === "string" ? input.username.trim() : "";
   const password = typeof input?.password === "string" ? input.password : "";
   if (!USERNAME_RE.test(username)) return error(400, "账号需为 4–24 位字母、数字、下划线或短横线。");
+  if (username.toLowerCase() === '__deleted__') return error(400, '此账号名称不可使用。');
   if (password.length < 12 || password.length > 128) return error(400, "密码长度需为 12–128 位。");
 
   const ip = request.headers.get("cf-connecting-ip") || "unknown";
@@ -174,10 +180,14 @@ async function login(env, request) {
   if (!gate.allowed && account?.role !== 'root') return error(429, '登录尝试过多，请稍后再试。', { 'retry-after': String(gate.retryAfter) });
   const valid = account ? await verifyPassword(password, account) : false;
   if (!valid) return error(401, "账号或密码不正确，请检查后重试。");
+  const status = await env.DB.prepare('SELECT disabled FROM account_status WHERE username=?1').bind(account.username).first();
+  if (status?.disabled) return error(403, '此账户已停用，请联系雨巷主理人。');
+  await env.DB.prepare('INSERT INTO account_status(username,last_login_at,last_seen_at) VALUES(?1,?2,?2) ON CONFLICT(username) DO UPDATE SET last_login_at=excluded.last_login_at,last_seen_at=excluded.last_seen_at').bind(account.username,Math.floor(Date.now()/1000)).run();
 
   await env.DB.prepare("DELETE FROM auth_throttle WHERE bucket_hash = ?1").bind(gate.bucketHash).run();
   const session = await createSession(env, account.username);
-  return json({ account: { username: account.username, role: account.role }, session });
+  const moderator = account.role !== 'root' && await env.DB.prepare('SELECT username FROM community_moderators WHERE username = ?1').bind(account.username).first();
+  return json({ account: { username: account.username, role: account.role === 'root' ? 'root' : moderator ? 'admin' : 'player' }, session });
 }
 
 async function updateAccount(env, request) {
@@ -190,6 +200,7 @@ async function updateAccount(env, request) {
   if (!currentPassword || !USERNAME_RE.test(requestedUsername)) return error(400, "请输入有效的当前密码和账号名称。");
   if (newPassword && (newPassword.length < 12 || newPassword.length > 128)) return error(400, "新密码长度需为 12–128 位。");
   const usernameUnchanged = requestedUsername.toLowerCase() === session.username.toLowerCase();
+  if (requestedUsername.toLowerCase() === '__deleted__') return error(400, '此账号名称不可使用。');
   if (usernameUnchanged && !newPassword) return error(400, "没有需要保存的账号变更。");
   const gate = session.role === 'root' ? { allowed: true } : await throttle(env, `account-update:${session.username}`, 8, 600);
   if (!gate.allowed) return error(429, "账号修改请求较多，请稍后再试。", { "retry-after": String(gate.retryAfter) });
@@ -207,6 +218,9 @@ async function updateAccount(env, request) {
         env.DB.prepare("UPDATE sessions SET username = ?1 WHERE username = ?2").bind(canonicalUsername, session.username),
         env.DB.prepare("UPDATE comments SET username = ?1 WHERE username = ?2").bind(canonicalUsername, session.username),
         env.DB.prepare("UPDATE profiles SET username = ?1 WHERE username = ?2").bind(canonicalUsername, session.username),
+        env.DB.prepare("UPDATE community_moderators SET username = ?1 WHERE username = ?2").bind(canonicalUsername, session.username),
+        // Moving status with the account prevents renaming from clearing a mute.
+        env.DB.prepare("UPDATE account_status SET username = ?1 WHERE username = ?2").bind(canonicalUsername, session.username),
         env.DB.prepare("DELETE FROM accounts WHERE username = ?1").bind(session.username),
         env.DB.prepare("DELETE FROM sessions WHERE username = ?1 AND token_hash != ?2").bind(canonicalUsername, session.tokenHash),
       ]);
@@ -244,12 +258,20 @@ async function communityStatus(env, session) {
   if (!session) return null;
   const unlimited = session.role === 'root';
   const row = unlimited ? null : await env.DB.prepare("SELECT MAX(created_at) AS lastAt FROM comments WHERE username = ?1").bind(session.username).first();
-  return { unlimited, nextAllowedAt: row?.lastAt == null ? 0 : Number(row.lastAt) + 3600, serverNow: Math.floor(Date.now() / 1000) };
+  const status = await env.DB.prepare('SELECT muted_until AS mutedUntil,mute_reason AS muteReason FROM account_status WHERE username=?1').bind(session.username).first();
+  return { unlimited, mutedUntil: Number(status?.mutedUntil || 0), muteReason: status?.muteReason || '', nextAllowedAt: Math.max(Number(status?.mutedUntil || 0), row?.lastAt == null ? 0 : Number(row.lastAt) + 3600), serverNow: Math.floor(Date.now() / 1000) };
 }
 async function listComments(env, request, featureId) {
   const session = await authenticate(env, request);
-  const rows = await env.DB.prepare("SELECT id, username, body, created_at AS createdAt FROM comments WHERE feature_id = ?1 ORDER BY created_at DESC, id DESC LIMIT 40").bind(featureId).all();
-  return json({ comments: rows.results || [], community: await communityStatus(env, session) });
+  const url = new URL(request.url);
+  const rawBefore = url.searchParams.get('before');
+  const before = rawBefore == null ? Number.MAX_SAFE_INTEGER : Number(rawBefore);
+  if (!Number.isSafeInteger(before) || before < 1) return error(400, '留言游标无效。');
+  const roots = await env.DB.prepare("SELECT id FROM comments WHERE feature_id = ?1 AND root_id IS NULL AND id < ?2 ORDER BY id DESC LIMIT 21").bind(featureId, before).all();
+  const ids = (roots.results || []).slice(0, 20).map(row => row.id);
+  const rows = ids.length ? await env.DB.prepare(`SELECT c.id, c.username, c.body, c.created_at AS createdAt, c.root_id AS rootId, c.reply_to_id AS replyToId, c.deleted_at AS deletedAt, a.role AS authorRole, m.username AS moderator FROM comments c JOIN accounts a ON a.username = c.username LEFT JOIN community_moderators m ON m.username = c.username WHERE c.feature_id = ?1 AND COALESCE(c.root_id, c.id) IN (${ids.map((_, i) => '?' + (i + 2)).join(',')}) ORDER BY COALESCE(c.root_id, c.id) DESC, c.created_at, c.id`).bind(featureId, ...ids).all() : { results: [] };
+  const comments = rows.results.map(row => ({ id: row.id, username: row.username, body: row.deletedAt ? '' : row.body, createdAt: row.createdAt, rootId: row.rootId, replyToId: row.replyToId, deleted: row.deletedAt != null, canDelete: row.deletedAt == null && !!session && (session.username.toLowerCase() === row.username.toLowerCase() || (['root', 'admin'].includes(session.role) && row.authorRole === 'player' && !row.moderator)) }));
+  return json({ comments, nextBefore: roots.results.length > 20 ? ids.at(-1) : null, community: await communityStatus(env, session) });
 }
 async function addComment(env, request, featureId) {
   const session = await authenticate(env, request);
@@ -257,10 +279,18 @@ async function addComment(env, request, featureId) {
   const input = await readJson(request);
   const body = typeof input?.body === "string" ? input.body.trim() : "";
   if (!body || [...body].length > 500 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(body)) return error(400, "评论需为 1–500 个字符。");
+  let target = null;
+  if (input.replyToId != null) {
+    if (!Number.isSafeInteger(input.replyToId) || input.replyToId < 1) return error(400, '回复对象无效。');
+    target = await env.DB.prepare('SELECT id, root_id FROM comments WHERE id = ?1 AND feature_id = ?2 AND deleted_at IS NULL').bind(input.replyToId, featureId).first();
+    if (!target) return error(404, '这条内容已删除或不存在。');
+  }
   let result;
   try {
-    result = await env.DB.prepare("INSERT INTO comments (feature_id, username, body, created_at) VALUES (?1, ?2, ?3, ?4)").bind(featureId, session.username, body, Math.floor(Date.now() / 1000)).run();
+    result = await env.DB.prepare("INSERT INTO comments (feature_id, username, body, created_at, root_id, reply_to_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6)").bind(featureId, session.username, body, Math.floor(Date.now() / 1000), target ? (target.root_id || target.id) : null, target?.id || null).run();
   } catch (cause) {
+    if (String(cause?.message).includes('COMMUNITY_MUTED')) return json({error:'此账户暂时无法发言，请查看禁言状态。',community:await communityStatus(env,session)},403);
+    if (String(cause?.message).includes('COMMENT_TARGET_UNAVAILABLE')) return error(409, '原留言或回复对象已删除，请刷新后再试。');
     if (!String(cause?.message).includes('COMMUNITY_HOUR_LOCK')) throw cause;
     const community = await communityStatus(env, session);
     const retryAfter = Math.max(1, community.nextAllowedAt - community.serverNow);
@@ -268,6 +298,19 @@ async function addComment(env, request, featureId) {
   }
   const comment = await env.DB.prepare("SELECT id, username, body, created_at AS createdAt FROM comments WHERE id = ?1").bind(result.meta?.last_row_id).first();
   return json({ comment, community: await communityStatus(env, session) }, 201);
+}
+
+async function deleteComment(env, request, featureId, id) {
+  const session = await authenticate(env, request);
+  if (!session) return error(401, '登录已失效，请重新登录。');
+  // Keep authorization in the mutation so concurrent role changes cannot bypass it.
+  const result = await env.DB.prepare(`UPDATE comments SET body = '内容已删除', deleted_at = ?1 WHERE id = ?2 AND feature_id = ?3 AND deleted_at IS NULL AND (username = ?4 COLLATE NOCASE OR (EXISTS (SELECT 1 FROM accounts actor WHERE actor.username = ?4 AND (actor.role = 'root' OR EXISTS (SELECT 1 FROM community_moderators WHERE username = actor.username))) AND EXISTS (SELECT 1 FROM accounts author WHERE author.username = comments.username AND author.role = 'player' AND NOT EXISTS (SELECT 1 FROM community_moderators WHERE username = author.username))))`).bind(Math.floor(Date.now() / 1000), id, featureId, session.username).run();
+  if (!result.meta?.changes) {
+    const row = await env.DB.prepare('SELECT deleted_at FROM comments WHERE id = ?1 AND feature_id = ?2').bind(id, featureId).first();
+    if (!row) return error(404, '这条内容不存在。');
+    if (row.deleted_at == null) return error(403, '你只能删除自己的内容；主理人和管理员可以删除普通玩家的内容。');
+  }
+  return json({ ok: true, community: await communityStatus(env, session) });
 }
 
 function sanitizeProfileHtml(value) {
@@ -354,6 +397,7 @@ async function saveProfile(env, request, username) {
 export async function handleRequest(request, env) {
   const url = new URL(request.url);
   const { pathname } = url;
+  if (pathname.startsWith('/api/management/')) return management(request,env,{authenticate,readJson,json,error,cleanProfile});
   if (pathname === "/health" && request.method === "GET") return json({ ok: true, service: "rain-alley-auth" });
   if (pathname === "/api/register" && request.method === "POST") return register(env, request);
   if (pathname === "/api/login" && request.method === "POST") return login(env, request);
@@ -370,11 +414,16 @@ export async function handleRequest(request, env) {
     if (request.method === "PUT") return saveProfile(env, request, username);
   }
 
-  const commentRoute = /^\/api\/modules\/([^/]+)\/comments$/.exec(pathname);
+  const commentRoute = /^\/api\/modules\/([^/]+)\/comments(?:\/([1-9][0-9]*))?$/.exec(pathname);
   if (commentRoute) {
     let featureId;
     try { featureId = decodeURIComponent(commentRoute[1]); } catch { return error(400, "功能编号无效。"); }
     if (!validFeatureId(featureId)) return error(400, "功能编号无效。");
+    if (commentRoute[2]) {
+      const id = Number(commentRoute[2]);
+      if (!Number.isSafeInteger(id)) return error(400, '留言编号无效。');
+      return request.method === 'DELETE' ? deleteComment(env, request, featureId, id) : error(405, '不支持该操作。');
+    }
     if (request.method === "GET") return listComments(env, request, featureId);
     if (request.method === "POST") return addComment(env, request, featureId);
   }

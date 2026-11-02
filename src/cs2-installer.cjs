@@ -3,7 +3,7 @@ const path = require('node:path');
 const os = require('node:os');
 const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
-const { owned, retainedRuntime } = require('./cs2-ownership.cjs');
+const { owned, retainedRuntime, demoOverlap } = require('./cs2-ownership.cjs');
 
 const INSTALL_ENTRIES = ['addons', 'cfg', 'gameinfo.gi', 'overrides', 'Panel v1.4.7.exe'];
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -26,7 +26,7 @@ function extractArchive(archive, stage) {
 
 // A committed install must never roll back because antivirus/Windows still holds
 // an extracted DLL open. Rollback storage lives outside the extraction directory.
-async function installOfficialPayload({ root, archive, keepBackup, io = fs, extract = extractArchive, entries = INSTALL_ENTRIES, preserveBot = false }) {
+async function installOfficialPayload({ root, archive, keepBackup, io = fs, extract = extractArchive, entries = INSTALL_ENTRIES, preserveBot = false, installingDemo = false }) {
   const stage = await io.mkdtemp(path.join(os.tmpdir(), 'rain-alley-cs2-'));
   const rollback = path.join(root, `.rain-alley-${keepBackup ? 'backup' : 'rollback'}-${crypto.randomUUID()}`);
   const journal = { root, archive, phase: 'preparing', moved: [], installed: [], created: [] };
@@ -59,6 +59,9 @@ async function installOfficialPayload({ root, archive, keepBackup, io = fs, extr
     const info = await io.lstat(source);
     if (info.isSymbolicLink()) throw new Error('安装文件包含不支持的链接。');
     if (!info.isDirectory()) {
+      // DemoTracer requires the matched API v3 provider. Installing bots later
+      // must not downgrade its provider, API or Harmony assembly.
+      if (!installingDemo && demoOverlap(relative) && await exists(path.join(root, 'addons/counterstrikesharp/plugins/DemoTracer/DemoTracer.dll'), io)) return;
       if (relative.replaceAll('\\', '/').toLowerCase().startsWith('addons/counterstrikesharp/configs/') && await exists(target, io)) return;
       if (await exists(target, io)) await moveOld(relative);
       // Record before copy: a failed write can leave a partial destination.

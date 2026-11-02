@@ -1,0 +1,99 @@
+{
+  "version": "1.6.6",
+  "archiveSha256": "acfe88175564f68d869a02c687196d7f02be5756f0543463e402406894532241",
+  "guiSha256": "e1aed577be504277bc389573fcaa665b138c057709030ef3074cfef24d9b344d",
+  "files": [
+    {
+      "path": "addons/counterstrikesharp/plugins/BotRandomizer/BotRandomizer.deps.json",
+      "sha256": "49bdf2aa2fe12737230422ed8b751f8ed41e4b323e53e0e61690f609a6514974"
+    },
+    {
+      "path": "addons/counterstrikesharp/plugins/BotRandomizer/BotRandomizer.dll",
+      "sha256": "e8e572e2b80eca8d4dc5af4d0060f77f494c86776bf885e32dfc99e3e1ca7b78"
+    },
+    {
+      "path": "addons/counterstrikesharp/plugins/BotRandomizer/charm_placements.json",
+      "sha256": "6c2660cf41b62e2d79f693d3735fe9da91a975a116596839e0ab553491935b1c"
+    },
+    {
+      "path": "addons/counterstrikesharp/plugins/BotRandomizer/cosmetic_catalog.json",
+      "sha256": "48c59f8f1ae82ce4e46b49e5453bc352a83a8496c87a9148ea80baea626bbe97"
+    },
+    {
+      "path": "addons/counterstrikesharp/plugins/BotRandomizer/cs2-lib-econ-index.v1.json",
+      "sha256": "bd8b4b258bc291d1aa685ccba5b32bff684261e21494c02399abd982473b0597"
+    },
+    {
+      "path": "addons/counterstrikesharp/plugins/DemoTracer/cs2-lib-econ-index.v1.json",
+      "sha256": "bd8b4b258bc291d1aa685ccba5b32bff684261e21494c02399abd982473b0597"
+    },
+    {
+      "path": "addons/counterstrikesharp/plugins/DemoTracer/demotracer-native.json",
+      "sha256": "8a4da288083ee1c91fb40ab1f74b603f16e11e0bf7fc8c7f098c5186afd37221"
+    },
+    {
+      "path": "addons/counterstrikesharp/plugins/DemoTracer/DemoTracer.deps.json",
+      "sha256": "a74626952bd89e06a35e4b67eb02804f13e4ac62154dbd95e79624bf79f3cf40"
+    },
+    {
+      "path": "addons/counterstrikesharp/plugins/DemoTracer/DemoTracer.dll",
+      "sha256": "310cb303bfd85efc90cb19fa6b3fe25aec066c034a71c3e6c479ed9359e7ee54"
+    },
+    {
+      "path": "addons/counterstrikesharp/plugins/DemoTracer/ZstdSharp.dll",
+      "sha256": "b285bb9f59928becb8e048bf2a75e872f6555f8773d7b72386a9f77f447f425c"
+    },
+    {
+      "path": "addons/counterstrikesharp/plugins/DtrHider/DtrHider.deps.json",
+      "sha256": "9f56ca03d0bdc3e4a51f8a5d0eb5b311ee5f72769cb238be10f64598af368ba2"
+    },
+    {
+      "path": "addons/counterstrikesharp/plugins/DtrHider/DtrHider.dll",
+      "sha256": "6e5fc5b2d0b1fcbf3faa16010d8c5d4bf6f08aef003fd48a485b4ed4d4a2d378"
+    },
+    {
+      "path": "addons/counterstrikesharp/shared/0Harmony/0Harmony.dll",
+      "sha256": "fd77b88724f4104440df0cf979a851d35eec75ea3a7e86297d04abe47c71aff6"
+    },
+    {
+      "path": "addons/counterstrikesharp/shared/BotRandomizerApi/BotRandomizerApi.dll",
+      "sha256": "603b0d4df2b373f6fedc1eb8348ddaf133ff2fff6107a277030eee99e4b1fc08"
+    },
+    {
+      "path": "addons/counterstrikesharp/shared/DemoTracerApi/DemoTracerApi.dll",
+      "sha256": "761016cb52690913e1c290b112f7ff10d7cec26e2e6fb6fa179ad2ef1d50fe83"
+    },
+    {
+      "path": "addons/counterstrikesharp/shared/DtrHiderApi/DtrHiderApi.dll",
+      "sha256": "cfd773469725f0c1353bd410d1fc46970ff26b4f1f9a67dfdb1a394c6aa1571d"
+    },
+    {
+      "path": "addons/demotracer-install.v1.json",
+      "sha256": "e4790c8c285d07a0ff7cf0094b890888af865fb838a9ecaf1aa82e5857d0d1ce"
+    },
+    {
+      "path": "addons/dtr-controller/bin/win64/dtr-controller.dll",
+      "sha256": "8df601fed34d7b2a64332f171ed13c376743bc6945121d7440a978a5f00e74e8"
+    },
+    {
+      "path": "addons/dtr-controller/gamedata.json",
+      "sha256": "8cab3f708197f10127c838f781771116377acd5f4129869c8254328f4e597047"
+    },
+    {
+      "path": "addons/dtr-hider/bin/win64/dtr-hider.dll",
+      "sha256": "ace816d48f39c677da7e89b4765ff4af0d36070faa21dbd36d9fe57c30f090d9"
+    },
+    {
+      "path": "addons/dtr-hider/gamedata.json",
+      "sha256": "e31c6813425d110669ce636c1c4bf34d99d413fbdf713bd783354925865aa7e0"
+    },
+    {
+      "path": "addons/dtr-hider/map_whitelist.json",
+      "sha256": "18139dabb7b8f86a3efc0660415684af1a73e1b174e5dbafdf02f0c3a1438f90"
+    },
+    {
+      "path": "addons/metamod/dtr-controller.vdf",
+      "sha256": "d4d3e90a0ea902e3ff3a8473696dc55cd5fa08bb31ab40c25634e9afc9a127af"
+    }
+  ]
+}
