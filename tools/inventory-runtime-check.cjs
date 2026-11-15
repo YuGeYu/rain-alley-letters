@@ -8,11 +8,11 @@ const root = path.resolve(__dirname, '..');
 const preview = process.argv.includes('--preview');
 async function run() {
   const base = fs.mkdtempSync(path.join(os.tmpdir(), 'alley-inventory-ui-'));
-  const appRoot = createTestApp(base);
+  const appRoot = createTestApp(base, { seedResources: true });
   const game = path.join(base, 'game/csgo'); fs.mkdirSync(game, { recursive: true });
   fs.writeFileSync(path.join(game, 'gameinfo.gi'), 'GameInfo { FileSystem { SearchPaths {\n Game csgo\n} } }');
-  const profile = path.join(base, 'profile'); fs.mkdirSync(profile); fs.mkdirSync(path.join(profile, 'downloads'));
-  fs.writeFileSync(path.join(profile, 'preferences.json'), JSON.stringify({ cs2Directory: game, cs2Archive: 'E:/dow/CS2BotImprover.zip', downloadDirectory: path.join(profile, 'downloads'), allowHttp: true, allowLocalNetwork: true, allowedHosts: ['127.0.0.1'] }));
+  const profile = path.join(base, 'profile'); fs.mkdirSync(profile, { recursive: true }); fs.mkdirSync(path.join(profile, 'downloads'));
+  fs.writeFileSync(path.join(profile, 'preferences.json'), JSON.stringify({ cs2Directory: game, cs2Archive: 'E:/dow/CS2BotImprover (1).zip', downloadDirectory: path.join(profile, 'downloads'), allowHttp: true, allowLocalNetwork: true, allowedHosts: ['127.0.0.1'] }));
   // Restore the real native web view; only account/community responses are fixtures.
   const preloadPath = path.join(appRoot, 'src/preload.cjs');
   let preload = fs.readFileSync(preloadPath, 'utf8');
@@ -20,8 +20,11 @@ async function run() {
   preload = preload.replace('chooseCs2Directory:', "testCopy: () => ipcRenderer.invoke('test:copy'), testBounds: () => ipcRenderer.invoke('test:bounds'), testLink: url => ipcRenderer.invoke('test:link', url), testExternal: () => ipcRenderer.invoke('test:external'), chooseCs2Directory:");
   fs.writeFileSync(preloadPath, preload);
   const mainPath = path.join(appRoot, 'src/main.cjs');
+  fs.appendFileSync(mainPath,'\nipcMain.handle("test:clipboard",()=>clipboard.readText());ipcMain.handle("test:restore-clipboard",async()=>{await originalClipboardReady;return clipboard.writeText(originalClipboard)});\n');
+  let preloadForCommands = fs.readFileSync(preloadPath,'utf8').replace('chooseCs2Directory:',"testClipboard: () => ipcRenderer.invoke('test:clipboard'), testRestoreClipboard: () => ipcRenderer.invoke('test:restore-clipboard'), chooseCs2Directory:");
+  fs.writeFileSync(preloadPath,preloadForCommands);
   fs.appendFileSync(mainPath, '\nconst testExternal=[];shell.openExternal=async url=>{testExternal.push(url);};ipcMain.handle("test:external",()=>testExternal);ipcMain.handle("test:bounds",()=>[...websiteViews.values()].map(v=>v.getBounds()));ipcMain.handle("test:link",async(_e,url)=>websiteViews.get(activeWebsiteId).webContents.executeJavaScript("window.open("+JSON.stringify(url)+")",true));\n');
-  fs.appendFileSync(mainPath, "\nconst originalClipboard = clipboard.readText();\napp.on('will-quit', () => clipboard.writeText(originalClipboard));\nipcMain.handle('test:copy', async () => {\n const c = websiteViews.get(activeWebsiteId).webContents;\n c.focus();\n await c.executeJavaScript(\"navigator.clipboard.writeText('/猪圈签到')\", true);\n const text = await clipboard.readText();\n const denied = await c.executeJavaScript(\"navigator.clipboard.readText().then(()=>false,()=>true)\", true);\n await clipboard.writeText(await originalClipboard);\n return { text, denied };\n});\n");
+  fs.appendFileSync(mainPath, "\nlet originalClipboard = ''; const originalClipboardReady = clipboard.readText().then(value => { originalClipboard = value; });\napp.on('will-quit', () => clipboard.writeText(originalClipboard));\nipcMain.handle('test:copy', async () => {\n const c = websiteViews.get(activeWebsiteId).webContents;\n windowRef.focus(); c.focus();\n await c.executeJavaScript(\"navigator.clipboard.writeText('/猪圈签到')\", true);\n let text = await clipboard.readText(); for(let attempt=0; text!=='/猪圈签到' && attempt<20; attempt++){await new Promise(resolve=>setTimeout(resolve,100));text=await clipboard.readText();}\n const denied = await c.executeJavaScript(\"navigator.clipboard.readText().then(()=>false,()=>true)\", true);\n await clipboard.writeText(await originalClipboard);\n return { text, denied };\n});\n");
   let launchRoot = appRoot;
   if (process.argv.includes('--asar')) { launchRoot = path.join(base, 'app.asar'); await require('@electron/asar').createPackage(appRoot, launchRoot); }
   const http = require('node:http');
@@ -52,10 +55,23 @@ async function run() {
     await waitFor(cdp, "document.querySelector('#inventoryStatus')?.textContent.includes('饰品工坊已安装')", 'IPC install failed', 90000);
     assert.ok(fs.existsSync(path.join(game, 'addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll')));
     assert.ok(!fs.existsSync(path.join(game, 'addons/counterstrikesharp/plugins/BotAI/BotAI.dll')));
+    const manifest=require('../src/inventory-payload-manifest.json');
+    for (const item of manifest.files) assert.equal(require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(game,item.path))).digest('hex'),item.sha256);
+    assert.ok(await cdp.evaluate("document.querySelector('#inventoryStatus').textContent.includes('3.8.2')"));
+    for(const [id,expected] of [['inventoryCopy','exec rain-alley-inventory.cfg'],['inventoryCopyRefresh','!ws'],['inventoryCopySpray','!spray'],['inventoryCopyPlugins','css_plugins list']]) {
+      await cdp.evaluate('document.querySelector('+JSON.stringify('#'+id)+').click()');
+      await waitFor(cdp,'window.alleyDesktop.testClipboard().then(value=>value==='+JSON.stringify(expected)+')','Copied command does not match '+id);
+    }
+    await cdp.evaluate('window.alleyDesktop.testRestoreClipboard()');
     await cdp.evaluate("document.querySelector('#inventoryUninstall').click()"); await click('保留配置');
     await waitFor(cdp, "document.querySelector('#cs2ModalTitle')?.textContent==='确认卸载饰品工坊？'", 'No uninstall preview'); await click('确认卸载');
     await waitFor(cdp, "document.querySelector('#inventoryStatus')?.textContent.includes('恢复备份')", 'IPC uninstall failed');
     assert.ok(!fs.existsSync(path.join(game, 'addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll')));
+    assert.ok(!fs.existsSync(path.join(game,'addons/counterstrikesharp/gamedata/inventory-simulator.json')));
+    await cdp.evaluate("document.querySelector('#inventoryInstall').click()");await click('是，继续安装');await click('不保留备份');
+    await waitFor(cdp,"document.querySelector('#inventoryStatus').textContent.includes('饰品工坊已安装')",'No-backup reinstall failed',90000);
+    await cdp.evaluate("document.querySelector('.detail-card').scrollIntoView({block:'start'})");
+    await shot('preview-inventory-installed.png');
     await route(url);
     await waitFor(cdp, 'window.alleyDesktop.testBounds().then(a=>a.some(b=>b.width>0))', 'Native website not visible');
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -87,7 +103,18 @@ async function run() {
     assert.equal((await cdp.evaluate('window.alleyDesktop.testExternal()'))[0], 'ccswitch://v1/import?test=2');
     await route('rainalley://app/feature/cs2-inventory');
     console.log('Inventory runtime passed: real install/uninstall IPC, both cancel steps, bundled ZIP, shared runtime only, native WebContentsView remains hidden through wheel/resize, default-off protocol, confirmed OS dispatch, screenshots.');
-    if (preview) { keep = true; socket.close(); proc.unref(); proc.stdout.destroy(); proc.stderr.destroy(); console.log(JSON.stringify({ preview:true,pid:proc.pid,directory:base })); }
+    if (preview) {
+      await waitFor(cdp,"document.querySelector('#inventoryDirectory')?.value.length>0",'Preview directory missing');
+      await cdp.evaluate("document.querySelector('.detail-card').scrollIntoView({block:'start'})");
+      await cdp.send('Emulation.setDeviceMetricsOverride',{width:1050,height:900,deviceScaleFactor:1,mobile:false});
+      assert.ok(await cdp.evaluate('document.documentElement.scrollWidth<=innerWidth'),'Inventory page overflows at minimum supported width');
+      await shot('preview-inventory-narrow.png');await cdp.send('Emulation.clearDeviceMetricsOverride');
+      const state={preview:true,pid:proc.pid,port,directory:base,game,appRoot};
+      fs.mkdirSync(path.join(root,'.work/inventory-3.8.2'),{recursive:true});
+      fs.writeFileSync(path.join(root,'.work/inventory-3.8.2/preview-state.json'),JSON.stringify(state,null,2));
+      keep = true; socket.close(); proc.unref(); proc.stdout.destroy(); proc.stderr.destroy(); console.log(JSON.stringify(state));
+      setInterval(()=>{},60000);
+    }
   } catch (error) { throw new Error(error.stack + '\n' + output.slice(-3000)); }
   finally {
     socket?.close(); server.close();

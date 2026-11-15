@@ -1,5 +1,5 @@
 {
-  "preparedAt": "2026-11-02T17:45:21.740Z",
+  "preparedAt": "2026-11-15T19:31:09.766Z",
   "uploaded": false,
   "files": [
     {
@@ -14,18 +14,18 @@
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 4648,
-      "sha256": "079c1631ed1492254d2244127cb887ff179d1c57226bfdc6d3b91330bd335a61"
+      "bytes": 6912,
+      "sha256": "916565daab2e24c53266d33f9686e118f48d66d11449cffa09e9e694c32d75fc"
     },
     {
       "path": "README.md",
-      "bytes": 7414,
-      "sha256": "8889d16baa5a3fd43791fa31689c420ba140ea5eb8f376bb368955d1e39a758c"
+      "bytes": 10925,
+      "sha256": "9ec5690c5e974e3b9e4484fd3e56427c006778c013bfaeac323f50338959d3cb"
     },
     {
       "path": "package.json",
-      "bytes": 3089,
-      "sha256": "43b6428b69ee28c8f8ac2c998f2c93dc61792765afaf2842a09cf43deccddc27"
+      "bytes": 3934,
+      "sha256": "f9fec37274f7cfcb440cced854f7415c7b709209ca015ac0f89e8ec5da2c7a86"
     },
     {
       "path": "package-lock.json",
@@ -49,23 +49,48 @@
     },
     {
       "path": "设计规范.md",
-      "bytes": 14566,
-      "sha256": "5cd95f6a90fc3b31b5836776a988734dde45f2832913dca501342576b2584f57"
+      "bytes": 14541,
+      "sha256": "73fe16ae2e05969ed965ef7378d0345d9fb04f437b21ff12739c136775efd5f3"
     },
     {
       "path": "功能模块规范.md",
-      "bytes": 12155,
-      "sha256": "a970fb3daafbb2f340fbfffc67f5570b8154fddc336bef9d25336715553a9bcf"
+      "bytes": 15019,
+      "sha256": "dd6f0300131348701e13633cacbcdd3ffcb41f435523a7415c9e611b99ee36f8"
+    },
+    {
+      "path": "src/bilidesk-icon.png",
+      "bytes": 22260,
+      "sha256": "90089706ab7a8c74b6b424c1eec5a4b32b87573532e7bddb33e4645ebda6cc11"
+    },
+    {
+      "path": "src/bilidesk-manager.cjs",
+      "bytes": 7927,
+      "sha256": "03916f9e4713aa0ee4d0116e5617759f6d3c5425051d4fcc435abe6fd1c2741e"
+    },
+    {
+      "path": "src/bilidesk-payload-manifest.json",
+      "bytes": 64879,
+      "sha256": "8718ad96312c209ac0e3e15c1ba59aa4763a1fb23932757067129365124ce5a1"
+    },
+    {
+      "path": "src/bilidesk-ui.js",
+      "bytes": 6597,
+      "sha256": "a5f77daf85b71cda697d1e754f33af33b94c20c55fa9e317a9ae429a9b66f24a"
+    },
+    {
+      "path": "src/bilidesk.css",
+      "bytes": 1858,
+      "sha256": "55c6ded9e2cdf73035e207d9e8c0b069485247ec8b00bc8fcd0725fe8796a69d"
     },
     {
       "path": "src/catalog.js",
-      "bytes": 152244,
-      "sha256": "2728f2caaaa7b610964263a2a79715ccb8039d97697fc4f8c639c07cabf40b3e"
+      "bytes": 162465,
+      "sha256": "41b133adddab2cf9164dcf26e89a75e56d63064b991a678180a9f13f50ddae26"
     },
     {
       "path": "src/celebration.js",
-      "bytes": 3766,
-      "sha256": "d8847d08bf290348c459eb94a24710f86a29c5cc4369e922288fa6e5f653a1ed"
+      "bytes": 3441,
+      "sha256": "01c0db804caf2544f7e2280c4386b401ad756c9dc2bf43995f2cf0540e6a0598"
     },
     {
       "path": "src/cloudflare-config.json",
@@ -74,43 +99,53 @@
     },
     {
       "path": "src/cs2-installer.cjs",
-      "bytes": 9026,
-      "sha256": "46541fdfd79c1b89bdba260715696e00cddea85be27e81b94c19ce6522f7d3b6"
+      "bytes": 10766,
+      "sha256": "30ddf64efaaefb2526eded58a2585d3dcf6646229f38fb97a40d16576c85d8ff"
+    },
+    {
+      "path": "src/cs2-legacy-payload-manifest.json",
+      "bytes": 111337,
+      "sha256": "b027b2c9643bc51a25a4b22c81b07048dc8bcdf32e1968ee94e114a483cff158"
     },
     {
       "path": "src/cs2-ownership.cjs",
-      "bytes": 2639,
-      "sha256": "aa7b0f17625c6eeb0a923fe2f211c42855734121156d86e77c6330d8f8ec7f23"
+      "bytes": 2866,
+      "sha256": "da1c90c90457423b1799e93317c49a19bbb5147f00644a66d016bfc17f2368b4"
     },
     {
       "path": "src/cs2-payload-manifest.json",
-      "bytes": 113591,
-      "sha256": "57dde63721087fcd81397f863d75fde299d87f74536409b2889b98a029e5f9ba"
+      "bytes": 112208,
+      "sha256": "ab87272f7b10f39903d779999e18f22bf7662da9adf3104e050273d8447a1c56"
     },
     {
       "path": "src/cs2-uninstaller.cjs",
-      "bytes": 7831,
-      "sha256": "fb0fa557b1379c9a4832014ca26f999dca2f7eaa8be793589c2dd199cea502a7"
+      "bytes": 8268,
+      "sha256": "e69e00abfd29f1031ac2796335b55fef7ff69937874ae16d6e8bfe42870b5e36"
     },
     {
       "path": "src/demo-gui.cjs",
-      "bytes": 4966,
-      "sha256": "73d434ecfa1451e14456ccc2bfbb35206c7bb96d565a9321293cdd98a9fe075f"
+      "bytes": 5566,
+      "sha256": "d1d33cdb3f0ab592ca761b7c3f0a158a1d69652383a1ea7316c04ecbd9b647a7"
     },
     {
       "path": "src/demo-installer.cjs",
-      "bytes": 2515,
-      "sha256": "7f44dd6f576736638f9facef2200d24c8c5b35021a9ba1749b0ebe6f07260198"
+      "bytes": 3008,
+      "sha256": "0f9d01acb4bfe4cd79afd62178647a19061f21de7faa9b538d9d402cfe5aba16"
+    },
+    {
+      "path": "src/demo-legacy-payload-manifest.json",
+      "bytes": 4122,
+      "sha256": "00e26c42c2639459011eab262bbce8b28a68871c755c72671226574b197dba1e"
     },
     {
       "path": "src/demo-payload-manifest.json",
-      "bytes": 4121,
-      "sha256": "f92f1fa97cc85dc17ddd35a8f582a82dc844cc14787b1f820c58d93df17385b0"
+      "bytes": 4147,
+      "sha256": "c878b0d8f0e2d30073f9d7ee5d9575a73bff5c6df147948a8941edebae00440b"
     },
     {
       "path": "src/demo-ui.js",
-      "bytes": 9839,
-      "sha256": "16d1e6fc029434e147b4a6e24a9755211846089954b999e37da1314817436afc"
+      "bytes": 10967,
+      "sha256": "36ea64050e107b9422ac314a400a2f894c568ec9878c574061fcfb8821f91070"
     },
     {
       "path": "src/developer-vault.cjs",
@@ -118,34 +153,49 @@
       "sha256": "323d09e4b3c8b852daada9893d0da8275bd29e362239176e9d284f3b25c24f97"
     },
     {
+      "path": "src/effects.js",
+      "bytes": 266,
+      "sha256": "394348bedda958a4dbf072f3f45f96fdf27406242a6e7aec2488be470956f245"
+    },
+    {
       "path": "src/external-protocol.cjs",
       "bytes": 689,
       "sha256": "cb10e6c1b57b2486350cba457007e5c0e7bfa157f6af0ff67d9266400e9b3ce4"
     },
     {
+      "path": "src/external-resources.json",
+      "bytes": 837,
+      "sha256": "134b8cfb5ea57ddd6e7de3c44364f5ec5b431666a492cd31a8772a1cf31a49ab"
+    },
+    {
       "path": "src/features.js",
-      "bytes": 6691,
-      "sha256": "6701a4f7c043fb2a5e6a8da0a66faf9d5203629dcba8582f01ea324df682462b"
+      "bytes": 8400,
+      "sha256": "b1060edf2cc2ba78c66fd1df69eec68eb58589a662e4c709db26321e719cb09a"
     },
     {
       "path": "src/index.html",
-      "bytes": 32457,
-      "sha256": "c338a2232119b22998bc35fd872f4f3a828875e594093855ff1cc24c1ac8d60e"
+      "bytes": 33687,
+      "sha256": "f66c408a57a23de21963982e615046dc70722011f97bc58321718629f5346ff8"
     },
     {
       "path": "src/inventory-installer.cjs",
-      "bytes": 3535,
-      "sha256": "2706488537163fce882cbce0494b9f7ef984e9bd0e9483bfe9fc47bf1be3b787"
+      "bytes": 4164,
+      "sha256": "faa96bd98cb99a1f93dc0146c5d2297d5114ace73483d97456ddc931ef104560"
+    },
+    {
+      "path": "src/inventory-legacy-payload-manifest.json",
+      "bytes": 1420,
+      "sha256": "419239c61d7b278c1bbc993327a3da05a90490a420887ddaa14439606d13e829"
     },
     {
       "path": "src/inventory-payload-manifest.json",
-      "bytes": 1452,
-      "sha256": "8626aba4396a1619f17b3182b817c1443874a00b869642836f0cdb776ff1c027"
+      "bytes": 1617,
+      "sha256": "779e751328c9449346b7bb32d76da0fa9e89ff94111a4797748f28e4924bda0e"
     },
     {
       "path": "src/inventory-ui.js",
-      "bytes": 2014,
-      "sha256": "53060dd70e8ac048741f199f442d6739c93d39f122dd57b64d2bb85dce7b9c94"
+      "bytes": 2668,
+      "sha256": "e8b70b9f97843fb709e2ed0290e616fb2f7b00a21949c9b4722381e9bfab0605"
     },
     {
       "path": "src/linkswift/AGPL-3.0-or-later.txt",
@@ -219,8 +269,8 @@
     },
     {
       "path": "src/main.cjs",
-      "bytes": 108104,
-      "sha256": "3c947788714ed3eb68c2a4a6c8e2d6d63aa815b73455a19ece88bb4ec6e34b41"
+      "bytes": 118795,
+      "sha256": "b073b0cc3807e008efba906a74aba525a9e0975ee0ffeb50b374750d560c4b8f"
     },
     {
       "path": "src/management-ui.js",
@@ -238,14 +288,59 @@
       "sha256": "fd8be7701597d2d81a0f1957aeb6cea7d156d273882d19fa5b6d2822133c6d18"
     },
     {
+      "path": "src/player-tool-preload.cjs",
+      "bytes": 424,
+      "sha256": "65bf5110b180c5dda1edc35cc27f58f7fc3b4b00cc7bc059dc4c352ab8514c6b"
+    },
+    {
+      "path": "src/player-tool-runner.cjs",
+      "bytes": 856,
+      "sha256": "59665eccacca7e07bacb208ad2fddabebee54750353bf204bfb43f526d7c8089"
+    },
+    {
+      "path": "src/player-tool-schema.js",
+      "bytes": 2476,
+      "sha256": "05d3c9a105bb70644d6cec685a8dc5d593292d2a63940874a2b08f2ae87f7949"
+    },
+    {
+      "path": "src/player-tools-main.cjs",
+      "bytes": 10243,
+      "sha256": "8afa8015efea45119a14f0aff2a206c387562a72c3c1a676ffc843d7898f535f"
+    },
+    {
+      "path": "src/player-tools-ui.js",
+      "bytes": 14969,
+      "sha256": "d2bc6d7ef249fa8b3ec3787f4521564d7e8d98afd825adbd3d7d9c90216a441c"
+    },
+    {
+      "path": "src/player-tools.css",
+      "bytes": 4397,
+      "sha256": "e2b18bd42d1935c1cd0b80026fb2e579e1864f14c0d31d89c976200012b6a2cb"
+    },
+    {
       "path": "src/preload.cjs",
-      "bytes": 8216,
-      "sha256": "1b5ffd6b06063af2ef13e059ab40bb9ce4ff8349b9c819f82454385645d5fe88"
+      "bytes": 9743,
+      "sha256": "78c4135d5fe1bec11e941f243f94c354a645822db4a6f351eb4c3e3150dcf37f"
     },
     {
       "path": "src/renderer.js",
-      "bytes": 169,
-      "sha256": "92fafa31caca6c6abe10dac8b6cf1654288ef51ecf7ee2e1ff3a24020fd836ea"
+      "bytes": 23,
+      "sha256": "dffc3cab94ddd022fdad10b478440f33190a8f06641ff3cac376e074ae40bf9a"
+    },
+    {
+      "path": "src/resource-store.cjs",
+      "bytes": 1979,
+      "sha256": "530e71a67f174a25393a1b9c3dee7981bc8e661f758dd5c5a260289b5d1ca6e9"
+    },
+    {
+      "path": "src/runtime-overlay-manifest.json",
+      "bytes": 7512,
+      "sha256": "9ce13910eec184c498d9adcdfac22391a1eac387ad5a638ce85b304edcb11680"
+    },
+    {
+      "path": "src/runtime-overlay.cjs",
+      "bytes": 1986,
+      "sha256": "2db7c85281e62e2a1c238942f85c893055bfc4b85b9e6a2cd673d3462cda3f58"
     },
     {
       "path": "src/shared-runtime-manifest.json",
@@ -259,23 +354,78 @@
     },
     {
       "path": "src/site-preload.cjs",
-      "bytes": 2072,
-      "sha256": "ec21558165a626bbf8279ba205be75f734825ca58a85eb8e7636d9cde717208d"
+      "bytes": 2141,
+      "sha256": "9382d4da6c91fe0f8c12db63e8cea8d27f66be3ab88c3001e50e7cea553ba8e1"
     },
     {
       "path": "src/spectrum.css",
-      "bytes": 5678,
-      "sha256": "5f8511da9a11dd969b4db5b49f39fd8ee147567f353d044093d07e95538b7e72"
+      "bytes": 5731,
+      "sha256": "b72842840e95665ca097310fb0e0893cd9c930f1cb4c3860668c5e392af0124c"
     },
     {
       "path": "src/styles.css",
-      "bytes": 125213,
-      "sha256": "201b2f6cde5cefe3321bb9a5d72ad335da844093d58fc78d3bbe1c3bd1f90783"
+      "bytes": 128000,
+      "sha256": "3cc74e3c522e9639fc3fe6dd0b4ad8a16aeaa423f9fb95e84915c652ba8014c2"
     },
     {
       "path": "src/tool-launcher.cjs",
       "bytes": 2225,
       "sha256": "ef8974261216f807db5c7f0995250c85736dcddf3b6cd909841bfef23e634c36"
+    },
+    {
+      "path": "src/xcmusic-icon.png",
+      "bytes": 50595,
+      "sha256": "1a9373d9c0ffe86bc124a737c5f7e8ae49263ab67940c70c22c5de39b405d83c"
+    },
+    {
+      "path": "src/xcmusic-manager.cjs",
+      "bytes": 190,
+      "sha256": "2193e5be30bfb759ec6f95c941a5f15dd77fe11906f4c916bd12fd9ac132da74"
+    },
+    {
+      "path": "src/xcmusic-payload-manifest.json",
+      "bytes": 527217,
+      "sha256": "d9eaf40299d98f06c0631f91860c186717f512f3b7d7da3a12a768ac624e539e"
+    },
+    {
+      "path": "src/xcmusic-ui.js",
+      "bytes": 6699,
+      "sha256": "2d966e801dea462f56e6a14670b74f44cf622a2216ff9086f7359dff98a814b1"
+    },
+    {
+      "path": "src/xcmusic.css",
+      "bytes": 1831,
+      "sha256": "a727b47ef757be5b9155f96154df08fc888d6e2f5c2b7dd150eda0dbac8f626d"
+    },
+    {
+      "path": "assets/clients/BiliDesk-1.6.2-source.zip",
+      "bytes": 5072500,
+      "sha256": "65b2b74e64292712118f15dc0ca153c8e03280dc951260274e9e63ee48c94f9e"
+    },
+    {
+      "path": "assets/clients/BiliDesk-LICENSE.txt",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "path": "assets/clients/BiliDesk-NOTICES.txt",
+      "bytes": 1571,
+      "sha256": "80f9167e0c4a06e8ff607345ed93d7e85213ce0dc709d1a34e68e64f284cd5e7"
+    },
+    {
+      "path": "assets/clients/XCMusic-0.3.1-source.zip",
+      "bytes": 9195127,
+      "sha256": "8d0bbe75874e877f80a15bf8e5906aaffadf129c3f735c769eb51b9a0b669654"
+    },
+    {
+      "path": "assets/clients/XCMusic-LICENSE.txt",
+      "bytes": 1064,
+      "sha256": "01cfa7209f94fbbc44d9b6946d94c75612cf3fbfb6950752af500ea1956664c0"
+    },
+    {
+      "path": "assets/clients/XCMusic-NOTICES.txt",
+      "bytes": 1001,
+      "sha256": "991adcfd68a6ac62f6e4534fb13043947f154e26a7ad7262d8782925dcc0f2a3"
     },
     {
       "path": "assets/installer-header.bmp",
@@ -288,19 +438,19 @@
       "sha256": "469b7f3318d18a0f92908a0b1d4d134fdcf48a42c3a5b078ad216be048c3f209"
     },
     {
-      "path": "assets/plugins/cs2-shared-runtime.zip",
-      "bytes": 67943286,
-      "sha256": "c399a013da2247af837a0be8798c68d6a174e941d348b94cde648cd4f4aadd38"
+      "path": "assets/plugins/cs2-runtime-1.0.380-overlay.zip",
+      "bytes": 18079879,
+      "sha256": "8aeb002975b480acae1f22acd11f1d4a97aaae87f595f1e46fa7496843d63e1e"
     },
     {
-      "path": "assets/plugins/demotracer-css-v1.6.6.zip",
-      "bytes": 2917653,
-      "sha256": "acfe88175564f68d869a02c687196d7f02be5756f0543463e402406894532241"
+      "path": "assets/plugins/demotracer-css-v1.6.12.zip",
+      "bytes": 2955154,
+      "sha256": "6109159c9777f7e4e71d56b3bc8bbfc885272b648c39084af7acd1d815c0bc10"
     },
     {
       "path": "assets/plugins/DemoTracer-DESKTOP-LICENSE.txt",
-      "bytes": 1487,
-      "sha256": "3b2606648961e6ef5fb460cf8414f3fdce8b886e81cba1c52fc6bb5d6abacd3e"
+      "bytes": 1489,
+      "sha256": "2fa4d4ed3848686d9b0238040bc85db1c91b33c7162228904eeef24a1c175051"
     },
     {
       "path": "assets/plugins/DemoTracer-LICENSE.txt",
@@ -314,8 +464,8 @@
     },
     {
       "path": "assets/plugins/DemoTracer-TRADEMARKS.md",
-      "bytes": 1156,
-      "sha256": "e70342c7716bf2f1040b966e5fc1dc8bacfeb31f1af3e170f37a33f69e2776de"
+      "bytes": 1182,
+      "sha256": "253a9c95cb0c960bdaf3adf31e93a5802fa181db7c0ddcbc016c020fe3c1799c"
     },
     {
       "path": "assets/plugins/InventorySimulator-LICENSE.txt",
@@ -323,9 +473,9 @@
       "sha256": "6a86b76d8990a9ea81a839d4426971831e34a4413ce9aa50ad052b1c21e638c8"
     },
     {
-      "path": "assets/plugins/InventorySimulator-v3.7.2.zip",
-      "bytes": 83592,
-      "sha256": "a50f1a8c4157ff7f613af59f0e6a4268afe6a1f858431d15a4e6090cdb32125a"
+      "path": "assets/plugins/InventorySimulator-v3.8.2.zip",
+      "bytes": 83861,
+      "sha256": "7e310228ab4852e54c82d8c21a21f913cde946cc7aa149dab7c224ce6781d1ab"
     },
     {
       "path": "assets/rain-alley.ico",
@@ -348,6 +498,11 @@
       "sha256": "cacb1818a07ad405a4247d68f9af8b280e0b67dd42aaccb99bc914c5d503a1eb"
     },
     {
+      "path": "design-system/default/pages/player-tools.md",
+      "bytes": 625,
+      "sha256": "20cbd26ec98884bcbca9bbbfc9604db733116c7ccfad8f4128409bd30c3304a8"
+    },
+    {
       "path": "design-system/default/pages/street.md",
       "bytes": 1034,
       "sha256": "b7d9b21b9d8d2820ba251aa98efc9ab1364d610d1a24500cc67fbea290941162"
@@ -356,6 +511,16 @@
       "path": "design-system/default/pages/web-bookmarks.md",
       "bytes": 1059,
       "sha256": "54ad780764126e95bbfab9e14bd876d7b91e2f693b58d316695da04251c36c83"
+    },
+    {
+      "path": "design-system/default/pages/xcmusic.md",
+      "bytes": 426,
+      "sha256": "26f554c62359107f7718f157a90599163dd7133c95a9914b198f93c1d777c9c4"
+    },
+    {
+      "path": "docs/BiliDesk客户端集成开发记录-20261105.md",
+      "bytes": 2287,
+      "sha256": "48c7a17fe62f91085aa950b82c0b2442d9ec9ddc92c2bdb5b831a1fa4325e81a"
     },
     {
       "path": "docs/CS2卸载开发记录-20261101.md",
@@ -373,9 +538,24 @@
       "sha256": "1898bcf650688c2f17eba252b8930af83904d93fbd7f31d58d7a9848afbdca49"
     },
     {
+      "path": "docs/XCMusic客户端集成开发记录-20261105.md",
+      "bytes": 6769,
+      "sha256": "b90469dd94cc7639caa0cf7014f81f052047c783d16649205adffaf045f53e9f"
+    },
+    {
       "path": "docs/优化记录-20261102-工具跳转与Demo管理.md",
       "bytes": 2176,
       "sha256": "b2ce41191bee34a9e3af298e417ac148a02cef57adda4d11ee05d8f69d3f170c"
+    },
+    {
+      "path": "docs/全页面炫彩交互动效开发记录-20261105.md",
+      "bytes": 4253,
+      "sha256": "7e93654feeb1c93e9ebd3384c0f649aae58588e833b78344cab4f7ca165131ed"
+    },
+    {
+      "path": "docs/固定标签与全部标签页浮层开发记录-20261105.md",
+      "bytes": 2744,
+      "sha256": "55080220152499652e297b63eeea8cc20539dec5a81c81d23f9ee5f3127eadc0"
     },
     {
       "path": "docs/开源说明.md",
@@ -398,9 +578,19 @@
       "sha256": "a1082d88f8caee468de5073c1ada3e8b417ab463663f17cd6e703c4e9e91a34c"
     },
     {
+      "path": "docs/设置独立标签开发记录-20261105.md",
+      "bytes": 2784,
+      "sha256": "936a32e584dbe7d2d7a0c39a6458bd7708f67f653a1a6e0a0b31d7f1beb9a70f"
+    },
+    {
       "path": "docs/部署交付报告-20261103.md",
-      "bytes": 1949,
-      "sha256": "d7c0373079a66c2117d02011806a0f8c05854accf71ca28f6c461a1aec4f771d"
+      "bytes": 2312,
+      "sha256": "3e88613aefc6cbade68b589ff89b53ea405e8de97edc831602b5510c4f0fa70b"
+    },
+    {
+      "path": "docs/部署交付报告-20261105.md",
+      "bytes": 4399,
+      "sha256": "bd09fae791fab5dec03d5c82af95feb56aad949b0e99a6dd0c84f4e9c13b5e24"
     },
     {
       "path": "docs/饰品工坊与网页跳转开发记录-20261101.md",
@@ -408,14 +598,2599 @@
       "sha256": "11d00b53c22e08d73beedd38cfdb14cdaa89367ddb3b640536ad4beca083f19d"
     },
     {
+      "path": "vendor/BiliDesk/.gitattributes",
+      "bytes": 992,
+      "sha256": "e9e0457d765fc5bab7fdc18b4138e6e33d4ab39271efdaa249167ccd3cba2deb"
+    },
+    {
+      "path": "vendor/BiliDesk/.gitignore",
+      "bytes": 459,
+      "sha256": "328bf7cced0e8b7dcdbc860d7ebd5442b4e057a134956af91c80da543966e466"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/app.manifest",
+      "bytes": 864,
+      "sha256": "82e6287884a9231ce803448b8d92d707ecf082fdcff2b188385d861ac802613a"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/App.xaml",
+      "bytes": 5041,
+      "sha256": "27d8ade6afcf86293abfa593d9c2d45b4866c066d72bb5fbc46f0284e938200d"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/App.xaml.cs",
+      "bytes": 13678,
+      "sha256": "327e0d1b499806aab18137882f37a3fd9585e091061e8c5d3e21a8346cef67ec"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Assets/app.ico",
+      "bytes": 183005,
+      "sha256": "905f645b018b6592a692c18e9d7b82dd7b1e532e8fd0e0429aa497983333184c"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Assets/app.png",
+      "bytes": 1091220,
+      "sha256": "22da1cb0ce9bdb8d13cf5c32a8cf2635cf4e08f4f20f03da8a90ea47bce3fc5c"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Assets/share.png",
+      "bytes": 15708,
+      "sha256": "2b4c36e489f259c1d0d4e153ad01ab8dca3496f22e0e25be49111a2559c04bc4"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/BiliDesk.csproj",
+      "bytes": 13258,
+      "sha256": "ebb106de34d3535d2f00e4b08b4dbda72341d744ab8cb74846ee71898266859d"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/ByteSize.cs",
+      "bytes": 1331,
+      "sha256": "89b98ac5a7784172ea123288ca9d04bd96fd362bdc00d1c9f222899d9ac73fc5"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/CardWall.cs",
+      "bytes": 16972,
+      "sha256": "a7a0ca06d8a7b9d231db9675a84facce51555a22a44bd10c8298b4bf8cc216c7"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/CardWallPanel.cs",
+      "bytes": 34479,
+      "sha256": "3a47dbe7c383ac7994065043dc31278327dc1a0823f4e61bd8984161410806d1"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/Converters.cs",
+      "bytes": 8213,
+      "sha256": "029746d301c9f4273b159e34e352c8db1b0cfc30e16deb1f5d7cc9e33da1292c"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/CoverLoader.cs",
+      "bytes": 30726,
+      "sha256": "7454578fed12756da601b211c3368166143fbbc9fb4b3f68829183ec05185654"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/DanmakuKeywordFilter.cs",
+      "bytes": 3540,
+      "sha256": "18ccf91fc2d8919e634750840e0f5698981fdce2c07e59558afe9a04213945c3"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/DanmakuMotion.cs",
+      "bytes": 6887,
+      "sha256": "b89b1d6d451f621f059fd917ab212ff2f6d7c7c0aa1010f819eb973c6f03127e"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/DanmakuParser.cs",
+      "bytes": 8290,
+      "sha256": "25e1cf0c48f7a80a987aacb2af50edc33a53681c2497d9cfe4f853e713147160"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/DashRemuxer.cs",
+      "bytes": 38949,
+      "sha256": "6d6d31e495711c144ff0c33ee2de7008f637aafa113e77af93f5144799614e97"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/DesktopTint.cs",
+      "bytes": 10301,
+      "sha256": "8197c4bf891e68fa40f5155dda3dd26ca7d20d17dc8a97e4bc5668b8c6d415a9"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/DisclaimerText.cs",
+      "bytes": 6080,
+      "sha256": "d22526d96d23b8abe1ec17cc436ac02c2cdf2f9ac23dd354831d98a1847e7240"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/DwmInterop.cs",
+      "bytes": 29334,
+      "sha256": "b83107901eb26b7dde376d4aa39e9b44b5b67013b420b25df1523ca471abb63c"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/FileNameUtil.cs",
+      "bytes": 2250,
+      "sha256": "7859db1034d6a55409711b47237074f37f4afd2d46ac6af91738b411c231493d"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/FilterService.cs",
+      "bytes": 21051,
+      "sha256": "e7a5d0ae2d25370a9e67bad6185357c29282da46e28f2ef4c872003e6cf9bd12"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/Hashing.cs",
+      "bytes": 928,
+      "sha256": "f98a59b16a0a2004bceca8fe2313e5cebb913951bd10e4150955c8666629da85"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/HttpDefaults.cs",
+      "bytes": 1770,
+      "sha256": "aa8fc3d9254a76b733bae574b9ba612956b565a9a4bd322bbe1e2e1bbf8e66de"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/ImageDownloader.cs",
+      "bytes": 3255,
+      "sha256": "c4c292ee96af64183a4e1f8018d2ef3b6aa6549b41f7b9d2689244d5ef434535"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/MediaActions.cs",
+      "bytes": 2491,
+      "sha256": "5fb742296ca59c79e3df5ad4d44b6f1039dc00397770668509e38a2bac81debd"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/MemoryTrim.cs",
+      "bytes": 8263,
+      "sha256": "03c9b019bbeeb6a6aaede3cf960c4adb28fe1a630bd37112b3fcc6d340a9cfb6"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/MentionParser.cs",
+      "bytes": 5425,
+      "sha256": "2c715af1e688ef5e9ca314e5229b0166d660b5ae5e37bdc21cb80264db307e7d"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/MiddleClickAutoscroll.cs",
+      "bytes": 11489,
+      "sha256": "7d33debef78bf460b5195cb0987f83e1cb6a7344d89c1914c94d8b8cb655b5ef"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/PageTransition.cs",
+      "bytes": 4796,
+      "sha256": "066433f3d26031587797277a8f179c621ae1227c9b27fc5bed1980a7dc5b9265"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/QrCode.cs",
+      "bytes": 19586,
+      "sha256": "d08180e174d48977b1b86ddee423a511f70a330ccb82de8f4d3b603cd6d1107d"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/RelayCommand.cs",
+      "bytes": 2009,
+      "sha256": "804ea760e8c766e65d9924e3ebdca1fdf81923600dfa546eab55c4c66a134b60"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/Responsive.cs",
+      "bytes": 11167,
+      "sha256": "0023d6837c4275f49637acdaf550c6d829397708204d627d634f99c973b23fb2"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/SmoothScroll.cs",
+      "bytes": 5789,
+      "sha256": "ea671adf6d92c4d8b399d52fd79aec0e7dddbc35083b66b99ea2b393b385ef5c"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/ThemeService.cs",
+      "bytes": 38934,
+      "sha256": "39689605314b09d6f7ac7c8a6edf851bf56c0006eb8d6c9ba61a65acd822e73b"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/ThemeTransition.cs",
+      "bytes": 14139,
+      "sha256": "c4d511851499fbd0d75a07eed297b54b05efcd651f7a381f45a01da9ccea8294"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/UiScale.cs",
+      "bytes": 6138,
+      "sha256": "319633883c7033e28a3ec30920116d7df0072f716f0f91de8cbfd231bf7e465b"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/VideoBackdropInterop.cs",
+      "bytes": 13115,
+      "sha256": "2a8e16a3841eaf8cdcb4ba5c2e51d9d2a90e56ce6c2c07d7f001fcd2efb63650"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/VideoDownloader.cs",
+      "bytes": 6274,
+      "sha256": "b84b63620b77f9bb8f790e7a2aca336238d7238ba855449eb3152c6261908aa4"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/VideoList.cs",
+      "bytes": 2441,
+      "sha256": "635f57ce0907222aca726890b30a16353aafc0efd1a636b09c0a885e31e8630a"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Helpers/VisualTreeUtil.cs",
+      "bytes": 996,
+      "sha256": "3f0a57b60a62c3a2065df7e6070241fa26cfaae3bc18e9e67936095035f9ee6d"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/MainWindow.xaml",
+      "bytes": 29452,
+      "sha256": "2d581ef0bc7f7a1b280c3d20fea7fbb54a362129f9afdaf40f9bb67b2cccb8f3"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/MainWindow.xaml.cs",
+      "bytes": 25641,
+      "sha256": "8c03568cb0482536f8af687da7241672a4e2d35d2667c67b651747ad965ff37c"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Models/CdnOption.cs",
+      "bytes": 4085,
+      "sha256": "4f533027c0b9e4d58548d0ca6f7528d9c6ff2e7232d73677359dbd9edb3ce7ed"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Models/Models.cs",
+      "bytes": 82997,
+      "sha256": "41154ec5d1847ba8eedd4be5efd7afc2b3d221ece2295f6f90f9483324daace7"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Models/QualityPreference.cs",
+      "bytes": 5634,
+      "sha256": "04c3330b26afd3c1cb8e48d45abf2c5a7d13e090a87f7d4c8bee4db0c42d1458"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Properties/PublishProfiles/FolderProfile.pubxml",
+      "bytes": 971,
+      "sha256": "467ccf41e070e2b3715c2ec295e92f1d7c9f2f66326444aa57b77e7ddec1a5cc"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/ApiClient.cs",
+      "bytes": 275360,
+      "sha256": "8ba60ab35510f95c7993ebbbcd9096eab315323b6ec3a7077df0bb5ae92ecc43"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/AppPaths.cs",
+      "bytes": 7971,
+      "sha256": "5d0c12109a6dec8964855a0845480ece6748b4c1db44da6ea99d9765fd6e375e"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/BufferPolicy.cs",
+      "bytes": 8594,
+      "sha256": "221f24be956c3514f9a448164d95e2547a6869f491805d78101b06db78160e70"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/CdnService.cs",
+      "bytes": 25149,
+      "sha256": "1f086804e7485d61e049de291e1415378d5b9ee67aaf8d90ba1098af971f5f98"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/DownloadProgressService.cs",
+      "bytes": 5412,
+      "sha256": "762a2095b6c79fdbefb876ff10ab22e14c2ade37763f5e854981e79a092a4063"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/DynamicSeenStore.cs",
+      "bytes": 4796,
+      "sha256": "d1ec41531a80d42896b6a9b81d9d566eb9a9a483bd6bb3d1c39e08a54f529fb4"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/HistorySyncService.cs",
+      "bytes": 4428,
+      "sha256": "922d2017c401c6fcb7f7f3a2bfe2f3915b307857283da5599960c0e0287b8714"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/NavigationDispatcher.cs",
+      "bytes": 6040,
+      "sha256": "89797285d31285e195cb15cf27b8051be56e95d4ccdedcafb98e9718afc16587"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/PartitionCatalog.cs",
+      "bytes": 76370,
+      "sha256": "3b333ba5961004d09247180fa806edea56b836aa71d9c8a7528022c41cd6494c"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/PassportService.cs",
+      "bytes": 8645,
+      "sha256": "b8466fa18c2ae541a499b0c7a5a6c9878738421ddd32610b56491dd2ef9d426a"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/PlayerService.cs",
+      "bytes": 4006,
+      "sha256": "f4e32aa706672134281d7b59a9e6b8802b40b13da5dddc5160d009a2c9f2d148"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/RainAlleyProfile.cs",
+      "bytes": 1078,
+      "sha256": "032ef5ea156c45fc926a3ed9c6223524619690879d971770cb30624b188ab9e8"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/SearchHistoryService.cs",
+      "bytes": 2899,
+      "sha256": "e9e0acd67c0e392809c1f2cba26008fd63dce0383b109bb160a5b0e83beae568"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/SessionManager.cs",
+      "bytes": 18582,
+      "sha256": "f7f2f02ae39705e55a0d8a7ab33251dfe39017374a0aec4509f83553d1d8b6ee"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/SettingsStore.cs",
+      "bytes": 60289,
+      "sha256": "5075a73a2e98fcf25f1f734b83f021291bc7c67d114dbef591ea00d683d435b8"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/ShortVideoCache.cs",
+      "bytes": 17217,
+      "sha256": "9e5c4535b478b771f3c28e153f9deb9860f12e348fc1da59664bfb3029e80e3e"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/SingleInstance.cs",
+      "bytes": 5924,
+      "sha256": "2b5b47b0f9c1815db125a89807528cc710e5ea805b2f1098c119967405134d14"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/SponsorBlockService.cs",
+      "bytes": 11396,
+      "sha256": "847af623a3601215960e7ce2ae295a407bf7ba16eb6a6c6f833ac8fe551be813"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/Svc.cs",
+      "bytes": 1505,
+      "sha256": "f11d0f3f73b5b5972ae4069fa89b72de8460baaab18875108ff281ec782ec9e6"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/SvcWindow.cs",
+      "bytes": 820,
+      "sha256": "0fc383f50c940ba7dc2d2d084c62c07636e16b985330454ceb8d7ffba71dc4d7"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/ToastService.cs",
+      "bytes": 313,
+      "sha256": "7a5961c8f73d892751a411ba6717ac55c1eb7afa771695065c44e234eff74212"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/TrayService.cs",
+      "bytes": 7596,
+      "sha256": "f1df3763c7e9edbd2c2de713e528a3d2ae04b6c8e9ba2796f61b7ff502d37fa7"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/UpdateChecker.cs",
+      "bytes": 7947,
+      "sha256": "6ddec635723f1e7a5e0387e4156d8c986b13430e0a39cab70411e6ab24107aa5"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/VlcCore.cs",
+      "bytes": 6871,
+      "sha256": "952d50803dfcb7e0e6bc6437680f29801b1e802d90211bf4cb5bd8cca35f351e"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Services/WebView2Service.cs",
+      "bytes": 17834,
+      "sha256": "3c9785ad1a36f15f9f9dbaf803c256a7009dfca8e81822e650c251397b717463"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Themes/Colors.Dark.xaml",
+      "bytes": 5114,
+      "sha256": "e9eab8e3ff4fa1b8a13ac0308a29197f1784b7fdfaaf7388c8e342d05bd96b7d"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Themes/Colors.Light.xaml",
+      "bytes": 6862,
+      "sha256": "91ebaf0d03cc128225a1a5d271ccc88e6f56e7e9f593908a88f04b7ac5181ade"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Themes/Styles.xaml",
+      "bytes": 133127,
+      "sha256": "63b331999d66db220406bddb4fa9a4f5e3c13b7fb3c69b4ef61c7b56c477a4ed"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Utils/UrlParser.cs",
+      "bytes": 2833,
+      "sha256": "088ef8a47bc5ad701d5b520ef5a92b1baf2e026dc2cdd99675b49e19dd699585"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/BangumiViewModel.cs",
+      "bytes": 6377,
+      "sha256": "0398b1999d118f187360f57e4929d8c252505b6fa8835a8a44ae7f9468e7de53"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/CacheViewModel.cs",
+      "bytes": 7355,
+      "sha256": "6141ad7f70f750e7702892e6d33f26d09ab2b07e41aaaca8d30bf603545fa88a"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/FavoritesViewModel.cs",
+      "bytes": 18436,
+      "sha256": "6612d0177b436820778d29f43cd72caf3924eedbe4ad57aaa8322fa65455a488"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/FollowViewModel.cs",
+      "bytes": 24299,
+      "sha256": "1be4cb089413d9c6f82cdf4b06b606434957d1bf828cbb8afc311c05a0f353e9"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/HistoryViewModel.cs",
+      "bytes": 16320,
+      "sha256": "0e15a52ab3116cdc33015cda6cf087f536ce069489196461f1fcf93ff9932027"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/HomeViewModel.cs",
+      "bytes": 35940,
+      "sha256": "3d15a770f752ff1d7858960329a5e3020fc27b42c8b99739d6a454bdae0c0e12"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/MainViewModel.cs",
+      "bytes": 4777,
+      "sha256": "e7c92cc713079a531c1e04c70cd6bd49c0c3f11721ebef15ceeff5fc7944fd4a"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/MessagesViewModel.cs",
+      "bytes": 7924,
+      "sha256": "c80666d9c5f5db754364e27c3641ef42795cec0e917217d3eef8c6dae970d9f2"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/MineViewModel.cs",
+      "bytes": 10405,
+      "sha256": "488f53f45f1e8a375f68f5ed08ef3188c09e2eb2de24860c863c8a3e1ac753b6"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/ObservableObject.cs",
+      "bytes": 674,
+      "sha256": "44f4e7e0bcc33d6f8c74763c016433341ad9bd2f38f37bc2ec4fc238bf0b3322"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/RegionViewModel.cs",
+      "bytes": 9295,
+      "sha256": "615273f09a7c1e100f38882abfec36993c1ded480a0fca6e7919da0cf2e616ef"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/SearchViewModel.cs",
+      "bytes": 15293,
+      "sha256": "ccba97fb92689b4c81e84d0a4658ea170dc2027d7ce13c11ad9b8d997fbd3253"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/SettingsViewModel.cs",
+      "bytes": 66363,
+      "sha256": "129afe12f7cb2c014271e7d5e22b03f8b073cb3011d0cf53e3a3529ac5a4f021"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/UserSpaceViewModel.cs",
+      "bytes": 8772,
+      "sha256": "363b6ba3af42deb1bd539ac99cfcafb74a4f423b6932297912a7636615888877"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/VideoListSelectionViewModel.cs",
+      "bytes": 7957,
+      "sha256": "3acd4f4376d90f5b48385c5d5d83a58919cdbe073829862c39942ff546a334da"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/ViewModels/WatchLaterViewModel.cs",
+      "bytes": 13564,
+      "sha256": "6b6093d02121ac5094a3ff220aa2f7b2f6196b9b7bdc8eb25a37d9a0f94cc49e"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/BangumiCard.xaml",
+      "bytes": 8200,
+      "sha256": "28e2e009f81fe30f97e44a81515b10e2a94d71c31665a97f693d8f11b7711ffa"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/BangumiCard.xaml.cs",
+      "bytes": 4640,
+      "sha256": "15e2bf54a0b128d5f222f9effaac333fe212e54211570ade96799db06c5161c7"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/ColorPalette.xaml",
+      "bytes": 7458,
+      "sha256": "22d65c2ef30e1d1d6f45ba0a8b9fed3da0f0377984ed6fd27ee40f470f1df294"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/ColorPalette.xaml.cs",
+      "bytes": 10831,
+      "sha256": "4305a659b53fbd7698721b477673e52bad989452c0db309672d115f3f3925743"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/CommentText.cs",
+      "bytes": 15233,
+      "sha256": "52c746fb2116c1270f02088e110e17877ac5f6fb422828660740d560849e1f63"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/DisclaimerView.xaml",
+      "bytes": 2923,
+      "sha256": "318dd73a66ed64ae85d979e9351a4f86e9eed200932c180636d91595fd4f7512"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/DisclaimerView.xaml.cs",
+      "bytes": 268,
+      "sha256": "d4d8ce37b42d5b323e4689e25722ba419bdfd0c8320545a71a4a4489c9729ec8"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/DownloadProgressBanner.xaml",
+      "bytes": 1819,
+      "sha256": "faa2d9ac491074409d1e8525964c36fef5a3a27215156a68e2075d50342af310"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/DownloadProgressBanner.xaml.cs",
+      "bytes": 4127,
+      "sha256": "3fa60749434b677211741d4e8f260b91c034893d4682d125e767d68b52642643"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/DynamicCard.xaml",
+      "bytes": 10203,
+      "sha256": "ae3491d08acf8fd8b0b52ad9023b2d9182bf62c85d04c5226c3a8ef7d00be0c1"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/DynamicCard.xaml.cs",
+      "bytes": 5412,
+      "sha256": "c928c3b986a8464bc6c1350dd17e9b96e89d534a668e695d5076c516cbce0d17"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/LoadingRing.xaml",
+      "bytes": 1303,
+      "sha256": "80325dffc1ee918e8f713b3174025a6f697d1405a414b5a93cbefa723f9023f9"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/LoadingRing.xaml.cs",
+      "bytes": 169,
+      "sha256": "8b8f95cb17cda7f8c05f1b0cc8f011913fcf2bbd48f611d03721bb2d9c909b48"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/VideoCard.xaml",
+      "bytes": 17528,
+      "sha256": "262cb1f90ca3f18fc6e2a6ff7d25991d97ce00bd94c2c2fe9e2f56b6b1eb0182"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/VideoCard.xaml.cs",
+      "bytes": 15652,
+      "sha256": "32a88b24f0b1c84ad1f293db163b6332b023fe9dc8f25362d1db3ca9ca9e9047"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/WindowButtons.xaml",
+      "bytes": 7821,
+      "sha256": "a154c14c7684f4176824ac8600858338ac1efff86c855663900b9306ed6c0a89"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Controls/WindowButtons.xaml.cs",
+      "bytes": 3100,
+      "sha256": "4420c6817108774b83355418d4732ed860ad5164984b8347ed031902e3b09cd3"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/FluentWindow.cs",
+      "bytes": 36242,
+      "sha256": "ffa3fdcf9c18c1b4b4dd0d687f85b58eed08c8633c70c4e4b5ca39d83edbc02c"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/BangumiPage.xaml",
+      "bytes": 12397,
+      "sha256": "6c7b3b55cf1a61c19f45215b5fa1ffe09a853cb55586861322755160a9b0f179"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/BangumiPage.xaml.cs",
+      "bytes": 1228,
+      "sha256": "17e7a68f4d500a85698cd7fc7988dc30f53d38d6d3af3511df35e4fe75d9bb4a"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/CachePage.xaml",
+      "bytes": 11323,
+      "sha256": "946a5ba4f4e89a28651690f5d345be1c8be7dce71fc99edd3094af78f4b32573"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/CachePage.xaml.cs",
+      "bytes": 2199,
+      "sha256": "d2bba93ad60854266c46a5954789f46dc8ebe97c3a9a7da114daf40059bed666"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/FavoritesPage.xaml",
+      "bytes": 17240,
+      "sha256": "efad511022976fab42ff350eca4e4399bdb37dd1d871e71d319473d2a79569d3"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/FavoritesPage.xaml.cs",
+      "bytes": 9017,
+      "sha256": "d2a9dbc9ad7483c66fbaaf5eacc1f53fc61b0d606b00a1e7e16644bb8ec69caa"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/FollowPage.xaml",
+      "bytes": 36872,
+      "sha256": "f4f79b978499993bab9fe13e02be0a5233bf65f6b79f5bddab9f82a9b3206b04"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/FollowPage.xaml.cs",
+      "bytes": 9665,
+      "sha256": "55acf43b05321521cae35b6c5b0fa2b1967b0a4348d621229634b48802b21a52"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/HistoryPage.xaml",
+      "bytes": 13804,
+      "sha256": "c1cdd85c50bf26d789b40a2b1a04b360dd7491a51a0f57f49af1248bc4a43c52"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/HistoryPage.xaml.cs",
+      "bytes": 3275,
+      "sha256": "ad10b48cc32e3d7fe3a6a7522e37ed1baa37905adbaeb12989205dc437c31024"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/HomePage.xaml",
+      "bytes": 62419,
+      "sha256": "ecf27ce37d108a4e8e4d8564985d812dff6ecb96e75334d65651f647ffe9cdcb"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/HomePage.xaml.cs",
+      "bytes": 60770,
+      "sha256": "9f8d527a2b6678bde48f3dfc3c37149431f47985c6dbcb7c602108d1b1ad5cfb"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/MessagesPage.xaml",
+      "bytes": 21493,
+      "sha256": "31d16faf8466c4d83a23ba41195813814f279d688bb447835fd3045fef4d6683"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/MessagesPage.xaml.cs",
+      "bytes": 4514,
+      "sha256": "2efdbd68b950e8a4532f1c62855d56341dda3771f91c2c5b6e273afe63236378"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/MinePage.xaml",
+      "bytes": 21696,
+      "sha256": "dc523adfa506ccfecaddab106792dd152af4a600d30da6e1e669c842b190f26b"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/MinePage.xaml.cs",
+      "bytes": 2053,
+      "sha256": "2d4ce0ad61b8aacc6541519ec662c5962885833eb2e875eb85614dda73cb6b80"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/RegionPage.xaml",
+      "bytes": 9563,
+      "sha256": "647a6e1157be5d808e48cd05ebef39cf93916d56d855ac6a96ffe2d7d47f2a00"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/RegionPage.xaml.cs",
+      "bytes": 8126,
+      "sha256": "3ced9845725c10eb4759c351a0b67b2e9e9e7d2ec6fdf3e6b88b1e3176e52795"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/SearchPage.xaml",
+      "bytes": 20466,
+      "sha256": "93f82861d79d8d73aead87464bd6c5750fbc3d0396ab3f1a883748da80da66b2"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/SearchPage.xaml.cs",
+      "bytes": 21736,
+      "sha256": "b954858b1f599d756432058c9f93abffc7f751ac7196deb979269e0005b0e238"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/Settings/SettingsTabs.xaml",
+      "bytes": 71496,
+      "sha256": "5c0575c14eae357a09a40d46b40a40c15275c8c20be79a6bbe847640aa5acc67"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/SettingsPage.xaml",
+      "bytes": 5963,
+      "sha256": "6e4aed49d43551857a99ca73e3ce72f0202a72de2f129b88cf1eb553fe124e74"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/SettingsPage.xaml.cs",
+      "bytes": 5300,
+      "sha256": "062d39b3fa26c7b00c47c236061f093e1b43d589d1a0ac33b024a99c6bf61b86"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/UserSpacePage.xaml",
+      "bytes": 9977,
+      "sha256": "1bfebb75b737b529e9f2be889a000d323dc9634bd3ecba4952a8acf77eb9ff9b"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/UserSpacePage.xaml.cs",
+      "bytes": 3227,
+      "sha256": "6550c9d3ab7bda5f2547f5b96136fddf270ffaf8ae220805fa49c46c1b2d111e"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/WatchLaterPage.xaml",
+      "bytes": 8691,
+      "sha256": "a7d4bd5cd750964faf5005e55fec9a8682adde7543cb16f6adfad2c65892ba62"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Pages/WatchLaterPage.xaml.cs",
+      "bytes": 2877,
+      "sha256": "ac3a3887cf89f129bab554b2d988951c62668d66ba9120c591cb5640ce0a80b6"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/BrowserWindow.xaml",
+      "bytes": 1276,
+      "sha256": "daa33b5eda31ac67dbb7262f5bd7a34a3b3cc62b56bd6f54e89853f8f61988f9"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/BrowserWindow.xaml.cs",
+      "bytes": 1092,
+      "sha256": "3c3b3d867759be07b644cede2d2252ce11b9330025f1140ef89171c45b7208be"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/CoinWindow.xaml",
+      "bytes": 5504,
+      "sha256": "255f17878a412768e50c88f564cdb62080f1e0e878d2606e200338d2ea86a891"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/CoinWindow.xaml.cs",
+      "bytes": 1489,
+      "sha256": "5a11d0f2fafba682841818592dc22180378145acef72ba7a85e6d2217ba4482c"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/DisclaimerWindow.xaml",
+      "bytes": 3056,
+      "sha256": "e98c822bf1073446adbe2457d869af13ac70e764601a6a5aabd2db5fef8b8a2e"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/DisclaimerWindow.xaml.cs",
+      "bytes": 2003,
+      "sha256": "1d63c706caca244e0d4af7060f12efff60aa3f4de9755c0453f8415829b0089f"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/FavFolderPickerWindow.xaml",
+      "bytes": 7310,
+      "sha256": "0f80e6400472cabd3d66ee8e8fd4eba1e67ff265b0283efa687373cb9f84e33f"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/FavFolderPickerWindow.xaml.cs",
+      "bytes": 3784,
+      "sha256": "95b069441266f6929aff642208eae607a5637133b66a77b2c2fe507b598d53a6"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/ImagePreviewWindow.xaml",
+      "bytes": 4466,
+      "sha256": "4b913bcb2f8963023a14c0fca2416326c4664b63238a3818b7e6379958313ef5"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/ImagePreviewWindow.xaml.cs",
+      "bytes": 10621,
+      "sha256": "f01077d28df9f58a6e63ecccd54c1d5db634666196f181fe19ae51ca0dd48143"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/LoginWindow.xaml",
+      "bytes": 15421,
+      "sha256": "4c1c995ac4d44a565296e5a3ee7273da7850d62a920c8741bd22b6b073eed0a5"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/LoginWindow.xaml.cs",
+      "bytes": 33395,
+      "sha256": "de65e60016bf0f5f8b952bf64e5558e000af66264cd4f16e4d2d649d7ff18f53"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/PlayerWindow.xaml",
+      "bytes": 219596,
+      "sha256": "dff9deb24e74b3514e621695c20951dcaaa3d0b9bff621744c8bfd42d823bc0e"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/PlayerWindow.xaml.cs",
+      "bytes": 488124,
+      "sha256": "1830f8caa239d8e27a3208a74e4110f3a3de3fe896d14ceff703e6cc9cac68bf"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/UpdatePromptWindow.xaml",
+      "bytes": 3023,
+      "sha256": "bd3499df92436fe6c242951234bed3919b8b911331800168e87e7b5805f47e84"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk/Views/Windows/UpdatePromptWindow.xaml.cs",
+      "bytes": 1802,
+      "sha256": "a1eafe4f821db70d876093cab9a792c1df7e49167e159229ba88a838e26bc8b0"
+    },
+    {
+      "path": "vendor/BiliDesk/BiliDesk.sln",
+      "bytes": 974,
+      "sha256": "69f4f26b3dd04dd7e703b4a76f05e66e7f3b8b01d83ca9c05814693848ce4654"
+    },
+    {
+      "path": "vendor/BiliDesk/docs/logo.png",
+      "bytes": 121558,
+      "sha256": "ceb5522c7a34d713d3fd590875e57e9fbdde8afa766dd1bfc94e1182f90af232"
+    },
+    {
+      "path": "vendor/BiliDesk/docs/logo_rounded.png",
+      "bytes": 121687,
+      "sha256": "965043df1cfc19aa1f222e86233b22977ad92bc4d7eb77d6edd14b247757313b"
+    },
+    {
+      "path": "vendor/BiliDesk/docs/screenshot-home-rounded.png",
+      "bytes": 1976030,
+      "sha256": "0b50f77359b5394af15c5416bceba95a129411b14f9804c1caf514f075d0505a"
+    },
+    {
+      "path": "vendor/BiliDesk/docs/screenshot-home.jpg",
+      "bytes": 375106,
+      "sha256": "75d1e928050df307887e816abd67ddae11ceaa449cf308023b89fb66ef6b6fcd"
+    },
+    {
+      "path": "vendor/BiliDesk/docs/screenshot-player.jpg",
+      "bytes": 264343,
+      "sha256": "bb27928e75f333b59ad512b69f370d02616dd5030576ba90aa61b8ca029f317e"
+    },
+    {
+      "path": "vendor/BiliDesk/LICENSE",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "path": "vendor/BiliDesk/nuget.config",
+      "bytes": 442,
+      "sha256": "8d730dec7dff917947d17baa4306c9bcf2c9d59fcbe9ea847ee722908175d919"
+    },
+    {
+      "path": "vendor/BiliDesk/Publish/installer.iss",
+      "bytes": 5203,
+      "sha256": "c7b3937b58ebcff6325c2d0817658d8403d1d7807ab681ed98addf4928cec543"
+    },
+    {
+      "path": "vendor/BiliDesk/RAIN-ALLEY-INTEGRATION.md",
+      "bytes": 1144,
+      "sha256": "d5accf017ffe229f9e412eb20286acd40dfbd970afe292c19f304213e8ef372c"
+    },
+    {
+      "path": "vendor/BiliDesk/README.md",
+      "bytes": 3622,
+      "sha256": "cb1931bf680a336bde9545fd35e1c2545d61e656de3887172c067f66112f2c92"
+    },
+    {
+      "path": "vendor/BiliDesk/third-party-licenses/LGPL-2.1.txt",
+      "bytes": 26419,
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95"
+    },
+    {
+      "path": "vendor/BiliDesk/发布.ps1",
+      "bytes": 7312,
+      "sha256": "56704afa368b611f25c5782d11fcbc7cfed33670e3c13d73690bd344b9a5f54a"
+    },
+    {
+      "path": "vendor/XCMusic/.browserslistrc",
+      "bytes": 40,
+      "sha256": "00e4c16758c933c5411680decad48410c2e608760544315399a435b14141e419"
+    },
+    {
+      "path": "vendor/XCMusic/.github/workflows/build-ubuntu.yml",
+      "bytes": 775,
+      "sha256": "e2108bc4f531d73d6a4e11673926ad426efc15605f7cc935df35f8dc9fce331d"
+    },
+    {
+      "path": "vendor/XCMusic/.gitignore",
+      "bytes": 332,
+      "sha256": "cc4dfbdfb268457ecc60f6d34f9571ed558d25e369e6acb29f7a3a43d0e71418"
+    },
+    {
+      "path": "vendor/XCMusic/.hintrc",
+      "bytes": 148,
+      "sha256": "c9392b165560dda3685013558e322f985bc7c65f0999e99b3f36de58df7e745c"
+    },
+    {
+      "path": "vendor/XCMusic/.prettierrc",
+      "bytes": 19,
+      "sha256": "65d6778df0cae52985712a7bf2eeafca581b535b87f34056fb0d156f71ff8fc5"
+    },
+    {
+      "path": "vendor/XCMusic/babel.config.cjs",
+      "bytes": 352,
+      "sha256": "48e588cada6f7b92379124c69d1e0d1e44d8c9bc3813322a675ebb87d5edc28d"
+    },
+    {
+      "path": "vendor/XCMusic/CHANGELOG.md",
+      "bytes": 50615,
+      "sha256": "6e3b72b6dbe8268e6a0ffdf35356383fba3956cdac5a5a97bd6d2bd5537c5d36"
+    },
+    {
+      "path": "vendor/XCMusic/docs/DEVELOPMENT.md",
+      "bytes": 1908,
+      "sha256": "787db1864d5036cc24055875e7104d6958910b7d399e5fa25d442c315cd3cb2a"
+    },
+    {
+      "path": "vendor/XCMusic/docs/PRIVILEGES.md",
+      "bytes": 1935,
+      "sha256": "609844b36753d780d2ddc5c6269314418e1c3c9a0b0f8e2bc0213cfcc09bd480"
+    },
+    {
+      "path": "vendor/XCMusic/eslint.config.mjs",
+      "bytes": 1029,
+      "sha256": "85c5c339e5ba0047c5d2b71fddb532a706bcde42b372f0a0b64fe3869e691937"
+    },
+    {
+      "path": "vendor/XCMusic/jsconfig.json",
+      "bytes": 233,
+      "sha256": "35eb2918a2c8c35f953168e404921498ff732f6fa19b3cb7d70169d8221d753d"
+    },
+    {
+      "path": "vendor/XCMusic/LICENSE",
+      "bytes": 1064,
+      "sha256": "01cfa7209f94fbbc44d9b6946d94c75612cf3fbfb6950752af500ea1956664c0"
+    },
+    {
+      "path": "vendor/XCMusic/package-lock.json",
+      "bytes": 1680566,
+      "sha256": "953b32dd9e604f4c4f751f895c1b9a3bf498c586397c088ffec3d2d7a6c5e547"
+    },
+    {
+      "path": "vendor/XCMusic/package.json",
+      "bytes": 2875,
+      "sha256": "76322302eb04bc44b5abbdeaa2368199a40f15aa4cbcfd03cfc0a914a9fc9acb"
+    },
+    {
+      "path": "vendor/XCMusic/preload.js",
+      "bytes": 3054,
+      "sha256": "00ad76152949539fba4c576be05e3858923cf85bf1ccbe1ee30d7ca0c68582c2"
+    },
+    {
+      "path": "vendor/XCMusic/public/display/xc.svg",
+      "bytes": 17534,
+      "sha256": "4be3e86134daee8f86e0bf5d7abc5c758b39343102e994a9213592df81e3ea00"
+    },
+    {
+      "path": "vendor/XCMusic/public/favicon.ico",
+      "bytes": 43232,
+      "sha256": "8af4750528db2294ed2740e4b2327a03a4e22bc72ee1883f92b1dda464aa8089"
+    },
+    {
+      "path": "vendor/XCMusic/public/icons/icon.icns",
+      "bytes": 1293649,
+      "sha256": "3003053eb99a2bfde7b8df452675e0643d8bb7be29077b25565767e2cdb0e196"
+    },
+    {
+      "path": "vendor/XCMusic/public/icons/icon.ico",
+      "bytes": 43232,
+      "sha256": "8af4750528db2294ed2740e4b2327a03a4e22bc72ee1883f92b1dda464aa8089"
+    },
+    {
+      "path": "vendor/XCMusic/public/icons/icon.iconset/icon_128x128.png",
+      "bytes": 50595,
+      "sha256": "1a9373d9c0ffe86bc124a737c5f7e8ae49263ab67940c70c22c5de39b405d83c"
+    },
+    {
+      "path": "vendor/XCMusic/public/icons/icon.iconset/icon_128x128@2x.png",
+      "bytes": 152690,
+      "sha256": "492d8e6de78da62d4f618af3dcfefda3c54367b5e2fc698e8e63cd4297036171"
+    },
+    {
+      "path": "vendor/XCMusic/public/icons/icon.iconset/icon_16x16.png",
+      "bytes": 1770,
+      "sha256": "ad148706b255a85a1cedc57994a2715cce7974709c41e143a2f56a89c5690f20"
+    },
+    {
+      "path": "vendor/XCMusic/public/icons/icon.iconset/icon_16x16@2x.png",
+      "bytes": 5748,
+      "sha256": "a9f0edfcf8fec9198ae703b367eb966ad4fde175622c282a1716bf7aefe459d4"
+    },
+    {
+      "path": "vendor/XCMusic/public/icons/icon.iconset/icon_256x256.png",
+      "bytes": 460263,
+      "sha256": "222f5b8eac94f292cf891991007bc16b6d71faab61f7111f1a654ab4ff9809cb"
+    },
+    {
+      "path": "vendor/XCMusic/public/icons/icon.iconset/icon_256x256@2x.png",
+      "bytes": 460263,
+      "sha256": "5a9293e1a9fa1b0f8f462665420ec21a1bab38aa4cef3956e89dff62f897287f"
+    },
+    {
+      "path": "vendor/XCMusic/public/icons/icon.png",
+      "bytes": 24108,
+      "sha256": "fe8892a2ff0b2bc5e815d2b590444899caf92f5c9ce8ae5c4b03ff24e640f3fa"
+    },
+    {
+      "path": "vendor/XCMusic/public/icons/icon.svg",
+      "bytes": 74659,
+      "sha256": "48bce28faec531b1fa370d83a2fbb9812966f7cf558edafaa171fb9a15887c7a"
+    },
+    {
+      "path": "vendor/XCMusic/public/index.html",
+      "bytes": 651,
+      "sha256": "dded0a2bea25b0f142b26cc5b8db949f642f04b44b744880c1c68939238bcba5"
+    },
+    {
+      "path": "vendor/XCMusic/public/logo/logo.svg",
+      "bytes": 82325,
+      "sha256": "c61a539558eee171ad3631117090e2acfe3e57515c032b195312dab9f474f87b"
+    },
+    {
+      "path": "vendor/XCMusic/public/src/assets/Hydrogen_n=3_l=2_m=1.png",
+      "bytes": 170314,
+      "sha256": "7651b98ad53884794f1797b89e67bd718f736fcbb45fa5bc3c1e020ecef92ac7"
+    },
+    {
+      "path": "vendor/XCMusic/public/src/assets/logo.svg",
+      "bytes": 180403,
+      "sha256": "5b85b3887f5a96a40e1d69b0ac6cd62631950078106740a0ae6c94fd9c7a48a3"
+    },
+    {
+      "path": "vendor/XCMusic/public/src/assets/song.svg",
+      "bytes": 802,
+      "sha256": "ffb86920ebb4e822d20f3af4a3484adf079c3a32a2ce0089016aef310a9b304e"
+    },
+    {
+      "path": "vendor/XCMusic/RAIN-ALLEY-INTEGRATION.md",
+      "bytes": 2089,
+      "sha256": "1008b4176fd2522b6478cc4031717108f7e87d3e55001215d1bf6bda5fdab504"
+    },
+    {
+      "path": "vendor/XCMusic/README.md",
+      "bytes": 5413,
+      "sha256": "8dc0ec84d473f1a265a1a822e78cbbd24e097f90e61681a1578d7e4101cbd8aa"
+    },
+    {
+      "path": "vendor/XCMusic/scripts/locales/create_template_from_en.js",
+      "bytes": 1364,
+      "sha256": "0fab703a8338dbcb80e562a80f232db394e58562832c81f5a88a6e21253d5a09"
+    },
+    {
+      "path": "vendor/XCMusic/scripts/locales/sort.js",
+      "bytes": 1607,
+      "sha256": "f6385175d679f681a2676f1cab39adba9daa3618a7b626dce7f94ede94fd924e"
+    },
+    {
+      "path": "vendor/XCMusic/scripts/locales/sync_key.js",
+      "bytes": 2870,
+      "sha256": "cc09c77497f2789b72594bceb6070f106db380b5a78cb0e42bea1af4af5c2a47"
+    },
+    {
+      "path": "vendor/XCMusic/scripts/mac_build.js",
+      "bytes": 1104,
+      "sha256": "5f31e4736580a22b938dc89f7a425a0ead8dac08d4fb4e93d2fb3f1b3b3ed7be"
+    },
+    {
+      "path": "vendor/XCMusic/scripts/postinstall.js",
+      "bytes": 2640,
+      "sha256": "8d1c2cc2c7a0b5a2950d90b96bc65c4f730bc602b79dad20e2ab01143582bc42"
+    },
+    {
+      "path": "vendor/XCMusic/src/App.vue",
+      "bytes": 2949,
+      "sha256": "c38e181e4e302c9edb9ae751130443e8fc14676e1d8c427a8fea47f52b747fc2"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/add.svg",
+      "bytes": 278,
+      "sha256": "6bae37b7038ef4bc922345339b8700b6e9ccc60f584305aa49e57b396b56a5a8"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/addtoplaylist.svg",
+      "bytes": 1061,
+      "sha256": "8e4c5c852888651afaffd94ccf6f471c6733c34bdb4a6a0e80d612e245871c5b"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/backarrow.svg",
+      "bytes": 579,
+      "sha256": "72470f51f1122d97cd9764085ab6b0cf5faf777f6a5a8c0f319441b97076c2df"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/biglist.svg",
+      "bytes": 1314,
+      "sha256": "6b2f254e133799d80808b40568743d308d93892863ece78741573d7723d5b3bd"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/clear.svg",
+      "bytes": 749,
+      "sha256": "289ff58c7ff48c25cdae323c4ce3c436b3aaa4741f92c05d5bffe2cd10772b5f"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/clear2.svg",
+      "bytes": 494,
+      "sha256": "33a594529489cabd7e926014cedd03d2b5c42666d6823519b85f4c837c64930d"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/close.svg",
+      "bytes": 512,
+      "sha256": "8689d503a5b020b14730c2927f831e6ba51ff241dd8931d13b801a4d21ebfcf8"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/cloud.svg",
+      "bytes": 742,
+      "sha256": "dff5352c677ac4540ce61c49db724f03039b7b8e944fb4b8f52cfbb0dcd70892"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/comment.svg",
+      "bytes": 652,
+      "sha256": "c157b23e573fe30013acdc2a5859f207c0b4a3872ee242f26323d09cd9c2f3a0"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/comment2.svg",
+      "bytes": 1227,
+      "sha256": "e36ca1253fd4161b427a35678978f6acf557b51d10b5c72c7bba2080d9869b0e"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/copy.svg",
+      "bytes": 642,
+      "sha256": "34159a4e8e3125bbb8a7344edbe721a02a389cb0dfe1ed27ba8ba8222d5051e2"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/css/animation.scss",
+      "bytes": 466,
+      "sha256": "25fbb8b1f82e23962e67d1fd7089b32121a0a5779a69c24eeb9897db9c1d3254"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/css/font.scss",
+      "bytes": 751,
+      "sha256": "bd5fa848449eb1c2c91d8d332168a35b6248b3f3628191cd19bfc6a486cd1d00"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/css/global.scss",
+      "bytes": 1777,
+      "sha256": "6cc9146b974825a21d84525ea8325607b5336b4b324b49b2c66124c789942897"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/css/layout.scss",
+      "bytes": 37,
+      "sha256": "bfa5cbbb6c045dc4bfecfe952cf198aa9586667642439d62b9ba04f3858125fa"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/css/scroll.scss",
+      "bytes": 572,
+      "sha256": "cd907b92900add9fbd5c8ef947dbd9c1f9bcf3d4d2b4d558180682ee213820dd"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/delete.svg",
+      "bytes": 1202,
+      "sha256": "8d044928767c9a838c598ca1983000beb3e1bae732c0bf8608e40821c0751252"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/detail.svg",
+      "bytes": 368,
+      "sha256": "fd46589864e31905b52d11ed17b8d8bf56337da6fa8838f14a8a898736253746"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/down-arrow.svg",
+      "bytes": 685,
+      "sha256": "44da70525b77e0e93882d9e9ce595d05d16c2c0caf8cb2d1d9b5de1252ab5f06"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/download.svg",
+      "bytes": 600,
+      "sha256": "b44da2e6a01de6854496cb675b28e4926a2643830331f8fc9f90f353bc23cf29"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/edit.svg",
+      "bytes": 575,
+      "sha256": "3bd4b1295957f7e11e47de8e9ce7249f091242fe2e99cafa6691c52e0b7deb8c"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/equalizer.svg",
+      "bytes": 1602,
+      "sha256": "447c3dfa7ee1a82fc46c703964320e3c5af2796d7d79991999c6201f4b713310"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/error.svg",
+      "bytes": 736,
+      "sha256": "44f7fb7386c0fc9f34a6abe75426ee012159f8cd294c13e32832945c1651c058"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/forwardarrow.svg",
+      "bytes": 573,
+      "sha256": "39b59567db74eeb893adf52715c40beeef639297e8112b6546a18b07aff96dfc"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/hello.ai",
+      "bytes": 767308,
+      "sha256": "27dba33d129b6787f155a61564bf5dd4e861139e3624c058e2928f321c9eeabc"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/Hydrogen_n=3_l=2_m=1.png",
+      "bytes": 170314,
+      "sha256": "7651b98ad53884794f1797b89e67bd718f736fcbb45fa5bc3c1e020ecef92ac7"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/icon.ai",
+      "bytes": 448194,
+      "sha256": "afd1d41bd0449f3ad0870127e3d5a29cff7487c15b6b1b5f3d7a771f595b6e05"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/icon.svg",
+      "bytes": 76598,
+      "sha256": "36c5bc419413bd37d651cbe49e2ee00f4215895f3e9c98bed030f8d41831a2f6"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/icons/icon.icns",
+      "bytes": 1293649,
+      "sha256": "3003053eb99a2bfde7b8df452675e0643d8bb7be29077b25565767e2cdb0e196"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/icons/icon.ico",
+      "bytes": 43232,
+      "sha256": "8af4750528db2294ed2740e4b2327a03a4e22bc72ee1883f92b1dda464aa8089"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/icons/icon.png",
+      "bytes": 24108,
+      "sha256": "fe8892a2ff0b2bc5e815d2b590444899caf92f5c9ce8ae5c4b03ff24e640f3fa"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/icons/icon.svg",
+      "bytes": 74659,
+      "sha256": "48bce28faec531b1fa370d83a2fbb9812966f7cf558edafaa171fb9a15887c7a"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/icons/icon512.png",
+      "bytes": 55497,
+      "sha256": "d0bdaf7fd0bd796d5b34ca150c3c792825fa2d539d015f7e97396c65dc93fb0d"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/info.svg",
+      "bytes": 1166,
+      "sha256": "492c9745cf3df5fac6154242231d66800a6afd885475a9f8ff90c08b4391d846"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/less.svg",
+      "bytes": 617,
+      "sha256": "5e2207806a02e85ba7f0efab917fbd20276d072030a4d8f06d5a37ddacf45fec"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/like2.svg",
+      "bytes": 540,
+      "sha256": "93ffaed31b43bed098d1f77afa8dd36f90973610b12688da86937c5450ddf6ed"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/likes.svg",
+      "bytes": 700,
+      "sha256": "55b6baa84fd342ae7c5101801993d21f6d561d965956acdc20b90342f556a614"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/link.svg",
+      "bytes": 1870,
+      "sha256": "c4394b0bf623cad256362d24da4aac8a536edf4a7f629dfea1cf18ca4eb0bbb0"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/listloop.svg",
+      "bytes": 1183,
+      "sha256": "58676d657029ae533810b29b3872ec18aa0b84f578090c6b22c94843b69926bf"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/listrandom.svg",
+      "bytes": 1602,
+      "sha256": "00a5afaf29c5148868121c4128d3e4cc1928f04824936af760cf1beec82810e0"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/local.svg",
+      "bytes": 720,
+      "sha256": "0c0d1a52f8ece76c751953bd837195a14167625f8b5c4fb926b33c03b7c0513c"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/Logo.ai",
+      "bytes": 836608,
+      "sha256": "4d45ea2d4bf8987831e67e7ec6b645741390424bbb50313565c328766abe41fb"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/logo.png",
+      "bytes": 6849,
+      "sha256": "03d6d6da2545d3b3402855b8e721b779abaa87d113e69d9329ea6ea6325a83ce"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/logo.svg",
+      "bytes": 180403,
+      "sha256": "5b85b3887f5a96a40e1d69b0ac6cd62631950078106740a0ae6c94fd9c7a48a3"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/loop.svg",
+      "bytes": 1476,
+      "sha256": "7648b40b48df8c859aa62a5311bef4b0da80437d2ccf09eebd17531bcb38f01d"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/max.svg",
+      "bytes": 580,
+      "sha256": "fb8f7df7e06201673368c4d0ef0b0a86edde8b51a642adc4f5e540971c4bff23"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/min.svg",
+      "bytes": 303,
+      "sha256": "9d72978240c0ce1f2ec7ec83d5087adc37600ce26fd44223ea74cfb1c5e335c0"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/more.svg",
+      "bytes": 585,
+      "sha256": "3b6f806cbbb37df69039383de94ae59bca9dd35ffcc00d4fe8d708cb6223ea1c"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/multichoice.svg",
+      "bytes": 1559,
+      "sha256": "d0764c5574f3e7bd407f587b014437e0db68e0620f434cdd1997a2d9a975338a"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/next.svg",
+      "bytes": 646,
+      "sha256": "c4048ae082089818e0cc54a9115503ef60221b5ffd3c5654d967f2fc1a664220"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/order.svg",
+      "bytes": 876,
+      "sha256": "68642ec7ba8bd93f22d337eb9aded27839ada61dd3050348b7b7b74729a3bfff"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/paste.svg",
+      "bytes": 449,
+      "sha256": "7c1666a1ad654cac07a996d790891881fe44ab58260b9c229a2c02ea5c212267"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/pause.svg",
+      "bytes": 483,
+      "sha256": "286c20c160798acfce723f97d9b5140a8fdb96d90b66fe0950418a360edd385b"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/play.svg",
+      "bytes": 451,
+      "sha256": "34eca00cb39bb0ef43405549d277f434d862f525a97ad808a6955fa41ad7cb0c"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/playing.svg",
+      "bytes": 939,
+      "sha256": "31f6a71eaab2b80f8c79e93fee70c46cb2eefc0424460fd0323900bc015e6805"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/playlist.svg",
+      "bytes": 678,
+      "sha256": "54e518709c8d78a9c4d5d7a433b426f804db54ed2a1dbe002723eaa3442b5165"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/playlist2.svg",
+      "bytes": 555,
+      "sha256": "e7e76e189b4a5a5c60cc122e6d7c23205b0b286f876dcb8f2977064b2139fa23"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/play_.svg",
+      "bytes": 736,
+      "sha256": "9704d322743275afbd6e0141711a0b2341752af7dbfd91f672b56e74d2142dc8"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/position.svg",
+      "bytes": 739,
+      "sha256": "f2f1d41a0039f0b1b7de59e47aff1190a3cf6a1f50ff55484fb00923658277f7"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/previous.svg",
+      "bytes": 693,
+      "sha256": "0f46b758d9276953f6af1e56309d06df8030ab0826da8662b7ef1f8d5a15b942"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/random.svg",
+      "bytes": 2415,
+      "sha256": "172d6b718555a8af951ce16a54ccbd9847b3b674df09cb8d9190932adbd66ed0"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/search.svg",
+      "bytes": 650,
+      "sha256": "b99102085cf1b1433a60a50f66de212a01f605b4ec8141ef0ad25ee0daac96f9"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/settings.svg",
+      "bytes": 792,
+      "sha256": "0257812dbae15e6625560c68c7f3b14909271f6c888801c32be6c34ee949a77b"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/smalldownload.svg",
+      "bytes": 900,
+      "sha256": "e658962510257fc5fba0fa04f3e236c24937d6e0ccb208257edeaa97980495f8"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/smalllist.svg",
+      "bytes": 752,
+      "sha256": "6b852b6ed9fdb71704711ca6eb702caace624585144462e4c2169578e4d93862"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/song.svg",
+      "bytes": 802,
+      "sha256": "ffb86920ebb4e822d20f3af4a3484adf079c3a32a2ce0089016aef310a9b304e"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/songsrank.svg",
+      "bytes": 602834,
+      "sha256": "9c71fd07fedf9c2a035aa60abce46ceeefeb67059082b39a7fd91cc0be3c00c1"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/subscribe.svg",
+      "bytes": 687,
+      "sha256": "6d0afda093be304c841ee7870e8a41f115a384493f5c63b23596df9f187ec4e8"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/subscribe2.svg",
+      "bytes": 670,
+      "sha256": "414a20c90b24def4ea749004d1d1816725b707d483480218419901a5bebd61ca"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/subscribe3.svg",
+      "bytes": 531,
+      "sha256": "bd52363208f971e7ae8a8386da504695887f2a41fc29751d641adec071395f01"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/success.svg",
+      "bytes": 614,
+      "sha256": "a84a1d2323c9c8719bfa24276605acf9c5c642d2af2fb104b023c4a2affe52fb"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/test.svg",
+      "bytes": 224,
+      "sha256": "458b89b41dc79c23555ac588d653691d3780baba3ce4c297c5d2daa23b1284e9"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/thumb.svg",
+      "bytes": 2025,
+      "sha256": "3a073a259aa2fb1c6788cab139e11e2c5c2fb2c112f7b614d8e9b044a8571c89"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/titlebar.ai",
+      "bytes": 214698,
+      "sha256": "f3c3499c71081bcf1d7e36347a8c5547ee444735c8a615d7e9c3be02b3ade4fe"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/tools.ai",
+      "bytes": 292362,
+      "sha256": "fc90301d5a568cf42da6726ad595143af67d0b77a966073e3d4e3249bdc51f01"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/tools.svg",
+      "bytes": 602834,
+      "sha256": "9c71fd07fedf9c2a035aa60abce46ceeefeb67059082b39a7fd91cc0be3c00c1"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/translate.svg",
+      "bytes": 1425,
+      "sha256": "528e0a5f46e569d9f3a6d45ebee16931442620afd449d548407ba997f158d14d"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/unlikes.svg",
+      "bytes": 1567,
+      "sha256": "40d2da4d1d2a725d1dd65d7acd189ba47817f7b22fc3eb94f513a29d6f6b9f03"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/up-arrow.svg",
+      "bytes": 685,
+      "sha256": "48f4cd1b9b05a2d1ab7c8e36ef2f73e4df8651a49dd9c7b7fc0693e99e22dafd"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/updown-arrow.svg",
+      "bytes": 917,
+      "sha256": "e8d4ad4a0364f0e62c8b3ab8a7471614f342603ccf5834b0199d2c28e0550fea"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/volume.svg",
+      "bytes": 1143,
+      "sha256": "b6e0534988f23d35bb372cfb1e1585868f4130c40a7b3c8be053c9cfcdce7295"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/warning.svg",
+      "bytes": 674,
+      "sha256": "b8b72953c95df6a798e6af870e6200fa05cefb03ce0bcdeb9f382d3751ed93cc"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/xc-down.svg",
+      "bytes": 3644,
+      "sha256": "aa6b353e0f9234cfcf14552fe333f32af584c3e83148975f6edcfed0f3d1856a"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/xc-up.svg",
+      "bytes": 5191,
+      "sha256": "8bea08d1cc2f16595245dd4eab7cab36555778dd9875eec7c3db9b3d653089f9"
+    },
+    {
+      "path": "vendor/XCMusic/src/assets/xc.svg",
+      "bytes": 102771,
+      "sha256": "1a5efe7b2b45b85e0bbc6189cc42f707898a72cea50e0118d355010d86dac5e8"
+    },
+    {
+      "path": "vendor/XCMusic/src/background.ts",
+      "bytes": 10304,
+      "sha256": "6f71b83bddbcfa57c2f8c4cef579fcffc6e24d78d33c6df19651c0296a0fbe1d"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YContextMenu.ts",
+      "bytes": 1730,
+      "sha256": "3d1c3f19ab5cd3e06ce5c301cf799ab4e9e8c9ae24f7aff50e86da348a1506b4"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YContextMenu.vue",
+      "bytes": 2135,
+      "sha256": "3047582114e9b373f3827eeecadc031d0850ff52c04f2f0b981b97301ea3a09c"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YFontsSelect.vue",
+      "bytes": 7795,
+      "sha256": "423ded9fea8a8d907ff796c9caab752613e2748b77fd78fa013560d7399134d8"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YHeader.ts",
+      "bytes": 1002,
+      "sha256": "f71f2a3f19be72b4f8cd6cb1b0f756526a92e3fc2ba3c821bc15ddbac9286833"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YHeader.vue",
+      "bytes": 1968,
+      "sha256": "c3540dd1b7ebffd194a3c426c1b8124c43925b58f88b0da7e16aebb92d801205"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YListRandom.vue",
+      "bytes": 2117,
+      "sha256": "5f56d7cbdf4ea110db11e357b554d847fc3163181b959081f494d4ca9f94a5bf"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YLoading.vue",
+      "bytes": 624,
+      "sha256": "f6b20d0d5810d32071da19ab92f5b8e28b1b24a8a42abb49970cb05bf65b770b"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YLyrics.ts",
+      "bytes": 20043,
+      "sha256": "446686e4133c6c75916ce8068ee15392d20fe817bdc891cb0497bba53fada3b0"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YLyrics.vue",
+      "bytes": 646,
+      "sha256": "b7a2bfd35d60a4b769cdd9ee1e68285b10e129c771c2b1d170b2b9a4e8fe8f50"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YLyricsNew/index.vue",
+      "bytes": 20661,
+      "sha256": "db0e1292721e425af055e3f8c30ab0cd15539b6082d995ea57152265161c8dff"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YLyricsNew/utils.ts",
+      "bytes": 543,
+      "sha256": "5748d0e046b6bdf839cf3b0d926447c389fa4781d04a0d8b1e313ba96bc00a90"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YMessage.ts",
+      "bytes": 2011,
+      "sha256": "2b09cb7d5436231b995c27181c6e2394ad429b63164f5b88d925718f840df2bd"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YMessage.vue",
+      "bytes": 2230,
+      "sha256": "88a3092026d168f13a677ad708e67b85f2b4a5c1e9a61dc44922821308f805b5"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YPage.ts",
+      "bytes": 856,
+      "sha256": "8343ad66d865d90419e2b1ddd48476fd90a24dfe36eb52e279b83935092904bc"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YPage.vue",
+      "bytes": 3403,
+      "sha256": "013babe5c8f6b267a0a2dfe2cded721f8bcad8a11d2c1298dd931efa38ac0fc9"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YPanel.ts",
+      "bytes": 4047,
+      "sha256": "964d3bbccaa5757f62cb732fcf662eed8711eee5081671b172cf8dca98aaa7ad"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YPanel.vue",
+      "bytes": 1353,
+      "sha256": "51624d4ba0a407d7945e1b3ebadb69d720867bb27f2ab0f8096d220244a32a3e"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YPlaying.vue",
+      "bytes": 410,
+      "sha256": "bdcefc53fafb5c357b169fa770c184aad3d65dbe8148faa473c4ef57966f72cd"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YProgressBar.ts",
+      "bytes": 3708,
+      "sha256": "6ebfcbd51feaf9005168e6e787fb2a1b77a7cac62ce129f79905ccc5a0c2c7ca"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YProgressBar.vue",
+      "bytes": 3815,
+      "sha256": "3448bf327fe08cccf9ffba7230a337d389c17f226eb4139a19f34bf0bcc7c250"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YProgressBarV.vue",
+      "bytes": 2651,
+      "sha256": "43ae4322e1393add013f28827850a8f10211377abce4af066b6e5ea84540f02d"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YScroll.ts",
+      "bytes": 1244,
+      "sha256": "be722505ca844f57d68518c4b8c34e078dcd1feb0c5ad926310419ebcb86c294"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YScroll.vue",
+      "bytes": 225,
+      "sha256": "14001953862bfad1a63b96c121d3843c9db0371bd9a5beeb4d048f47eb6b791d"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YSmoothScroll/index.vue",
+      "bytes": 2443,
+      "sha256": "44f9b08a7199792ef1661a291e6b268e612729ccc55ced5e5a36802ad6220666"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YSpecCanvas.ts",
+      "bytes": 3821,
+      "sha256": "3e91c8a99aaf6479fcbd3fa59dbcc0efbbcfcc83c4cf498a875d7989db141411"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YSpecCanvas.vue",
+      "bytes": 250,
+      "sha256": "b09300900388f42f60918313d9583645c5e5c77908c161082cc7e1ab1a699e3f"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YTextBanner.ts",
+      "bytes": 2955,
+      "sha256": "ea0b21214ae2bd04010e47ff63a2ce2ad7e994524a686a354db710409472eeb6"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YTextBanner.vue",
+      "bytes": 634,
+      "sha256": "19c37a6d6b53ff2075298f6205d68c8dd74e52f9346b99df3b5868996b80f87e"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YVirtualScroll.interface.ts",
+      "bytes": 323,
+      "sha256": "5a93684412dab78ce66f7c031bab889294f7bb2fa82860ad9ce2b9c1efbd9ec7"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YVirtualScroll.vue",
+      "bytes": 8671,
+      "sha256": "b5396f6a9658a2cf4cf460829a166d9d262ae52a313a2353a193743438a4d72e"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YWindow.ts",
+      "bytes": 496,
+      "sha256": "4f1a28f5508552b0c3ccfde960f90095b3f0893a66dd6f569f1cd244f2a4063b"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/base/YWindow.vue",
+      "bytes": 1355,
+      "sha256": "2a4116b1ec6ca6d0a701a1eacf0b843669adc60441f65af27e63341422ce929f"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YArtistList.ts",
+      "bytes": 736,
+      "sha256": "e44fddec3fec92733591783f47053cd7cf2a2f4c4dda487d6a1c7f12d5305130"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YArtistList.vue",
+      "bytes": 2043,
+      "sha256": "2840e8f45a7c2e113b06741786ad268c5f28e8f1a2792b5df2c5fafe18c3bfa8"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YComment.ts",
+      "bytes": 1257,
+      "sha256": "682dfd9358a405c17444c6168833aafa4c1430bd0b9225ea89cd4a8305361c05"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YComment.vue",
+      "bytes": 7236,
+      "sha256": "259fba191acb80d08bb265c51c01daee47b1ae4dfc78f101c386e84d5a6767f8"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YPlaylistBiglist.ts",
+      "bytes": 994,
+      "sha256": "0dad410d41582ae1e675897eeb29829743c22cf24fecf819baee49de5aab8df8"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YPlaylistBiglist.vue",
+      "bytes": 3258,
+      "sha256": "195058c39ab583d9108073fc0b367ab6bea95f984be03cbaec196fb03612705d"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YPlaylistList.ts",
+      "bytes": 1289,
+      "sha256": "3bc4f53982f0329a036fcf1666d6d2d8eb039928a3ce88a55b85cb7c02e11dfc"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YPlaylistList.vue",
+      "bytes": 5482,
+      "sha256": "d58f8a3b8e0dc3778dd2bb20d0d3c635bc0a54e7208cdca0bc9dfb9bbd334403"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YSearchLyrics.ts",
+      "bytes": 664,
+      "sha256": "b02044f35c88351308fe3a6f35e6e8236ad3e7830a6a18f9a1d74fcbda97f1a0"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YSearchLyrics.vue",
+      "bytes": 412,
+      "sha256": "73308f15cda8137ed2a7728087b0cbcce14d11a32e0625f1cce8ece2696e11f3"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YSongsTable.scss",
+      "bytes": 6200,
+      "sha256": "5ad27bb99477c5e68e7fda6eedb53ea4286e8bcb6e5d9229141a54c55a863c29"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YSongsTable.ts",
+      "bytes": 21919,
+      "sha256": "0dd469ef9da884afae7939184848b4bd99fd4807cff00091e03119cb709504db"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YSongsTable.vue",
+      "bytes": 13663,
+      "sha256": "e00f099a0e073329511e9aaff49ef3c504e805b81c49c6eff393dcd60a591d58"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YSongsTableNew/index.vue",
+      "bytes": 27617,
+      "sha256": "73926b8a3ad9315f8a4c896c393152dba8c06a9a78781c5baf6618ded32bd6fe"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YSongsTableNew/time.ts",
+      "bytes": 269,
+      "sha256": "66084f8956a6187567384eb4d7b6127db24b531d06c077bcc2b3c83fadca9400"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YSongsTableNew/utils.ts",
+      "bytes": 5297,
+      "sha256": "eff76cbeedda35d77ac5b4c2a877741fd202daeb10f3eddd6dabcb069fffd29e"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/list/YSongsTableSkeleton.vue",
+      "bytes": 2484,
+      "sha256": "3eca70a248db20022f30f2d6fa181bf4c0abf97d487dc6e19e5879023a1aa463"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/UI/YDisplayArea.ts",
+      "bytes": 188,
+      "sha256": "1690a884673d73283e2bcf7255bee4db577fee79de02be3a5063a98363899b2c"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/UI/YDisplayArea.vue",
+      "bytes": 544,
+      "sha256": "d0d39fe2d496b2f6688eebcfed0ab6eceb9177d579ee71da3caa7e37f0ccf01f"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/UI/YPlaybar.ts",
+      "bytes": 13255,
+      "sha256": "4b3f0359ad0ea6ce870765909821fd63743ca33b017977212cbd5944edbbf9eb"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/UI/YPlaybar.vue",
+      "bytes": 27040,
+      "sha256": "27584e8b2350a6c8161ca1fc7cdc639a2d93264310b701143dcbac8fe03d8594"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/UI/YPlayUI.ts",
+      "bytes": 9595,
+      "sha256": "0b426c3c363a39c752ab7bc7118eeaaad4e1b8178a64ce886d0cf9c22fa2efec"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/UI/YPlayUI.vue",
+      "bytes": 14773,
+      "sha256": "60252f8221dca97bb2eb52bbe829d07db4cd6b4cdc3e005f8c94fa3ee87722be"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/UI/YSidebar.ts",
+      "bytes": 3780,
+      "sha256": "a17b55f1081fdd2cd4b3c64bde1f576b2631beeb0404b9bd96306a0849dcda61"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/UI/YSidebar.vue",
+      "bytes": 9796,
+      "sha256": "b59afdd99565acbbb0f2a7c4c1f6503f49c9df6f056e15a9537383b99f877513"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/UI/YTitlebar.ts",
+      "bytes": 11712,
+      "sha256": "26540120a08303c3b484699c5af6d59136965cfea7386e383f59f870b3db9fda"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/UI/YTitlebar.vue",
+      "bytes": 16373,
+      "sha256": "44e250a23162c1400289af01bce4d23094177260289c29160792d79818f3de56"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YAddToPlaylist.ts",
+      "bytes": 2076,
+      "sha256": "97090e25fbd95709fcfe2c2a657a66b4699161e21f65cbc8ba04082d43a35c5e"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YAddToPlaylist.vue",
+      "bytes": 1570,
+      "sha256": "5151064746a954da42063b059671a8493c001317e3776a45ad29857f158091f1"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YCloseWindow.ts",
+      "bytes": 1357,
+      "sha256": "320a7f78c94ecb55e088604af5b1c0737727a214dcd6179ff56904bddec39763"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YCloseWindow.vue",
+      "bytes": 2588,
+      "sha256": "79c2a2f65f67d3244b5cfa2ac83a7a4242d40af81c6844066178791d4eac5bca"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YConfirmWindow.ts",
+      "bytes": 934,
+      "sha256": "e846e1c76a2d85821dbd8f325d24a0e54291f65ac37e0dd063851871ce1fbc7a"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YConfirmWindow.vue",
+      "bytes": 1203,
+      "sha256": "be989ec0e170b33ef256cfaccec758e3ebc7b38a33fdff3c79fe9c66a99bcce3"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YCreatePlaylistWindow.ts",
+      "bytes": 1552,
+      "sha256": "3f9d9ce3bafa0b222e5b58ecabf58974632dc77be9884a4df3e35157cb966e3a"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YCreatePlaylistWindow.vue",
+      "bytes": 1702,
+      "sha256": "bd94f9814e4d762b55608a915129a8f508d433e8b5a6141d0315243db5f1a88c"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YCustomWindow.ts",
+      "bytes": 10641,
+      "sha256": "531a825b23f864145f709bd955fdddaa6e6a02a9d43457faa9a4196163000ba6"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YCustomWindow.vue",
+      "bytes": 23135,
+      "sha256": "fdd80bb8bb1220162c56c9491f72c89a16c148ed996cb365c3f7c74f10747068"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YEditPlaylistWindow.ts",
+      "bytes": 1171,
+      "sha256": "33deb1e1b9d2e1016d95367de4969570bc9081a133f264c753a8588b5ddfbb00"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YEditPlaylistWindow.vue",
+      "bytes": 2551,
+      "sha256": "a7f51149d4d35e266940ec99132749f7539f74612ead34446ec6a6132042a2cb"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YEqualizerWindow.ts",
+      "bytes": 1687,
+      "sha256": "94606b0584870db65fae7fc8854545e87255540e540c6de5f3dcbf3acc6dbc18"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YEqualizerWindow.vue",
+      "bytes": 2544,
+      "sha256": "313d57a9387a34b5745c8371b25bdd0f5d37871291700377827d5118c32e5740"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YFontsSelectWindow.vue",
+      "bytes": 1489,
+      "sha256": "e43b0cd402f4fd29dfa0fd9c23e430d156508ab967ebdee9e1bfaaf83ddb156a"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YLoginWindow.ts",
+      "bytes": 475,
+      "sha256": "4cab51d5031df64b3c987f13e2b41e43af503e78072b6c8406a736780074f325"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YLoginWindow.vue",
+      "bytes": 378,
+      "sha256": "81e2256df4ab5dafdc172de09e873463456b7ec98ff6e11f57656ea70e0b894a"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YSongInfo.ts",
+      "bytes": 1793,
+      "sha256": "e5086d9eeb0a5f1e833220270bd8541d89114d06faba9fd4cbe0ae9867c5b5b6"
+    },
+    {
+      "path": "vendor/XCMusic/src/components/YWindows/YSongInfo.vue",
+      "bytes": 6853,
+      "sha256": "4682fc8df05a0a8bb2c8bb21f3beae0c88e36b9744d1c93433d1dbbaf3f76048"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/damakuSongPicker.ts",
+      "bytes": 425,
+      "sha256": "41c41fd7fe6df548e40061a829b9f6d881ff853d200291de0ae671b1e8adb528"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/download_renderer.ts",
+      "bytes": 449,
+      "sha256": "e73840df9992a8ba1d40d4a8b2f38aef563b1f2a0a6ed9c9f8012f70fc699588"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/globalMsg.ts",
+      "bytes": 1348,
+      "sha256": "f423aa24e7a0ad3c2bbf1de57a985fb9bccc3fd4ef4beecc02f6f3287faff8e1"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/login.ts",
+      "bytes": 1009,
+      "sha256": "3c678a4a8d48ef76af9fd10ddd32ca13cf07add2a90ab8a5c0a5540f96a69fb2"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/player.ts",
+      "bytes": 1710,
+      "sha256": "86c265d2936689e3ff587857d59beef2da5edd0514d069bafd4c5758bd7c4fea"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/userProxy.interface.ts",
+      "bytes": 604,
+      "sha256": "9a9b15332cf5e4d7bdb9e32ac7862a95e4e097b64642d93c5d2d46685e68b26c"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YArtistList.ts",
+      "bytes": 524,
+      "sha256": "a99380ff42033fcf57d777edf14ecb976e838eef3098ec6c02f8834ec99bba0b"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YCommentC.ts",
+      "bytes": 5477,
+      "sha256": "d370353afae35d07eb09b5ab032c01e44be9058c4d993c53fca2543a45966531"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YContextMenuItemC.ts",
+      "bytes": 4717,
+      "sha256": "c85b971e1d74f49a8e7e32afd6701d13b6c729a2f84da8938c1a206924e3260d"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YCustomWindow.ts",
+      "bytes": 291,
+      "sha256": "4003e26cfc0781ac418ae47482ada7aa23322fa3d59dded69d2d21928f9e687e"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YLocalSongsView.ts",
+      "bytes": 360,
+      "sha256": "5c0eff3c907a71827245091bd8528024c5b2ac35a160dc769a8451fedb92c0b0"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YMessageC.ts",
+      "bytes": 1803,
+      "sha256": "4b06a7823d8fe62884ef64fc77ea06e664f6c760f240b27f1ff4edf7a81eb7a7"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YPageC.ts",
+      "bytes": 2709,
+      "sha256": "5b4b47214491737ef8d70e2f3edc604def53eec10cb145d75be0ba9dcaecc037"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YPlaylistList.ts",
+      "bytes": 1079,
+      "sha256": "63c4b8826adb36ea8b9ff8494312a647660323d05a5b6e9a2fba25e8addae06c"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YPlaylistView.ts",
+      "bytes": 318,
+      "sha256": "09a7b2654006fa0fff1d898eafd42b25c81ab298cd84a4d82aed7afb2b359323"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YPlayUI.ts",
+      "bytes": 1724,
+      "sha256": "adf8c77e8a6a40ac3c0c8a18f09ea469828eb7e2238026d920a7e1a91cd7884c"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YSettingView.ts",
+      "bytes": 309,
+      "sha256": "8353d2ffead84dfc4a1898c0e4267b185b7c58fc50f071943cc2f6fbe1b9c5c0"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YSheetView.ts",
+      "bytes": 295,
+      "sha256": "48239e337b268a716e94554804de26ae3bf1eecd5d3559e894591af50feef003"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YSongsTable.ts",
+      "bytes": 343,
+      "sha256": "9c77070857ea5b6beb88d8aeb9007bc0e6ea3f582ad2d1f383f4a5d0c339a1ab"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YTitlebar.ts",
+      "bytes": 398,
+      "sha256": "0d12e3c4295bea70a7734f0e502677119544447f1abd585be31717826ff38ff3"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YTrackC.ts",
+      "bytes": 2112,
+      "sha256": "e6163e9ae1d01f3713e2dd293a090f448401e33c439c479d0b57c79b98cd0d1a"
+    },
+    {
+      "path": "vendor/XCMusic/src/dual/YUserView.ts",
+      "bytes": 2598,
+      "sha256": "27a2636055b7afec71fb8b4e9418887c81a6f23e6c0f7d59eabb688ad81f5690"
+    },
+    {
+      "path": "vendor/XCMusic/src/electron/services.js",
+      "bytes": 1314,
+      "sha256": "598d27cb5a264baea1ef3138ff00d22ebcf1b1a25495e477e64d239170f92d24"
+    },
+    {
+      "path": "vendor/XCMusic/src/global.d.ts",
+      "bytes": 3334,
+      "sha256": "5ad5f738ed498daa6ea13d899f471a06c8d008c9c5bf85e7c28ac9c74554aa3b"
+    },
+    {
+      "path": "vendor/XCMusic/src/i18n.ts",
+      "bytes": 507,
+      "sha256": "a8c78ec6dd77448949d99644a3215c9c0b6e6666a306ecfce269b5f6ac6cbb7b"
+    },
+    {
+      "path": "vendor/XCMusic/src/locales/CONTRIBUTE_LOCALES.md",
+      "bytes": 537,
+      "sha256": "f26a1380af300db1a85f00b82be7d2de3829c16bd7a7e604ef3fc937ad9d8b0e"
+    },
+    {
+      "path": "vendor/XCMusic/src/locales/en.json",
+      "bytes": 14509,
+      "sha256": "65408826f83dff768f3b9e96b981bf1481ca546d417f88248aef859dc194bf5d"
+    },
+    {
+      "path": "vendor/XCMusic/src/locales/zh.json",
+      "bytes": 14574,
+      "sha256": "a1544ab3c5856083cfb81a3772f9243fa9afae7cdc39dfc62cfb41f5cb5f972f"
+    },
+    {
+      "path": "vendor/XCMusic/src/main.ts",
+      "bytes": 786,
+      "sha256": "d0ce4d375f7e3ecf399667d90be1aa154e638dae7cb5deea0cbcb5ae5ab97aa9"
+    },
+    {
+      "path": "vendor/XCMusic/src/ncmModDef.ts",
+      "bytes": 20293,
+      "sha256": "1b865ea0462e11faa39111601461b6edc1c015f1375206c1b676c486fa7df553"
+    },
+    {
+      "path": "vendor/XCMusic/src/router/index.js",
+      "bytes": 5993,
+      "sha256": "3dc8eeab48b93da05d8ec1c254f139ccadce8c0c905be797eb2b94268870a342"
+    },
+    {
+      "path": "vendor/XCMusic/src/store/index.ts",
+      "bytes": 1217,
+      "sha256": "f4d99c351af03009db122c076ade76bbdf9c223110a390be3de91611f2a31900"
+    },
+    {
+      "path": "vendor/XCMusic/src/types/flac-metadata.d.ts",
+      "bytes": 439,
+      "sha256": "55db0a8a61c273ecb3bde1f42c5af389edea1c1bf7f44286bf36a151205d75d6"
+    },
+    {
+      "path": "vendor/XCMusic/src/types/md.d.ts",
+      "bytes": 77,
+      "sha256": "0c68b0f383ec05b9f1b082e1479b08f80ea850f0bc2f4a9d8e52178c140bedea"
+    },
+    {
+      "path": "vendor/XCMusic/src/types/shims-svg.d.ts",
+      "bytes": 107,
+      "sha256": "e15bd02b422cbc2228030a346936dd8fb622f814d162f3c360e10dadc8f0110b"
+    },
+    {
+      "path": "vendor/XCMusic/src/types/shims-vue.d.ts",
+      "bytes": 158,
+      "sha256": "3604b9e9655f6c95f604686d751f492b160a4a48ab1485d6f52ac49524bb755b"
+    },
+    {
+      "path": "vendor/XCMusic/src/types/txt.d.ts",
+      "bytes": 78,
+      "sha256": "1c4fc9600962d4f45527a41847d65a9cf710cb404bb9badf5f0a532c98dc1ee1"
+    },
+    {
+      "path": "vendor/XCMusic/src/types/vuex.d.ts",
+      "bytes": 299,
+      "sha256": "a2701a4c9442f7113d1228d338a1974ebd86974f3008e6bce270dbd6eb440117"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/api.interface.ts",
+      "bytes": 17681,
+      "sha256": "32f5eb4c13f2080b7675470f32e238f2b7dbd6934a896814567a312794d4da1e"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/api.ts",
+      "bytes": 35387,
+      "sha256": "5b784cb1a474943762ec5742960ace55e1daa7a6d82a4300a931f4c0e9afa67d"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/color.ts",
+      "bytes": 14977,
+      "sha256": "4c81ff3c151340c462768edd435f120f3580a67c52b382314957fc5b965869ef"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/damakuSongPicker.ts",
+      "bytes": 5879,
+      "sha256": "e0e91bef3f84a460da3ec5c0ff7d6b681f2d8508f6e2f5f4acaa02a1d5c39cf5"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/document.ts",
+      "bytes": 1593,
+      "sha256": "ed294058b1ab4ddaf10efa7f294c2cbf5c65f9e18aab0667a30d78a44f474050"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/download.ts",
+      "bytes": 4521,
+      "sha256": "198e974f0b2690e22303efbf1cba07b5cbc20173e19a046e6fd0f59a4188fd54"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/download_renderer.ts",
+      "bytes": 6642,
+      "sha256": "7b55f8e119529c603800be3544bc6aeeadc1ee11fd5c3b3df865c61f25620ce2"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/fonts.ts",
+      "bytes": 1233,
+      "sha256": "fb0acdc8ae9999cd1011b3fa90fdb9baa377f6f02bb76cb89fb5d4e2eeda146f"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/globalMsg.ts",
+      "bytes": 2159,
+      "sha256": "263f332266f23c78659620107d753532a791a0d051ab4fa391aec99d8830fc74"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/indexDB.ts",
+      "bytes": 6759,
+      "sha256": "6e5e792158f5c6425f95df0837763f26a8998e00c00106374fd4e175be64f07b"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/localTracks.ts",
+      "bytes": 1487,
+      "sha256": "591583997728828ffbee0f0a29f917ad9dce3c1424643d7a4bc4ca19884c48bd"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/localTracks_renderer.ts",
+      "bytes": 575,
+      "sha256": "f32fdde1ec6959566722394eab15ba6bacff7dc0133cfe6bdecd47834c07069d"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/login.ts",
+      "bytes": 7486,
+      "sha256": "41b23b41ff4de554e64848c1c53c214d2286fe8bbd24f5ff65569e6411d71986"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/lyric.ts",
+      "bytes": 5659,
+      "sha256": "a1689e5543c6ee5cf66b891564653cd8ba6e1452444457d24e69bfaf9eaa6bf8"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/openedPlaylist.ts",
+      "bytes": 728,
+      "sha256": "5d9aa9029b0ffde93f7a562aec4de96f7d44333ed60cd9b4a4beba031ade9c56"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/player.ts",
+      "bytes": 43028,
+      "sha256": "fe4c6ec6ac0f8446e647546d2de3ae56f423e263abe677021ee4ada7ac566957"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/player_main.ts",
+      "bytes": 243,
+      "sha256": "e366d0465a5bcdd22710173ed50398ebc849f68e900858e958eaf201a1656761"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/playlist.ts",
+      "bytes": 649,
+      "sha256": "21da7aaed28adc14d9f3fc6952d1d5d33c6a0c810609f453b051ff87c5d8ffcb"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/rendererEvents.ts",
+      "bytes": 4639,
+      "sha256": "1c9fa44fedd554f6df33962510e9fe12c18095c8a6a89d8a63c8177975e12345"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/render_storage.ts",
+      "bytes": 7750,
+      "sha256": "8a9e8b399d3c5bb2cfbb07a061b5fe17bfc32781e3d14892ae53e5c1736d1edc"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/setting.ts",
+      "bytes": 24392,
+      "sha256": "ff9dc9bb4ea0071e662e409d783840ff6a17979d9233a13f61b7777adcf22661"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/subscribe.ts",
+      "bytes": 5558,
+      "sha256": "fa3b2e78a858a07d173e54b16cf929f53f240bd32144eab8eac0149d2e4ebf44"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/theme.scss",
+      "bytes": 6169,
+      "sha256": "c6dde1020ae9f74359448b4ff4aac80061d9470218023dfc7888d2d0ee71ac25"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/theme.ts",
+      "bytes": 6229,
+      "sha256": "06adcc0d8f65f239340f7b2e475eab062d50e2f2ad34b80bdc7358c9cfb97dd2"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/theme.txt",
+      "bytes": 6169,
+      "sha256": "c6dde1020ae9f74359448b4ff4aac80061d9470218023dfc7888d2d0ee71ac25"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/throttle.ts",
+      "bytes": 407,
+      "sha256": "7997019d1e400464a3bd853d282e58544985883dbf34811e15018b1d8482db7c"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/time.ts",
+      "bytes": 983,
+      "sha256": "a4d1efe43ee61dad8c682f797e2c0bb5a00686bb5ea571d52fca571f9034ae9a"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/tracks.ts",
+      "bytes": 9909,
+      "sha256": "eb4124b2e8c2f511498f722778b1018bf1f603b69dc950e84fc7790086e6769f"
+    },
+    {
+      "path": "vendor/XCMusic/src/utils/userProxy.ts",
+      "bytes": 1337,
+      "sha256": "281e873efd4716da69ec17947b83fdbc54955dfc10bff77b8d45e3097b5a984f"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/AboutView.vue",
+      "bytes": 89,
+      "sha256": "b4bc1e1f1e919b5343e9e38f6a88cc5ddddb3b3f92ce48d69e0c9c009eaabafb"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/HomeView.ts",
+      "bytes": 19923,
+      "sha256": "ad5c2f397108b75b11eb2fcf2ecfaecff60c805374deaffbb42f094eaa7faafd"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/HomeView.vue",
+      "bytes": 5984,
+      "sha256": "0cd52ecd84140fcd5adc0745c299f0c5193423014e7d2c18b4a82651d7bc73c8"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YAudioView.ts",
+      "bytes": 699,
+      "sha256": "34a135ff6101eca834465e1c3f8729d6c8adca077d236207eca4f8ea821622e9"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YAudioView.vue",
+      "bytes": 517,
+      "sha256": "8b5f3ec61d9c8071b39c213c35d83e8f997b6f6c1d40544be5cb75681220a25b"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YCloudView.ts",
+      "bytes": 2903,
+      "sha256": "b7e6de80dad4c5b47758fd0f9793ea398e9965e3f423093c2356a361d17822f5"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YCloudView.vue",
+      "bytes": 3078,
+      "sha256": "0ad29d4bec645ba287531c4872983391154ee92d9c99ea95690294c778beae70"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YCommentView.ts",
+      "bytes": 2289,
+      "sha256": "2a6b4b0e34a697ccabd5aaf2c51f655a88110b38202b9c4e68c2d16ccf3dabfa"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YCommentView.vue",
+      "bytes": 3740,
+      "sha256": "4f9f103ce6d2e73063e4b64f82988339fde9b7ec1e4ae9e5c7aa812b7090c911"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YDownloadView.ts",
+      "bytes": 1767,
+      "sha256": "9302735f0673b2940166d4e79bf24024e6f89b6ccb315cacd80137c60d8f5b57"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YDownloadView.vue",
+      "bytes": 2377,
+      "sha256": "1d06f09071d7cf307ac9439bb42a9ab16b0e858c53b1408ef3cc0d25283c45c7"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YFollowView.ts",
+      "bytes": 2525,
+      "sha256": "faf6895a5075c6440b423bf76dd8c79c2cb5b16bf31ce3a96b32197051ffab73"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YFollowView.vue",
+      "bytes": 203,
+      "sha256": "50233c3d64c4137de03cf24a205a675a6484ed2bfaa56b2765e3d23a488de063"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YGreetingView.ts",
+      "bytes": 710,
+      "sha256": "d98e547b2c6a76fce21e1327989e157f343bd9c5dd4340494ee06796798898d9"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YGreetingView.vue",
+      "bytes": 928,
+      "sha256": "05651ad387fb80fe25ec57156ece0f326f85b7ca722c71e0a3957d50a1e90a0a"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YLocalSongsView.ts",
+      "bytes": 1350,
+      "sha256": "cc7ee5e1dbc92258e8be9720c88dced54f77db202c9b09ef55a873960e9415e4"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YLocalSongsView.vue",
+      "bytes": 1579,
+      "sha256": "d50d31b60400b577c206202e0aad24b20cf3fa81987d66d234d0c4b165ee56a4"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YMarkdownView.ts",
+      "bytes": 2095,
+      "sha256": "a8620d1dfbdcd1b395ef26929aad45cd8bbf31bf5632df5dc6420df8f5bd4996"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YMarkdownView.vue",
+      "bytes": 339,
+      "sha256": "737b299678f803fc9d64d13ad1ac7f3fd86663667b17e52b9377cf49637d81d6"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YPlaylistView.ts",
+      "bytes": 16775,
+      "sha256": "d861a496ca575a8c891cdeac59c6e62aa51760fefc7eebca8fe666dc7016eb7b"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YPlaylistView.vue",
+      "bytes": 18107,
+      "sha256": "808148d70a80704bb2d2502d4aaae5793be1f883b4d3c8beed5f018f53164218"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YPlaylistViewNew/index.vue",
+      "bytes": 28183,
+      "sha256": "c7b59a7ef6997a94be9de7f2c167ceb46985d3651bcc59d57dff9d76a9999d9a"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YPlaylistViewNew/utils.ts",
+      "bytes": 2658,
+      "sha256": "db506384a23434960b2f2e5f301692273bc3a303c15806604bd871d38cfb32c2"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YSearchView.ts",
+      "bytes": 8876,
+      "sha256": "a290af340c541b4f0f3b810cf1ffcad8d232812848b458ab352084ac018099a0"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YSearchView.vue",
+      "bytes": 5014,
+      "sha256": "87f3b38e639a37f9ce442e904c8c9c14088199b85a381acd152b6354c9d65978"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YSettingView.ts",
+      "bytes": 19611,
+      "sha256": "057c039f342a3bc10c2dc2746909116ed36ef1f89526b494834a1f6304bece8d"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YSettingView.vue",
+      "bytes": 44186,
+      "sha256": "46ff2a5f54ad681a820591b30f35b175357f6185521abc2bf3cf60613393c93a"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YSheetView.ts",
+      "bytes": 3054,
+      "sha256": "c970953e8579e5b6b670775a2150acbd18144df5fcce6d6006695b9a9126b184"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YSheetView.vue",
+      "bytes": 2102,
+      "sha256": "d3fe4de34e2ab518cfee93e289ba924382ca37cd41243138cfdd61bf25dd9800"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YSubscribedAlbumView.ts",
+      "bytes": 1823,
+      "sha256": "104863b59dc42845c9c98e2c5b7911ef0a5580fd8ecafbea16b8c91cd6f12b8c"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YSubscribedAlbumView.vue",
+      "bytes": 638,
+      "sha256": "2daa0e0584c84dde890ade85db2fe842871c08c64be7c4f5f50160394c8f4dbd"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YTestView.ts",
+      "bytes": 1000,
+      "sha256": "811a93842cfe497203b7890dcae98852801133f3ebb06dedb54d9565d4c46564"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YTestView.vue",
+      "bytes": 776,
+      "sha256": "76d7672fdca7437f31436ddf442ee7e15deba1fbb154c497c93b3cb17d666500"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YUserSongsRankView.ts",
+      "bytes": 2107,
+      "sha256": "4856be6d4b3e4eea428ae6101ec56124e67ecb6e7a20b9e56954375157403d14"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YUserSongsRankView.vue",
+      "bytes": 552,
+      "sha256": "8a6188c502a8a4b7092fab3de70641696e39fb83e13b7500081615018bca466a"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YUserView.ts",
+      "bytes": 9234,
+      "sha256": "39f5e514fd3cb9f6b96534dbe6f496c9ae4a99669950d00cfed3a0940e513960"
+    },
+    {
+      "path": "vendor/XCMusic/src/views/YUserView.vue",
+      "bytes": 9756,
+      "sha256": "3c0530bdc7ea780276db2cd064f39c6e7e1690cd472ac15e9832bb1ea206887d"
+    },
+    {
+      "path": "vendor/XCMusic/src-api/.gitignore",
+      "bytes": 101,
+      "sha256": "0f41d62c11efc8cdd8b995a7bf13ac46716dc5bb862a4ee071b0eb9198fe7868"
+    },
+    {
+      "path": "vendor/XCMusic/src-api/Cargo.lock",
+      "bytes": 2971,
+      "sha256": "d29f50ad42d47664731e5a9ba1d5f53216157125724e6a8a006be7043721478e"
+    },
+    {
+      "path": "vendor/XCMusic/src-api/Cargo.toml",
+      "bytes": 145,
+      "sha256": "91071d6237de94af34d23813b4c147b545b923b10809bbe3fdb78ba1cc8ee671"
+    },
+    {
+      "path": "vendor/XCMusic/src-api/rustfmt.toml",
+      "bytes": 58,
+      "sha256": "f52496b318565edfae88a017f3dea655ef642dec7a76424a649f0177b844f3b1"
+    },
+    {
+      "path": "vendor/XCMusic/src-api/src/lib.rs",
+      "bytes": 51,
+      "sha256": "b9429ad2bfd5c6d1d5ba76608532c4481d18dc6d086c78c4456b74c588e0b222"
+    },
+    {
+      "path": "vendor/XCMusic/src-api/src/main.rs",
+      "bytes": 142,
+      "sha256": "cdecba072e5cb70ac4eac9b9825ffff2f8c4e6228497c9be8ddeb0ad55039f82"
+    },
+    {
+      "path": "vendor/XCMusic/src-api/src/util/cache_key.rs",
+      "bytes": 1543,
+      "sha256": "1a605fd17a8250a9f5d083e1c9db2510fba199a63daa865df49e634c87a518db"
+    },
+    {
+      "path": "vendor/XCMusic/src-api/src/util/mod.rs",
+      "bytes": 19,
+      "sha256": "914ccb301f79154f6330b3bac38a161fd91dcb47de251155662fa396b88a30de"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/.gitignore",
+      "bytes": 101,
+      "sha256": "0f41d62c11efc8cdd8b995a7bf13ac46716dc5bb862a4ee071b0eb9198fe7868"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/build.rs",
+      "bytes": 37,
+      "sha256": "b01bb80b64916f502a3033afdb4567227ef2abcc3b938889f02283aefa780fbe"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/capabilities/default.json",
+      "bytes": 207,
+      "sha256": "3274cf173d071a9596b3a5a49273a3695cf74c97ba2ccee118c0c69a4e492cb3"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/Cargo.lock",
+      "bytes": 117226,
+      "sha256": "2336613e3138e34e59b802d2dcef929c87adea95f13e31e540f6be1679f36226"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/Cargo.toml",
+      "bytes": 570,
+      "sha256": "89e3c9557f9098446af496eb06b4aa4c9468dc1b790d49d0af33a24b1fe3b9f6"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/128x128.png",
+      "bytes": 11059,
+      "sha256": "eeebf55d8ffe07348786b9057af253e3ca08c56b6a8f8893826381430e3c0b7b"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/128x128@2x.png",
+      "bytes": 23137,
+      "sha256": "2998b41d0c9278b08e8b3874e094920034fe983a46053c9d62764225f58ab7b0"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/32x32.png",
+      "bytes": 2225,
+      "sha256": "aaa96d0c53b756b77c7f46aeb72290f42256c786c69be68f6bcdeb9c7492a48e"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/icon.icns",
+      "bytes": 277003,
+      "sha256": "1535d355994f8ee82da91384d2a29e04d5b4440f3e6051b5c8b06e7a62283693"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/icon.ico",
+      "bytes": 37710,
+      "sha256": "e38ca88e1d5490f3dcbc3c3fa525f7fcb7b80fff3cb2f3a4eb1b2d018c0915c1"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/icon.png",
+      "bytes": 49979,
+      "sha256": "6413bfe9d546e5225fc9256a0ecec48df3a1272ea4bdc91c15b8e000222a95d3"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/Square107x107Logo.png",
+      "bytes": 9202,
+      "sha256": "33446a858d982a529554e562114673f8b15620588137cf0bf6c56a7441c78cd7"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/Square142x142Logo.png",
+      "bytes": 12530,
+      "sha256": "633d6dba504faa844b309e01272386e4523cddd4a3639c77c0eb5d2ce3eac752"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/Square150x150Logo.png",
+      "bytes": 13032,
+      "sha256": "d90061ad71e6f5882b759d80cf58cc16aa5021fa29ba4b2614adea982a4d7ee5"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/Square284x284Logo.png",
+      "bytes": 25943,
+      "sha256": "5feaa4f18f404843551756dd2791d7654ef471b6b007767ae40f60c7aebcad5b"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/Square30x30Logo.png",
+      "bytes": 2078,
+      "sha256": "68bc1b585f5685e0922f14b1ca7eb2d618213c684c89e759c6a5eb8578c3fe8d"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/Square310x310Logo.png",
+      "bytes": 28507,
+      "sha256": "5df8d779ab57c63ee06ed237b94c3c0954711e88117dccfa72b2aec5d83b0d80"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/Square44x44Logo.png",
+      "bytes": 3419,
+      "sha256": "c46208286b1ea1b4841b714972f3cb0a8abc6d3bfa71a29238f7b4d62f511f89"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/Square71x71Logo.png",
+      "bytes": 6027,
+      "sha256": "cb0ea93cbd13509d32c6bc06da71687e73d673d166fde91b23061771abe16b86"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/Square89x89Logo.png",
+      "bytes": 7551,
+      "sha256": "2208da1d741a20e902a59d7c39a5e58af74ec823db13113bf8ac6f555fa25bca"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/icons/StoreLogo.png",
+      "bytes": 3971,
+      "sha256": "9f84d0ce09df51bac0a4855042b3e49b190cc2b9761cd5eab61ebec5cd343820"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/rustfmt.toml",
+      "bytes": 42,
+      "sha256": "351e908098d8f7c44e057ce9dcc13551db123e7b5991592e57613a6ab433755b"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/src/lib.rs",
+      "bytes": 417,
+      "sha256": "be620c62bbeea8ecf2535642eb8498a3389fdf11afa762f0192f281481b56dd1"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/src/main.rs",
+      "bytes": 2832,
+      "sha256": "4b72458dda665c957c4c1228d7d212adfe60f9e4a52d904da072d232f34405b7"
+    },
+    {
+      "path": "vendor/XCMusic/src-tauri/tauri.conf.json",
+      "bytes": 818,
+      "sha256": "bc6f5870e39df94a1cb044112d3cd484d5a25cb62771be467a692e7836ecd4a7"
+    },
+    {
+      "path": "vendor/XCMusic/test.json",
+      "bytes": 116819,
+      "sha256": "c9b4f26f429ede9f887e5ddd54868d18306e4946eb898fbc4ff7cb88ffa0099a"
+    },
+    {
+      "path": "vendor/XCMusic/tsconfig.json",
+      "bytes": 692,
+      "sha256": "60c90a20999bd9d660298cf185d4848d523ab30b23292986809050f2ecf833fe"
+    },
+    {
+      "path": "vendor/XCMusic/vercel.example.json",
+      "bytes": 161,
+      "sha256": "ec4ed10013f5b7443211faf7922c8ad1774b96ba155cf35355f57b0fdf728549"
+    },
+    {
+      "path": "vendor/XCMusic/vercel.json",
+      "bytes": 161,
+      "sha256": "ec4ed10013f5b7443211faf7922c8ad1774b96ba155cf35355f57b0fdf728549"
+    },
+    {
+      "path": "vendor/XCMusic/vue.config.cjs",
+      "bytes": 3754,
+      "sha256": "051f39831447446f49bb0ad01b72c28274bc0a62293316fbd7cea65751bcdcb1"
+    },
+    {
       "path": "tools/auth-runtime.cjs",
       "bytes": 9075,
       "sha256": "fdf1e94b5db4d8518a1f445094d966f09b3f7baca5a741584b287d6d70ed456b"
     },
     {
+      "path": "tools/bilidesk-manager.test.cjs",
+      "bytes": 4257,
+      "sha256": "8d426aded11e98788082df42b6556de3300774c8b0f4e31555dcaaca44eb0464"
+    },
+    {
+      "path": "tools/bilidesk-runtime.cjs",
+      "bytes": 7401,
+      "sha256": "f422f741a748d060656a5bc245aea7b3b388a439fd7280175f8c27aebe9238b8"
+    },
+    {
       "path": "tools/build-direct-installer.cjs",
       "bytes": 3067,
       "sha256": "55b677b759f31b27ef2e83e73bf26c15891ca87b856a3b0fcfdbb34f01d7d01e"
+    },
+    {
+      "path": "tools/build-xcmusic.cjs",
+      "bytes": 563,
+      "sha256": "6f611fd5c19f7fb4eda17cd4aedeb4bd1bd62cc20e1bbfe80892f0caf5a65651"
+    },
+    {
+      "path": "tools/check-resource-policy.cjs",
+      "bytes": 1938,
+      "sha256": "f2862060911f682acdc5b8a5168da62ab8914610649f44d606218357a3fc5b7e"
     },
     {
       "path": "tools/check-window-icon.ps1",
@@ -433,29 +3208,34 @@
       "sha256": "72bf3cbb69608e9b2b9105f350a4fa8302b68cbf28cbdcc1a26b0095ed2ad9c4"
     },
     {
+      "path": "tools/cs2-bots-upgrade.test.cjs",
+      "bytes": 5226,
+      "sha256": "509798c871680af92e15b8093df10119abff5a2c2f2eb330fb762e3b4a80e9cd"
+    },
+    {
       "path": "tools/cs2-install-runtime-check.cjs",
-      "bytes": 13981,
-      "sha256": "5353064d3fd71db4a562907ec7c2957c0f91d2ddf14b9a658205bb2bdae7d954"
+      "bytes": 16845,
+      "sha256": "e33ec3a8ca96332ee218033b683ef89de6bb1e943f85fed8efe1cedb15bffbe5"
     },
     {
       "path": "tools/cs2-transaction.test.cjs",
-      "bytes": 3514,
-      "sha256": "3e6215db11116b4baeeded938da6dff74f91c83fcee70d42e5871ec2da884f11"
+      "bytes": 3557,
+      "sha256": "6c6c5e1dc8ee7bc053ebdce46c099a8b464363a273ee04fdf38961bf872d667d"
     },
     {
       "path": "tools/cs2-uninstall-runtime-check.cjs",
-      "bytes": 6739,
-      "sha256": "2da667e5e62f26901c0653ff2c661a907f530dce8aafb968ddccad85c18362b7"
+      "bytes": 6768,
+      "sha256": "435576b1610af12ff6c1451a917e9506a4be6c2fc4afa3bab87e82287db738c9"
     },
     {
       "path": "tools/cs2-uninstall.test.cjs",
-      "bytes": 4330,
-      "sha256": "854d03e8d673797b32c83868a29fb9b66a6cc115714d97d97df855673cfe5f56"
+      "bytes": 4737,
+      "sha256": "785a3ac4a46094bcce8d8c8af9a9db06871ba4996d2d1dcec92d0a435b3e8ccd"
     },
     {
       "path": "tools/demo-coexist.test.cjs",
-      "bytes": 5262,
-      "sha256": "e44189972e5e38bb63d0aabbb27b85ffeaa04f46b74ffc9a802896e5a89bfabd"
+      "bytes": 8976,
+      "sha256": "6ea411e4fd0e9d84267f44b887c51608b0ac5d7da4e51e96a2b3346a942c59ed"
     },
     {
       "path": "tools/demo-gui.test.cjs",
@@ -464,8 +3244,8 @@
     },
     {
       "path": "tools/demo-runtime-check.cjs",
-      "bytes": 9311,
-      "sha256": "aad100fdbc9b0721b7128c8f8db0cc9c42da6c533aa7cf154c312bfb629d6d5e"
+      "bytes": 10754,
+      "sha256": "b84218a0c7562de491c157b7fe5e35ec21c8d0038dea4ae0cc5de955ffc5ffbc"
     },
     {
       "path": "tools/direct-installer.nsi",
@@ -484,13 +3264,13 @@
     },
     {
       "path": "tools/inventory-coexist.test.cjs",
-      "bytes": 4588,
-      "sha256": "d2c1cd7c0c1de76b3e0c80e7a4742a6900a4919766692309f79e99d17e138d31"
+      "bytes": 8898,
+      "sha256": "f10ac8228e746b1435dee9b2b37686b7c8b75b32ae1426ec481da8299302382d"
     },
     {
       "path": "tools/inventory-runtime-check.cjs",
-      "bytes": 10399,
-      "sha256": "29ba72f15f9bc26ed04cd48063c2c59d6774c3ac2042c595d37db889b084cdc9"
+      "bytes": 13622,
+      "sha256": "b8acdee13ca97d45a20fcb34c05d6d25f053dae4c5388db4c32d4d6376ede0ec"
     },
     {
       "path": "tools/management-runtime.cjs",
@@ -508,9 +3288,59 @@
       "sha256": "157c9e31bd47686008d17ecb49dd52ff3a8f0b492e18813acc0b2a814656fc47"
     },
     {
+      "path": "tools/player-tools-fixture.mjs",
+      "bytes": 1584,
+      "sha256": "f7dccbf31e8f9a79c88ee7aaa0489faf7e3795b8232998b1ab12040ced41ec2b"
+    },
+    {
+      "path": "tools/player-tools-preview.cjs",
+      "bytes": 7135,
+      "sha256": "82cf6e0c143afaaab61c31bda09b122a8f49ff29e91f1ef80dfe18819ad00a1f"
+    },
+    {
+      "path": "tools/player-tools-verify-preview.cjs",
+      "bytes": 2636,
+      "sha256": "ad3176d2cac45f3970745b632dbda5f36d231a841b736ed436b62a5f577657b8"
+    },
+    {
+      "path": "tools/prepare-bilidesk.cjs",
+      "bytes": 289,
+      "sha256": "4501337d02a8f63a8066853d9f4f34043ad12863e258599a2577207aa1b1a3d3"
+    },
+    {
+      "path": "tools/prepare-bilidesk.py",
+      "bytes": 5809,
+      "sha256": "e3e8f799be8c53698ac15c08bbf053c1d5c95fd2e483298db926670d9b313077"
+    },
+    {
+      "path": "tools/prepare-cs2-bots.cjs",
+      "bytes": 2730,
+      "sha256": "7b989fd14f9347b1f7d8e235def1663ea9fc405d02228b35a9eb9e0ab6d29d94"
+    },
+    {
+      "path": "tools/prepare-demo.cjs",
+      "bytes": 4508,
+      "sha256": "6b895feea783aab5d113c4b4f4d6186a7e32d0faaf7fb38ee35cca395c2a2d0b"
+    },
+    {
+      "path": "tools/prepare-inventory.cjs",
+      "bytes": 2126,
+      "sha256": "f4fae71cf532e55c3caa45d19c50f5fb33a313bf6591f885bc3a2bd50568f660"
+    },
+    {
       "path": "tools/prepare-open-source.cjs",
-      "bytes": 4155,
-      "sha256": "4fb5a9a8fbe648a0e73cdc5de05b2524e430703ff00eba9d379839ad268f9005"
+      "bytes": 5588,
+      "sha256": "3e48b52b0230bde4fadb01334d30c2bdeb4e6cbbda9a9d29932bcaf2e1f92ca8"
+    },
+    {
+      "path": "tools/prepare-xcmusic.cjs",
+      "bytes": 269,
+      "sha256": "10cccf61602e28a7ade3519f84470616f3efb5c703367277de7ddf419994b7da"
+    },
+    {
+      "path": "tools/prepare-xcmusic.py",
+      "bytes": 3931,
+      "sha256": "75503174f4a6c833f79692b285bfc245673fd5272b058c16efa71fe5cc065333"
     },
     {
       "path": "tools/preview-community.cjs",
@@ -523,9 +3353,29 @@
       "sha256": "c969b906a042af84a7a26468eefb17ebe5ac4629c93616f3268ee65c218ffc7b"
     },
     {
+      "path": "tools/prismatic-effects-runtime.cjs",
+      "bytes": 11363,
+      "sha256": "9a1bf62acee3448eb467c4e4d695ed84427df01e028630b87f92810fc47f48fb"
+    },
+    {
       "path": "tools/renderer-smoke.cjs",
-      "bytes": 7742,
-      "sha256": "13717f10a0d78e374a31341dc905a72e28586062a9549d557b37bf5847821d60"
+      "bytes": 8649,
+      "sha256": "09546101102cc31171742e8814e48c56924d1f5d3e99aeca88f37e2d243c9120"
+    },
+    {
+      "path": "tools/resource-policy-preview.cjs",
+      "bytes": 2191,
+      "sha256": "9f002baf19327b2b1eb2818c7d6ea238e551982f34790493bb35662f3414fb6c"
+    },
+    {
+      "path": "tools/resource-store.test.cjs",
+      "bytes": 1906,
+      "sha256": "cc0fe676aac52a6c7a61c1c6b96c846e0c8d65d15864a7171f6cc2bc3efec53f"
+    },
+    {
+      "path": "tools/settings-tab-runtime.cjs",
+      "bytes": 10315,
+      "sha256": "b28a3ff3ff944eb72e02cc31465a5c0ef4c6d3a9f7977ab3836a88eb58e1a804"
     },
     {
       "path": "tools/single-instance-runtime.cjs",
@@ -539,8 +3389,13 @@
     },
     {
       "path": "tools/spectrum-runtime-check.cjs",
-      "bytes": 7478,
-      "sha256": "44f7a64cbce262d2aa89dbc9a16c664b9ac44722f001f6cc365a1d5f6e282401"
+      "bytes": 9513,
+      "sha256": "ad9ccf62479981027f7029bd6b5a86a383e7e767349d6dc72c28573ddcb5d42d"
+    },
+    {
+      "path": "tools/tab-overview-runtime.cjs",
+      "bytes": 11349,
+      "sha256": "e39c2ee5e2c2b522807d3fa980fa56cf739ceee4601a9995dca41f6d82e6ac5f"
     },
     {
       "path": "tools/taskbar-runtime-check.cjs",
@@ -568,14 +3423,34 @@
       "sha256": "46be3a1095863ff3e401c0adec15e7f9ce6fb4392c3def783f3006178e422e8d"
     },
     {
+      "path": "tools/xcmusic-manager.test.cjs",
+      "bytes": 3103,
+      "sha256": "b4ae315233022862d0acc4ff6ecfe972e9889f38b274f8ea8ae4af147b1729a7"
+    },
+    {
+      "path": "tools/xcmusic-native-check.cjs",
+      "bytes": 4921,
+      "sha256": "7f3bb60c93ca567d6f79b05d9859487316e150b47aba6d6eec429f0e1e54b459"
+    },
+    {
+      "path": "tools/xcmusic-native-preview.cjs",
+      "bytes": 2271,
+      "sha256": "b6fe68f1b30762db64a2cee4f7b93afdc8bd1de7d6522d27cbc0c25eaba94334"
+    },
+    {
+      "path": "tools/xcmusic-runtime.cjs",
+      "bytes": 5646,
+      "sha256": "fe3e24c1c904c324b1b48ec764d02918dea83388c9da124196df56e88b3ce40b"
+    },
+    {
       "path": "tools/_ui-runtime-check.cjs",
       "bytes": 69278,
       "sha256": "1d16efa826c176109eae354b930aada09872d2ad4729e9f07207e7a343735c69"
     },
     {
       "path": "cloudflare/auth-api/package.json",
-      "bytes": 526,
-      "sha256": "8d12b207254a1f5cb3eef5890a2c94da1c6f58b57e4b20e57bc1f4b875b933e0"
+      "bytes": 552,
+      "sha256": "548a45e1c9991dc3421f2a5cc9dc5ef90147668ece2a4491549fabcf88d86c11"
     },
     {
       "path": "cloudflare/auth-api/package-lock.json",
@@ -604,8 +3479,8 @@
     },
     {
       "path": "cloudflare/auth-api/src/index.js",
-      "bytes": 29401,
-      "sha256": "ff1608e33eda63890d8e875143769f4656b1f6a83ee6cdc9c523084207521b73"
+      "bytes": 29862,
+      "sha256": "47d70bfcbca2cf0cf8a47123b1fe9ed3f09cebbef2ee2473be3bec07587e36e7"
     },
     {
       "path": "cloudflare/auth-api/src/management.js",
@@ -616,6 +3491,16 @@
       "path": "cloudflare/auth-api/src/management.test.mjs",
       "bytes": 3682,
       "sha256": "cd70518efdb26f27c97d754eaa7457f45cb2d14448571fa4a53f1e75e180925c"
+    },
+    {
+      "path": "cloudflare/auth-api/src/player-tools.js",
+      "bytes": 4929,
+      "sha256": "5ec32f87a76fa9716f1079082af2c122df59f60c2362733875e8da24b3924b15"
+    },
+    {
+      "path": "cloudflare/auth-api/src/player-tools.test.mjs",
+      "bytes": 5206,
+      "sha256": "19a03214168a9b0bcd9ae11e1baa9a4dae60f68094b310c2619fa47b51bc3588"
     },
     {
       "path": "cloudflare/auth-api/src/security.test.mjs",
@@ -646,6 +3531,11 @@
       "path": "cloudflare/auth-api/migrations/0005_account_management.sql",
       "bytes": 1118,
       "sha256": "bbbcf9cd47eced188cf71d82c2d222bb982e21d8efa8bf4b225f79c7ea46bc52"
+    },
+    {
+      "path": "cloudflare/auth-api/migrations/0006_player_tools.sql",
+      "bytes": 819,
+      "sha256": "267ce53588e594851bc3974b72cffac7d96c7434fcb4cc6902ceca0c7d26612e"
     },
     {
       "path": "installer.nsi",

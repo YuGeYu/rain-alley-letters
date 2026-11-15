@@ -3,6 +3,7 @@ const { ipcRenderer } = require('electron');
 if (!process.isMainFrame) return;
 
 let linkSwiftEnabled = false;
+// Site forms and clicks never trigger app-wide celebratory effects.
 ipcRenderer.on('site:linkswift-enabled', () => { linkSwiftEnabled = true; });
 ipcRenderer.on('site:linkswift-disabled', () => { linkSwiftEnabled = false; });
 ipcRenderer.on('site:linkswift-storage-sync', (_event, message = {}) => {

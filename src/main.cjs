@@ -19,6 +19,7 @@ const {
 } = require('electron');
 const crypto = require('node:crypto');
 const { installOfficialPayload } = require('./cs2-installer.cjs');
+const cs2Payload = require('./cs2-payload-manifest.json');
 const { inspectUninstall, uninstallPayload } = require('./cs2-uninstaller.cjs');
 const { installInventory } = require('./inventory-installer.cjs');
 const { installDemo } = require('./demo-installer.cjs');
@@ -33,7 +34,10 @@ const { resolveNetdiskInput, providerFor, isSharePageUrl, isLinkSwiftAuthorizeUr
 
 protocol.registerSchemesAsPrivileged([{ scheme: 'rainalley', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }]);
 
-app.setAppUserModelId('cn.rainalley.letters');
+// Explorer resolves taskbar branding from every shortcut sharing an AppUserModelID.
+// A development Electron shortcut must never compete with the installed client.
+const APP_MODEL_ID = app.isPackaged ? 'cn.rainalley.letters' : 'cn.rainalley.letters.development';
+app.setAppUserModelId(APP_MODEL_ID);
 app.setName('雨巷来信');
 // Electron's lock is scoped to the current user-data directory. Production
 // shortcuts share the default profile; isolated development previews stay separate.
@@ -54,7 +58,7 @@ const NETDISK_API_HOSTS = new Set([
   '189.cn', 'xunlei.com', 'quark.cn', 'uc.cn', '123pan.com', '123pan.cn', '123684.com', '123865.com', '123952.com', '123912.com', 'cjjd19.com',
 ]);
 const CATALOG_SITE_HOSTS = ['maomaochongmiao.600318.xyz', 'mistport.600318.xyz', 'career.600318.xyz', 'usc.600318.xyz'];
-const TRUSTED_SITE_HOSTS = new Set(['pig.600318.xyz', 'vault.600318.xyz', 'api.600318.xyz', 'www.bilibili.com', 'space.bilibili.com', 'player.bilibili.com', 'github.com', 'release-assets.githubusercontent.com', 'objects.githubusercontent.com', ...CATALOG_SITE_HOSTS, ...NETDISK_PAGE_HOSTS, ...NETDISK_API_HOSTS]);
+const TRUSTED_SITE_HOSTS = new Set(['pig.600318.xyz', 'vault.600318.xyz', 'api.600318.xyz', 'bilibili.com', 'github.com', 'release-assets.githubusercontent.com', 'objects.githubusercontent.com', ...CATALOG_SITE_HOSTS, ...NETDISK_PAGE_HOSTS, ...NETDISK_API_HOSTS]);
 const ACCOUNT_API_HOSTS = new Set(['auth.600318.xyz', 'rain-alley-auth.600318.workers.dev']);
 const DEFAULT_STATE = Object.freeze({
   selectedFeature: 'street-postcard', installedFeatures: ['street-postcard'], muted: true, lightweight: false, theme: 'dark',
@@ -77,6 +81,7 @@ let suppressDownloadHistory = false;
 let quitting = false;
 let wasMaximized = false;
 let authSession;
+require('./player-tools-main.cjs').registerPlayerTools({ ensureTrusted, requestApi, brandWindow, getToken: () => authSession?.token, getParent: () => windowRef });
 let appState;
 let appStatePromise;
 let appStateWriteQueue = Promise.resolve();
@@ -88,13 +93,110 @@ const toolOperations = new Set();
 function handleToolOperation(channel, handler) {
   ipcMain.handle(channel, async (event, ...args) => {
     ensureTrusted(event);
-    const resource = channel.startsWith('demo:gui-') ? 'demo-gui' : 'cs2';
+    const resource = channel.startsWith('xcmusic:') ? 'xcmusic' : channel.startsWith('bilidesk:') ? 'bilidesk' : channel.startsWith('demo:gui-') ? 'demo-gui' : 'cs2';
     if (toolOperations.has(resource)) throw new Error('相关工具正在启动、安装或卸载，请等待当前操作完成。');
     toolOperations.add(resource);
     try { return await handler(event, ...args); } finally { toolOperations.delete(resource); }
   });
 }
 const linkSwiftRequests = new Map();
+let resourceStore;
+function getResourceStore() {
+  if (!resourceStore) resourceStore = require('./resource-store.cjs').createResourceStore({
+    cache: path.join(app.getPath('userData'), 'resource-packages'),
+    resources: require('./external-resources.json'),
+    chooseFile: async resource => {
+      const result = await dialog.showOpenDialog(windowRef, { title: '选择从夸克下载的 ' + resource.fileName, properties: ['openFile'], filters: [{ name: resource.fileName, extensions: ['zip'] }] });
+      return result.canceled ? null : result.filePaths[0];
+    },
+  });
+  return resourceStore;
+}
+handleToolOperation('resources:download', async (event, id) => {
+  ensureTrusted(event);
+  const resource = getResourceStore().get(id);
+  const url = new URL(resource.quarkUrl);
+  if (url.protocol !== 'https:' || url.hostname !== 'pan.quark.cn') throw new Error('资源分享地址无效。');
+  await shell.openExternal(url.href);
+  return true;
+});
+let xcMusicManager;
+function getXCMusicManager() {
+  if (!xcMusicManager) {
+    const testing = process.env.RAIN_ALLEY_TEST_MODE === '1';
+    const local = process.env.LOCALAPPDATA || app.getPath('appData');
+    xcMusicManager = require('./xcmusic-manager.cjs').createManager({
+      root: testing ? path.join(app.getPath('userData'), 'tools', 'XCMusic') : path.join(local, 'RainAlleyTools', 'XCMusic'),
+      assets: path.join(__dirname, '..', 'assets', 'clients'),
+      manifest: require('./xcmusic-payload-manifest.json'),
+      archiveProvider: () => getResourceStore().acquire('xcmusic'),
+      defaultProfile: path.join(app.getPath('appData'), 'xc-music'),
+      profile: testing ? path.join(app.getPath('userData'), 'xcmusic-preview-profile') : null,
+    });
+  }
+  return xcMusicManager;
+}
+for (const operation of ['status', 'install', 'launch', 'uninstall']) {
+  handleToolOperation('xcmusic:' + operation, async event => {
+    if (event.senderFrame !== event.sender.mainFrame) throw new Error('仅主页面可管理客户端。');
+    return getXCMusicManager()[operation]();
+  });
+}
+let biliDeskManager;
+function getBiliDeskManager() {
+  if (!biliDeskManager) {
+    const testing = process.env.RAIN_ALLEY_TEST_MODE === '1';
+    const local = process.env.LOCALAPPDATA || app.getPath('appData');
+    biliDeskManager = require('./bilidesk-manager.cjs').createManager({
+      root: testing ? path.join(app.getPath('userData'), 'tools', 'BiliDesk') : path.join(local, 'RainAlleyTools', 'BiliDesk'),
+      assets: path.join(__dirname, '..', 'assets', 'clients'),
+      manifest: require('./bilidesk-payload-manifest.json'),
+      archiveProvider: () => getResourceStore().acquire('bilidesk'),
+      defaultProfile: path.join(local, 'BiliDesk'),
+      profile: testing ? path.join(app.getPath('userData'), 'bilidesk-preview-profile') : null,
+    });
+  }
+  return biliDeskManager;
+}
+for (const operation of ['status', 'install', 'launch', 'uninstall']) {
+  handleToolOperation('bilidesk:' + operation, async event => {
+    if (event.senderFrame !== event.sender.mainFrame) throw new Error('仅主页面可管理客户端。');
+    return getBiliDeskManager()[operation]();
+  });
+}
+handleToolOperation('bilidesk:folder', async () => {
+  const manager = getBiliDeskManager();
+  if (!(await manager.status()).installed) throw new Error('请先安装客户端。');
+  const error = await shell.openPath(manager.directory); if (error) throw new Error(error);
+  return true;
+});
+handleToolOperation('bilidesk:source', async () => {
+  const manager = getBiliDeskManager(); await manager.status();
+  const target = path.join(manager.root, '开源与许可'); await fs.mkdir(target, { recursive: true });
+  if ((await fs.lstat(target)).isSymbolicLink()) throw new Error('源码导出目录包含链接，已停止操作。');
+  for (const name of ['BiliDesk-1.6.2-source.zip', 'BiliDesk-LICENSE.txt', 'BiliDesk-NOTICES.txt']) {
+    const destination = path.join(target, name);
+    if (!fsSync.existsSync(destination)) await fs.copyFile(path.join(__dirname, '..', 'assets', 'clients', name), destination, fsSync.constants.COPYFILE_EXCL);
+  }
+  const error = await shell.openPath(target); if (error) throw new Error(error); return true;
+});
+handleToolOperation('xcmusic:folder', async () => {
+  const manager = getXCMusicManager();
+  if (!(await manager.status()).installed) throw new Error('请先安装客户端。');
+  const error = await shell.openPath(manager.directory); if (error) throw new Error(error);
+  return true;
+});
+handleToolOperation('xcmusic:source', async () => {
+  // Export from asar to a normal path before opening Explorer.
+  const manager = getXCMusicManager(); await manager.status();
+  const target = path.join(manager.root, '开源与许可'); await fs.mkdir(target, { recursive: true });
+  if ((await fs.lstat(target)).isSymbolicLink()) throw new Error('源码导出目录包含链接，已停止操作。');
+  for (const name of ['XCMusic-0.3.1-source.zip', 'XCMusic-LICENSE.txt', 'XCMusic-NOTICES.txt']) {
+    const destination = path.join(target, name);
+    if (!fsSync.existsSync(destination)) await fs.copyFile(path.join(__dirname, '..', 'assets', 'clients', name), destination, fsSync.constants.COPYFILE_EXCL);
+  }
+  const error = await shell.openPath(target); if (error) throw new Error(error); return true;
+});
 const linkSwiftContents = new Map();
 const linkSwiftAuthWindows = new Set();
 
@@ -282,7 +384,7 @@ async function loadAppState() {
       history: cleanFeatureIds(saved.history).slice(0, 300),
       navigationPolicy: ['allowlist', 'blocklist', 'allow-all', 'deny-all'].includes(saved.navigationPolicy) ? saved.navigationPolicy : DEFAULT_STATE.navigationPolicy,
       // Add newly published catalog sites once; preserve later user removals.
-      allowedHosts: cleanHosts(saved.catalogSites20261101 ? saved.allowedHosts : [...cleanHosts(saved.allowedHosts, TRUSTED_SITE_HOSTS), ...CATALOG_SITE_HOSTS], TRUSTED_SITE_HOSTS),
+      allowedHosts: cleanHosts([...cleanHosts(saved.catalogSites20261101 ? saved.allowedHosts : [...cleanHosts(saved.allowedHosts, TRUSTED_SITE_HOSTS), ...CATALOG_SITE_HOSTS], TRUSTED_SITE_HOSTS), 'bilibili.com'], TRUSTED_SITE_HOSTS),
       catalogSites20261101: true,
       blockedHosts: cleanHosts(saved.blockedHosts, []),
       allowExternalProtocols: saved.allowExternalProtocols === true,
@@ -397,6 +499,7 @@ function siteAllowed(url, current = appState || DEFAULT_STATE) {
   if (current.navigationPolicy === 'deny-all') return false;
   if (current.navigationPolicy === 'allow-all') return true;
   if (current.navigationPolicy === 'blocklist') return true;
+  if (host === 'bilibili.com' || host.endsWith('.bilibili.com')) return current.allowedHosts.includes('bilibili.com');
   return current.allowedHosts.some((allowed) => host === allowed || host.endsWith(`.${allowed}`));
 }
 
@@ -577,6 +680,9 @@ function activateWebsiteTab(tabId) {
 function contentsLoading(contents) {
   try { return contents.isLoading(); } catch { return false; }
 }
+const prismaticSource = 'window.__alleyEffects = Object.freeze({ play: () => false, stop: () => {}, configure: () => {} });';
+const effectsWorld = 1004;
+function configureWebsiteEffects() { return Promise.resolve(); }
 function createWebsiteView(tabId) {
   const view = new WebContentsView({
     webPreferences: {
@@ -642,6 +748,8 @@ function createWebsiteView(tabId) {
   contents.on('did-navigate-in-page', (_event, nextUrl) => reportNavigation(nextUrl));
   contents.on('did-fail-load', (_event, code, description) => { if (code !== -3) notify('desktop:site-failed', { description: description || '检查网络后可重新载入，或者返回功能目录。' }); });
   contents.on('did-finish-load', () => {
+    // Local decorative code only: no access to account data or the web page's JS world.
+    contents.executeJavaScriptInIsolatedWorld(effectsWorld, [{ code: prismaticSource + `\nwindow.__alleyEffects.configure(${JSON.stringify({ website: true, lightweight: Boolean(appState?.lightweight), paused: false })});` }]).catch(() => {});
     notify('desktop:site-loaded');
     notify('desktop:site-title', { url: contents.getURL(), title: contents.getTitle() });
   });
@@ -864,15 +972,41 @@ async function registerAppProtocol() {
 }
 
 function repairAppShortcuts(icon) {
+  const programs = path.join(app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs');
+  let migratedIdentity = false;
+  // Older previews registered Electron.lnk with the production identity. Preserve
+  // its target and arguments, but move only our own stale registration to dev.
+  const legacyElectron = path.join(programs, 'Electron.lnk');
+  try {
+    const shortcut = shell.readShortcutLink(legacyElectron);
+    const developmentExe = path.resolve(shortcut.target);
+    if (shortcut.appUserModelId === 'cn.rainalley.letters'
+      && path.basename(developmentExe).toLowerCase() === 'electron.exe'
+      && fsSync.existsSync(path.resolve(path.dirname(developmentExe), '..', '..', '..', 'assets', 'rain-alley.ico'))) {
+      migratedIdentity = shell.writeShortcutLink(legacyElectron, 'update', { appUserModelId: 'cn.rainalley.letters.development' });
+    }
+  } catch (cause) { if (fsSync.existsSync(legacyElectron)) console.warn('[shortcut-migration]', cause.message); }
   const pinned = path.join(app.getPath('appData'), 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar');
   const matchingPins = fsSync.existsSync(pinned) ? fsSync.readdirSync(pinned).filter(name => name.endsWith('.lnk')).map(name => path.join(pinned, name)).filter(file => { try { return path.resolve(shell.readShortcutLink(file).target).toLowerCase() === process.execPath.toLowerCase(); } catch { return false; } }) : [];
-  const shortcuts = [...matchingPins, path.join(app.getPath('desktop'), '雨巷来信.lnk'), path.join(app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs', '雨巷来信', '雨巷来信.lnk')];
+  const shortcuts = [...matchingPins, path.join(app.getPath('desktop'), '雨巷来信.lnk'), path.join(programs, '雨巷来信', '雨巷来信.lnk')];
+  const legacyApp = path.join(programs, '雨巷来信.lnk');
+  if (fsSync.existsSync(legacyApp)) shortcuts.push(legacyApp);
   for (const file of shortcuts) {
     try {
       if (fsSync.existsSync(file) && path.resolve(shell.readShortcutLink(file).target).toLowerCase() !== process.execPath.toLowerCase()) continue;
       fsSync.mkdirSync(path.dirname(file), { recursive: true });
-      shell.writeShortcutLink(file, 'replace', { target: process.execPath, cwd: path.dirname(process.execPath), icon, iconIndex: 0, appUserModelId: 'cn.rainalley.letters', description: '雨巷来信 · 工具集合' });
+      shell.writeShortcutLink(file, 'replace', { target: process.execPath, cwd: path.dirname(process.execPath), icon, iconIndex: 0, appUserModelId: APP_MODEL_ID, description: '雨巷来信 · 工具集合' });
     } catch (cause) { console.warn('[shortcut-repair]', cause.message); }
+  }
+  if (migratedIdentity && process.platform === 'win32') {
+    // Explorer caches the old AppID -> Electron association even after the link
+    // changes. Broadcast the documented shell notification once, before showing
+    // the first window. No Explorer restart or global icon-cache deletion.
+    const powershell = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
+    const refresh = spawnSync(powershell, ['-NoProfile', '-NonInteractive', '-Command',
+      'Add-Type -TypeDefinition \'using System; using System.Runtime.InteropServices; public class RainAlleyShell { [DllImport("shell32.dll")] public static extern void SHChangeNotify(uint e,uint f,IntPtr a,IntPtr b); }\'; [RainAlleyShell]::SHChangeNotify(0x08000000,0x1000,[IntPtr]::Zero,[IntPtr]::Zero)'],
+    { windowsHide: true, timeout: 15000, encoding: 'utf8' });
+    if (refresh.error || refresh.status !== 0) console.warn('[shortcut-refresh]', refresh.error?.message || 'Windows shell notification failed');
   }
 }
 
@@ -885,8 +1019,16 @@ function shellIconPath() {
   return target;
 }
 
+function brandWindow(window) {
+  const icon = nativeImage.createFromPath(path.join(__dirname, '..', 'assets', 'rain-alley.png'));
+  if (!icon.isEmpty()) window.setIcon(icon);
+  window.setAppDetails({ appId: APP_MODEL_ID, appIconPath: shellIconPath(), appIconIndex: 0, relaunchDisplayName: app.isPackaged ? '雨巷来信' : '雨巷来信 · 开发预览', relaunchCommand: app.isPackaged ? `"${process.execPath}"` : `"${process.execPath}" "${app.getAppPath()}"` });
+}
+
 function createWindow() {
   if (windowRef) { showHome(); return; }
+  const shellIcon = shellIconPath();
+  if (app.isPackaged) repairAppShortcuts(shellIcon);
   windowRef = new BrowserWindow({
     width: 1500,
     height: 960,
@@ -915,13 +1057,9 @@ function createWindow() {
   // Give both native window icons and Explorer relaunch metadata a stable
   // filesystem path, including when assets are packaged in ASAR.
   // Decode the PNG explicitly; Windows shell ICO extraction is separate from HWND icons.
-  const appIcon = nativeImage.createFromPath(path.join(__dirname, '..', 'assets', 'rain-alley.png'));
-  if (!appIcon.isEmpty()) windowRef.setIcon(appIcon);
+  brandWindow(windowRef);
   // Explicit shell relaunch metadata prevents Explorer from choosing the
   // development Electron executable as this window's taskbar identity.
-  const shellIcon = shellIconPath();
-  windowRef.setAppDetails({ appId: 'cn.rainalley.letters', appIconPath: shellIcon, appIconIndex: 0, relaunchDisplayName: '雨巷来信', relaunchCommand: app.isPackaged ? `"${process.execPath}"` : `"${process.execPath}" "${app.getAppPath()}"` });
-  if (app.isPackaged) repairAppShortcuts(shellIcon);
   windowRef.loadURL('rainalley://app/index.html');
   // The renderer no longer owns a continuously animated 3D scene. Keep
   // background throttling enabled so hidden/tray windows release scheduler
@@ -987,7 +1125,23 @@ ipcMain.handle('app:get-state', async (event) => {
     preferences: { ...state, installedFeatures: [...state.installedFeatures] },
   };
 });
-ipcMain.handle('app:save-state', async (event, value) => { ensureTrusted(event); return saveAppState(value); });
+ipcMain.handle('app:save-state', async (event, value) => {
+  ensureTrusted(event); const result = await saveAppState(value);
+  if (Object.hasOwn(value || {}, 'lightweight')) for (const view of websiteViews.values()) void configureWebsiteEffects(view.webContents);
+  return result;
+});
+ipcMain.handle('app:claim-celebration', async (event, key) => {
+  ensureTrusted(event);
+  if (!['cs2-installed', 'account-created'].includes(key)) return false;
+  const next = appStateWriteQueue.then(async () => {
+    const current = await loadAppState();
+    if (Date.now() - current.celebrationAt < 60 * 60 * 1000) return false;
+    await writeAppState({ celebrationAt: Date.now() });
+    return true;
+  });
+  appStateWriteQueue = next.then(() => {}, () => {});
+  return next;
+});
 ipcMain.handle('clipboard:write', async (event, value) => { ensureTrusted(event); await clipboard.writeText(typeof value === 'string' ? value.slice(0, 100_000) : ''); return true; });
 ipcMain.handle('account:resume', async (event) => {
   ensureTrusted(event);
@@ -1258,9 +1412,9 @@ handleToolOperation('cs2:open-panel', async (event, directory) => {
   if (typeof directory !== 'string') throw new Error('CS2 游戏目录无效。');
   const root = normalizeCs2Directory(directory);
   if (!root) throw new Error('CS2 游戏目录无效。');
-  const target = path.join(root, 'Panel v1.4.7.exe');
+  const target = path.join(root, cs2Payload.panelFile);
   if (!fsSync.existsSync(target)) throw new Error('所选游戏目录中还没有 Panel，请先安装官方插件包。');
-  return toolLauncher.launch('panel', target, /^Panel v1\..*\.exe$/i, '人机增强 Panel');
+  return toolLauncher.launch('panel', target, /^Panel(?: v1\..*)?\.exe$/i, '人机增强 Panel');
 });
 handleToolOperation('cs2:install', async (event, input = {}) => {
   ensureTrusted(event);
@@ -1270,9 +1424,9 @@ handleToolOperation('cs2:install', async (event, input = {}) => {
   if (input.cleanOtherPlugins !== true || typeof input.keepBackup !== 'boolean') return { cancelled: true };
   appState = await saveAppState({ cs2Directory: root });
   if (!archive) {
-    archive = path.join(app.getPath('userData'), 'cs2-bot-improver-v1.4.7.zip');
+    archive = path.join(app.getPath('userData'), `cs2-bot-improver-v${cs2Payload.version}.zip`);
     if (!fsSync.existsSync(archive)) {
-      const response = await net.fetch('https://github.com/ed0ard/CS2-Bot-Improver/releases/download/v1.4.7/CS2BotImprover.zip');
+      const response = await net.fetch(cs2Payload.packageUrl, { signal: AbortSignal.timeout(300000) });
       if (!response.ok) throw new Error(`官方插件下载失败（${response.status}），请检查网络后重试。`);
       await fs.mkdir(path.dirname(archive), { recursive: true });
       const temporary = `${archive}.${process.pid}.tmp`;
@@ -1282,7 +1436,7 @@ handleToolOperation('cs2:install', async (event, input = {}) => {
   }
   if (!path.isAbsolute(archive) || !fsSync.existsSync(archive)) throw new Error('没有找到官方插件 ZIP 文件。');
   const digest = await new Promise((resolve, reject) => { const hash = crypto.createHash('sha256'); const stream = fsSync.createReadStream(archive); stream.on('data', (chunk) => hash.update(chunk)); stream.once('error', reject); stream.once('end', () => resolve(hash.digest('hex').toUpperCase())); });
-  if (digest !== 'EFFB3C9C76301F74DA1582FB167B44FA12B86772C2CACC91848767C27DB92E67') throw new Error('文件校验未通过。请从官方 v1.4.7 Release 下载 CS2BotImprover.zip。');
+  if (digest !== cs2Payload.archiveSha256.toUpperCase()) throw new Error(`文件校验未通过。请从官方 v${cs2Payload.version} Release 下载 CS2BotImprover.zip。`);
   const structureOkay = path.basename(root).toLowerCase() === 'csgo' && path.basename(path.dirname(root)).toLowerCase() === 'game'
     && fsSync.existsSync(path.join(root, 'gameinfo.gi')) && fsSync.existsSync(path.join(path.dirname(root), 'bin', 'win64'));
   if (!structureOkay) {
@@ -1295,16 +1449,12 @@ handleToolOperation('cs2:install', async (event, input = {}) => {
 
 let cs2InstallRunning = false;
 async function runtimeArchive() {
-  const archive = path.join(__dirname, '..', 'assets/plugins/cs2-shared-runtime.zip');
-  if (!fsSync.existsSync(archive)) throw new Error('随应用附带的共享运行库缺失，请修复雨巷来信安装。');
-  const digest = crypto.createHash('sha256').update(await fs.readFile(archive)).digest('hex');
-  if (digest !== require('./shared-runtime-manifest.json').archiveSha256) throw new Error('随应用附带的共享运行库校验失败。');
-  return archive;
+  return getResourceStore().acquire('cs2-runtime');
 }
 function requireGameClosed() {
   const processes = spawnSync('tasklist.exe', ['/FO', 'CSV', '/NH'], { encoding: 'utf8', windowsHide: true });
   if (processes.status !== 0) throw new Error('无法检查游戏运行状态，请稍后重试。');
-  if (/"(?:cs2|Panel v1\.[^"]*)\.exe"/i.test(processes.stdout)) throw new Error('请先关闭 CS2 和人机增强 Panel。');
+  if (/"(?:cs2|Panel(?: v1\.[^"]*)?)\.exe"/i.test(processes.stdout)) throw new Error('请先关闭 CS2 和人机增强 Panel。');
 }
 handleToolOperation('inventory:install', async (event, input = {}) => {
   ensureTrusted(event);
@@ -1315,9 +1465,11 @@ handleToolOperation('inventory:install', async (event, input = {}) => {
   cs2InstallRunning = true;
   try {
     requireGameClosed();
-    const runtime = await runtimeArchive();
+    const reuseRuntime = await require('./runtime-overlay.cjs').hasCompatibleRuntime(root);
+    const runtime = reuseRuntime ? null : await runtimeArchive();
+    if (!reuseRuntime && !runtime) return { cancelled: true };
     requireGameClosed();
-    const result = await installInventory({ root, archive: path.join(__dirname, '..', 'assets/plugins/InventorySimulator-v3.7.2.zip'), runtimeArchive: runtime, keepBackup: input.keepBackup });
+    const result = await installInventory({ root, archive: path.join(__dirname, '..', 'assets/plugins/InventorySimulator-v3.8.2.zip'), runtimeArchive: runtime, keepBackup: input.keepBackup });
     await saveAppState({ cs2Directory: root });
     return result;
   } finally { cs2InstallRunning = false; }
@@ -1331,8 +1483,10 @@ handleToolOperation('demo:install', async (event, input = {}) => {
   cs2InstallRunning = true;
   try {
     requireGameClosed();
-    const runtime = await runtimeArchive(); requireGameClosed();
-    const result = await installDemo({ root, archive: path.join(__dirname, '..', 'assets/plugins/demotracer-css-v1.6.6.zip'), runtimeArchive: runtime, keepBackup: input.keepBackup });
+    const reuseRuntime = await require('./runtime-overlay.cjs').hasCompatibleRuntime(root);
+    const runtime = reuseRuntime ? null : await runtimeArchive(); requireGameClosed();
+    if (!reuseRuntime && !runtime) return { cancelled: true };
+    const result = await installDemo({ root, archive: path.join(__dirname, '..', 'assets/plugins/demotracer-css-v1.6.12.zip'), runtimeArchive: runtime, keepBackup: input.keepBackup });
     await saveAppState({ cs2Directory: root }); return result;
   } finally { cs2InstallRunning = false; }
 });
@@ -1355,7 +1509,7 @@ handleToolOperation('demo:launch-game', async event => {
 const demoGui = require('./demo-gui.cjs');
 const demoGuiRecord = () => path.join(app.getPath('userData'), 'demotracer-gui.json');
 const demoLocalData = () => process.env.LOCALAPPDATA || app.getPath('appData');
-ipcMain.handle('demo:gui-status', async event => { ensureTrusted(event); return demoGui.findGui(demoGuiRecord(), demoLocalData()); });
+ipcMain.handle('demo:gui-status', async event => { ensureTrusted(event); return demoGui.guiStatus(demoGuiRecord(), demoLocalData()); });
 handleToolOperation('demo:gui-locate', async event => {
   ensureTrusted(event); const result = await dialog.showOpenDialog(windowRef, { title: '选择已安装的 cs2-demotracer-gui.exe', properties: ['openFile'], filters: [{ name: '已安装的 DemoTracer', extensions: ['exe'] }] });
   return result.canceled ? null : demoGui.rememberGui(demoGuiRecord(), result.filePaths[0]);
@@ -1366,24 +1520,28 @@ handleToolOperation('demo:gui-install', async (event, download = false) => {
   demoGuiInstalling = true;
   try {
     const existing = await demoGui.findGui(demoGuiRecord(), demoLocalData());
-    if (existing) { await demoGui.launchGui(existing); return { executable: existing, alreadyInstalled: true }; }
+    if (existing) {
+      const answer = await dialog.showMessageBox(windowRef, { type: 'question', title: '更新 DemoTracer', message: '安装或更新为 DemoTracer 1.6.12？', detail: '已有程序：' + existing + '\n仅打开程序请使用“打开 DemoTracer”。更新前请关闭 DemoTracer，个人回放库保留。', buttons: ['取消', '继续更新'], defaultId: 0, cancelId: 0 });
+      if (answer.response !== 1) return { cancelled: true };
+    }
+    toolLauncher.assertClosed(/^cs2-demotracer-gui\.exe$/i, 'DemoTracer');
     let installer;
     if (download === true) {
-      installer = path.join(app.getPath('userData'), 'demotracer-gui-v1.6.6.exe');
+      installer = path.join(app.getPath('userData'), 'demotracer-gui-v1.6.12.exe');
       if (!fsSync.existsSync(installer)) {
         try {
-          const response = await net.fetch('https://github.com/unicbm/demotracer/releases/download/v1.6.6/demotracer-gui-v1.6.6.exe');
+          const response = await net.fetch('https://github.com/unicbm/demotracer/releases/download/v1.6.12/demotracer-gui-v1.6.12.exe');
           if (!response.ok) throw new Error('HTTP ' + response.status);
           const bytes = Buffer.from(await response.arrayBuffer());
           if (crypto.createHash('sha256').update(bytes).digest('hex') !== require('./demo-payload-manifest.json').guiSha256) throw new Error('文件校验失败');
           await fs.mkdir(path.dirname(installer), { recursive: true }); await fs.writeFile(installer, bytes);
-        } catch (cause) { throw new Error('官方 GUI 下载失败，已停止且不会自动重试。请手动从官方 v1.6.6 Release 下载 demotracer-gui-v1.6.6.exe，再使用“选择安装包并安装”。' + cause.message); }
+        } catch (cause) { throw new Error('官方 GUI 下载失败，已停止且不会自动重试。请手动从官方 v1.6.12 Release 下载 demotracer-gui-v1.6.12.exe，再使用“选择安装包并安装”。' + cause.message); }
       }
     } else {
-      const result = await dialog.showOpenDialog(windowRef, { title: '选择官方 demotracer-gui-v1.6.6.exe 安装包', properties: ['openFile'], filters: [{ name: '官方安装包', extensions: ['exe'] }] });
+      const result = await dialog.showOpenDialog(windowRef, { title: '选择官方 demotracer-gui-v1.6.12.exe 安装包', properties: ['openFile'], filters: [{ name: '官方安装包', extensions: ['exe'] }] });
       if (result.canceled) return { cancelled: true }; installer = result.filePaths[0];
     }
-    const target = await demoGui.installGui(installer, path.join(demoLocalData(), 'Programs', 'DemoTracer'), demoGuiRecord());
+    const target = await demoGui.installGui(installer, existing ? path.dirname(existing) : path.join(demoLocalData(), 'Programs', 'DemoTracer'), demoGuiRecord());
     await demoGui.launchGui(target); return { executable: target };
   } finally { demoGuiInstalling = false; }
 });
@@ -1450,7 +1608,15 @@ ipcMain.handle('cs2:status', async (event, directory) => {
   ensureTrusted(event);
   const root = normalizeCs2Directory(directory);
   if (!root) return {};
-  return { demo: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/DemoTracer/DemoTracer.dll')), bots: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/BotAI/BotAI.dll')), inventory: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll')) };
+  let demoVersion = null;
+  let inventoryVersion = null;
+  try {
+    const dll = 'addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll';
+    const hash = crypto.createHash('sha256').update(await fs.readFile(path.join(root,dll))).digest('hex');
+    for (const manifest of [require('./inventory-payload-manifest.json'),require('./inventory-legacy-payload-manifest.json')]) if (manifest.files.some(item=>item.path===dll && item.sha256===hash)) inventoryVersion=manifest.version;
+  } catch {}
+  try { demoVersion = JSON.parse(await fs.readFile(path.join(root,'addons/demotracer-install.v1.json'),'utf8')).bundle_version; } catch {}
+  return { inventoryVersion, demoVersion: typeof demoVersion === 'string' ? demoVersion.slice(0,40) : null, demo: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/DemoTracer/DemoTracer.dll')), bots: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/BotAI/BotAI.dll')), inventory: fsSync.existsSync(path.join(root, 'addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll')) };
 });
 ipcMain.handle('app:open-source-notices', async (event) => {
   ensureTrusted(event);
@@ -1472,7 +1638,7 @@ handleToolOperation('cs2:uninstall', async (event, input = {}) => {
   try {
     const processes = spawnSync('tasklist.exe', ['/FO', 'CSV', '/NH'], { encoding: 'utf8', windowsHide: true });
     if (processes.status !== 0) throw new Error('暂时无法检查游戏是否运行，请稍后重试。');
-    if (/"(?:cs2|Panel v1\.[^"]*)\.exe"/i.test(processes.stdout)) throw new Error('请先关闭 CS2 和人机增强 Panel，再进行卸载。');
+    if (/"(?:cs2|Panel(?: v1\.[^"]*)?)\.exe"/i.test(processes.stdout)) throw new Error('请先关闭 CS2 和人机增强 Panel，再进行卸载。');
     const result = await uninstallPayload({ root, keepConfig: input.keepConfig !== false, removeShared: input.removeShared === true, fingerprint: input.fingerprint });
     return result;
   } finally { cs2InstallRunning = false; }
@@ -1483,11 +1649,11 @@ async function runCs2Install(root, archive, keepBackup) {
   try {
     const processes = spawnSync('tasklist.exe', ['/FO', 'CSV', '/NH'], { encoding: 'utf8', windowsHide: true });
     if (processes.status !== 0) throw new Error('暂时无法检查游戏是否运行，请稍后重试。');
-    if (/"(?:cs2|Panel v1\.[^"]*)\.exe"/i.test(processes.stdout)) throw new Error('请先关闭 CS2 和人机增强 Panel，再进行安装。');
+    if (/"(?:cs2|Panel(?: v1\.[^"]*)?)\.exe"/i.test(processes.stdout)) throw new Error('请先关闭 CS2 和人机增强 Panel，再进行安装。');
     const result = await installOfficialPayload({ root, archive, keepBackup });
-    const panelTarget = path.join(root, 'Panel v1.4.7.exe');
+    const panelTarget = path.join(root, cs2Payload.panelFile);
     let panelOpened = false;
-    try { await toolLauncher.launch('panel', panelTarget, /^Panel v1\..*\.exe$/i, '人机增强 Panel'); panelOpened = true; } catch { /* installation succeeded; manual launch remains available */ }
+    try { await toolLauncher.launch('panel', panelTarget, /^Panel(?: v1\..*)?\.exe$/i, '人机增强 Panel'); panelOpened = true; } catch { /* installation succeeded; manual launch remains available */ }
     return { ...result, panel: panelTarget, panelOpened };
   } finally { cs2InstallRunning = false; }
 }

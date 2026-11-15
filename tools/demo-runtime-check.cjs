@@ -8,11 +8,11 @@ const root = path.resolve(__dirname, '..');
 const preview = process.argv.includes('--preview');
 async function run() {
   const base = fs.mkdtempSync(path.join(os.tmpdir(), 'alley-inventory-ui-'));
-  const appRoot = createTestApp(base);
+  const appRoot = createTestApp(base, { seedResources: true });
   const game = path.join(base, 'game/csgo'); fs.mkdirSync(game, { recursive: true });
   fs.writeFileSync(path.join(game, 'gameinfo.gi'), 'GameInfo { FileSystem { SearchPaths {\n Game csgo\n} } }');
-  const profile = path.join(base, 'profile'); fs.mkdirSync(profile); fs.mkdirSync(path.join(profile, 'downloads'));
-  fs.writeFileSync(path.join(profile, 'preferences.json'), JSON.stringify({ cs2Directory: game, cs2Archive: 'E:/dow/CS2BotImprover.zip', downloadDirectory: path.join(profile, 'downloads'), allowHttp: true, allowLocalNetwork: true, allowedHosts: ['127.0.0.1'] }));
+  const profile = path.join(base, 'profile'); fs.mkdirSync(profile, { recursive: true }); fs.mkdirSync(path.join(profile, 'downloads'));
+  fs.writeFileSync(path.join(profile, 'preferences.json'), JSON.stringify({ cs2Directory: game, cs2Archive: 'E:/dow/CS2BotImprover (1).zip', downloadDirectory: path.join(profile, 'downloads'), allowHttp: true, allowLocalNetwork: true, allowedHosts: ['127.0.0.1'] }));
   // Restore the real native web view; only account/community responses are fixtures.
   const preloadPath = path.join(appRoot, 'src/preload.cjs');
   let preload = fs.readFileSync(preloadPath, 'utf8');
@@ -75,7 +75,23 @@ async function run() {
     assert.equal(await cdp.evaluate("!!document.querySelector('.website-modal-background')"),false);
     await route('rainalley://app/feature/cs2-demo');
     console.log('PASS: Demo install/uninstall, both cancellation steps, downloads captured background and native view restoration.');
-    if (preview) { keep = true; socket.close(); proc.unref(); proc.stdout.destroy(); proc.stderr.destroy(); console.log(JSON.stringify({ preview:true,pid:proc.pid,directory:base })); }
+    if (preview) {
+      await waitFor(cdp, "document.querySelector('#demoDirectory')?.value.length > 0", 'Preview directory missing');
+      await cdp.evaluate("document.querySelector('#demoInstall').click()"); await click('是，继续安装'); await click('不保留备份');
+      await waitFor(cdp, "document.querySelector('#demoStatus')?.textContent.includes('回放插件已安装')", 'Preview reinstall failed', 90000);
+      await cdp.evaluate("document.querySelector('.detail-card').scrollIntoView({block:'start'})");
+      await shot('preview-demo-installed.png');
+      await cdp.send('Emulation.setDeviceMetricsOverride',{width:1050,height:900,deviceScaleFactor:1,mobile:false});
+      assert.ok(await cdp.evaluate('document.documentElement.scrollWidth <= innerWidth'), 'Demo preview overflows at the supported minimum width (1050px)');
+      await shot('preview-demo-narrow.png');
+      await cdp.send('Emulation.clearDeviceMetricsOverride');
+      const state = {preview:true,pid:proc.pid,port,directory:base,game,appRoot};
+      fs.writeFileSync(path.join(root,'.work/demo-1.6.12/preview-state.json'),JSON.stringify(state,null,2));
+      keep = true; socket.close(); proc.unref(); proc.stdout.destroy(); proc.stderr.destroy(); console.log(JSON.stringify(state));
+      // Keep the preview's launcher alive: Windows command hosts may otherwise
+      // close the child process job even after Electron has been unref'ed.
+      setInterval(() => {}, 60000);
+    }
   } catch (error) { throw new Error(error.stack + '\n' + output.slice(-3000)); }
   finally {
     socket?.close(); server.close();

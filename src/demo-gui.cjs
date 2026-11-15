@@ -22,12 +22,13 @@ async function rememberGui(record, target) {
   await fs.mkdir(path.dirname(record), { recursive: true }); await fs.writeFile(record, JSON.stringify({ executable: target })); return target;
 }
 async function installGui(installer, destination, record) {
+  launcher.assertClosed(/^cs2-demotracer-gui\.exe$/i, 'DemoTracer');
   const digest = crypto.createHash('sha256').update(await fs.readFile(installer)).digest('hex');
-  if (digest !== manifest.guiSha256) throw new Error('请选择官方 demotracer-gui-v1.6.6.exe 安装包，文件校验未通过。');
+  if (digest !== manifest.guiSha256) throw new Error('请选择官方 demotracer-gui-v1.6.12.exe 安装包，文件校验未通过。');
   // NSIS /D must be last. Remember the installed application, never setup.
   const staging = await fs.mkdtemp(path.join(os.tmpdir(), 'alley-demo-gui-setup-'));
   try {
-    const localInstaller = path.join(staging, 'demotracer-gui-v1.6.6.exe');
+    const localInstaller = path.join(staging, 'demotracer-gui-v1.6.12.exe');
     await fs.copyFile(installer, localInstaller);
     if (crypto.createHash('sha256').update(await fs.readFile(localInstaller)).digest('hex') !== manifest.guiSha256) throw new Error('安装程序副本校验失败。');
     await new Promise((resolve, reject) => {
@@ -40,6 +41,13 @@ async function installGui(installer, destination, record) {
 }
 async function launchGui(target) {
   return launcher.launch('demo-gui', target, /^cs2-demotracer-gui\.exe$/i, 'DemoTracer');
+}
+async function guiStatus(record, localAppData) {
+  const target = await findGui(record,localAppData);
+  if (!target) return null;
+  const result = spawnSync('powershell.exe',['-NoProfile','-NonInteractive','-Command',"[Diagnostics.FileVersionInfo]::GetVersionInfo('" + target.replaceAll("'","''") + "').ProductVersion"],{encoding:'utf8',windowsHide:true,timeout:5000});
+  const version = /^\d+\.\d+\.\d+(?:[.+-][\w.-]+)?$/.exec((result.stdout||'').trim())?.[0] || null;
+  return {executable:target,version};
 }
 // Only the official NSIS uninstaller beside the validated GUI is eligible.
 // Never recursively delete the install folder: it may contain user replays.
@@ -63,4 +71,4 @@ function runUninstaller(file, directory) {
     child.once('exit', code => code === 0 ? resolve() : reject(new Error('GUI 卸载未完成，退出码：' + code)));
   });
 }
-module.exports = { findGui, rememberGui, installGui, launchGui, uninstallGui };
+module.exports = { findGui, rememberGui, installGui, launchGui, uninstallGui, guiStatus };

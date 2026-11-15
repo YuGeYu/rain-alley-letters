@@ -1,4 +1,5 @@
 import { management } from './management.js';
+import { playerTools } from './player-tools.js';
 // Cloudflare Workers Web Crypto rejects PBKDF2 iteration counts above 100,000.
 const PASSWORD_ITERATIONS = 100_000;
 const SESSION_SECONDS = 60 * 60 * 24 * 30;
@@ -218,6 +219,8 @@ async function updateAccount(env, request) {
         env.DB.prepare("UPDATE sessions SET username = ?1 WHERE username = ?2").bind(canonicalUsername, session.username),
         env.DB.prepare("UPDATE comments SET username = ?1 WHERE username = ?2").bind(canonicalUsername, session.username),
         env.DB.prepare("UPDATE profiles SET username = ?1 WHERE username = ?2").bind(canonicalUsername, session.username),
+        env.DB.prepare("UPDATE player_tools SET username = ?1 WHERE username = ?2").bind(canonicalUsername, session.username),
+        env.DB.prepare("UPDATE player_tool_publishers SET username = ?1 WHERE username = ?2").bind(canonicalUsername, session.username),
         env.DB.prepare("UPDATE community_moderators SET username = ?1 WHERE username = ?2").bind(canonicalUsername, session.username),
         // Moving status with the account prevents renaming from clearing a mute.
         env.DB.prepare("UPDATE account_status SET username = ?1 WHERE username = ?2").bind(canonicalUsername, session.username),
@@ -397,6 +400,7 @@ async function saveProfile(env, request, username) {
 export async function handleRequest(request, env) {
   const url = new URL(request.url);
   const { pathname } = url;
+  if (pathname === '/api/tools' || pathname.startsWith('/api/tools/')) return playerTools(request,env,{authenticate,readJson,json,error,throttle});
   if (pathname.startsWith('/api/management/')) return management(request,env,{authenticate,readJson,json,error,cleanProfile});
   if (pathname === "/health" && request.method === "GET") return json({ ok: true, service: "rain-alley-auth" });
   if (pathname === "/api/register" && request.method === "POST") return register(env, request);

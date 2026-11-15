@@ -7,7 +7,7 @@ const assert = require('node:assert/strict');
 
 const root = path.resolve(__dirname, '..');
 const electron = path.join(root, 'node_modules', 'electron', 'dist', 'electron.exe');
-const archive = process.env.CS2_BOT_IMPROVER_ARCHIVE || 'E:\\dow\\CS2BotImprover.zip';
+const archive = process.env.CS2_BOT_IMPROVER_ARCHIVE || 'E:\\dow\\CS2BotImprover (1).zip';
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function freePort() {
@@ -19,10 +19,22 @@ async function freePort() {
   return port;
 }
 
-function createTestApp(base) {
+function createTestApp(base, { seedResources = false } = {}) {
   const appRoot = path.join(base, 'app');
   fs.mkdirSync(appRoot, { recursive: true });
-  for (const folder of ['src', 'assets']) fs.cpSync(path.join(root, folder), path.join(appRoot, folder), { recursive: true });
+  const resources = Object.values(require('../src/external-resources.json'));
+  const external = new Set(resources.map(resource => path.resolve(root, resource.localPath)));
+  for (const folder of ['src', 'assets']) fs.cpSync(path.join(root, folder), path.join(appRoot, folder), { recursive: true, filter: source => !external.has(source) });
+  // Integration fixtures model files the player has already downloaded and
+  // verified. Production never falls back to the excluded development ZIPs.
+  if (seedResources) {
+    const cache = path.join(base, 'profile', 'resource-packages');
+    fs.mkdirSync(cache, { recursive: true });
+    for (const resource of resources) {
+      const local = path.join(root, resource.localPath);
+      if (fs.existsSync(local)) fs.copyFileSync(local, path.join(cache, resource.sha256 + '.zip'));
+    }
+  }
   fs.copyFileSync(path.join(root, 'package.json'), path.join(appRoot, 'package.json'));
   for (const name of ['LICENSE', 'THIRD_PARTY_NOTICES.md']) fs.copyFileSync(path.join(root, name), path.join(appRoot, name));
   const preloadPath = path.join(appRoot, 'src', 'preload.cjs');
@@ -33,6 +45,13 @@ function createTestApp(base) {
   preload = preload.replace("openWebsite: (url, approvedByUser = false, tabId) => ipcRenderer.invoke('site:open', url, approvedByUser === true, tabId),", "openWebsite: async (url, _approved, tabId) => ({ id: tabId || 'test-tab', url, title: '测试分享页', loading: false }),");
   assert.ok(preload.includes("title: '测试分享页'"), 'The isolated website-view test hook was not installed.');
   fs.writeFileSync(preloadPath, preload, 'utf8');
+  // Every game mutation in a copied fixture is fenced below its temporary base,
+  // even if a delayed Steam-discovery callback accidentally returns a real path.
+  for (const [name, marker] of [['cs2-installer.cjs','  const stage = await io.mkdtemp('],['cs2-uninstaller.cjs','  const plan = await inspectUninstall({ root, removeShared, keepConfig, io, plugin });']]) {
+    const file = path.join(appRoot,'src',name), text = fs.readFileSync(file,'utf8');
+    const fence = '  if (!path.resolve(root).startsWith('+JSON.stringify(path.resolve(base)+path.sep)+')) throw new Error("Isolated test rejected a path outside its temporary directory.");\n';
+    assert.ok(text.includes(marker));fs.writeFileSync(file,text.replace(marker,fence+marker));
+  }
   return appRoot;
 }
 
@@ -90,17 +109,19 @@ function panelPids(executable) {
 }
 
 async function run() {
+  const preview = process.argv.includes('--preview');
+  let previewReady = false;
   if (process.platform !== 'win32') {
     console.log('CS2 install runtime skipped: the installer depends on Windows tar and executable launching.');
     return;
   }
   if (!fs.existsSync(archive)) {
-    console.log('CS2 install runtime skipped: set CS2_BOT_IMPROVER_ARCHIVE to the official v1.4.7 ZIP to enable the integration check.');
+    console.log('CS2 install runtime skipped: set CS2_BOT_IMPROVER_ARCHIVE to the official v1.4.9 ZIP to enable the integration check.');
     return;
   }
   assert.ok(fs.existsSync(electron), 'Electron executable is missing.');
   const digest = crypto.createHash('sha256').update(fs.readFileSync(archive)).digest('hex').toUpperCase();
-  assert.equal(digest, 'EFFB3C9C76301F74DA1582FB167B44FA12B86772C2CACC91848767C27DB92E67', 'The local plugin ZIP is not the pinned v1.4.7 release.');
+  assert.equal(digest, 'EBEF45E8E3A3012F5C4BB131BBD6E4CC8351D2C9C0FB059A11C1790048F639F4', 'The local plugin ZIP is not the pinned v1.4.9 release.');
   const base = fs.mkdtempSync(path.join(os.tmpdir(), 'rain-alley-cs2-install-'));
   const appRoot = createTestApp(base);
   const userData = path.join(base, 'user-data'); fs.mkdirSync(userData, { recursive: true });
@@ -113,7 +134,7 @@ async function run() {
   fs.writeFileSync(path.join(csgo, 'gameinfo.gi'), 'original-gameinfo');
   fs.writeFileSync(path.join(csgo, 'addons', 'RainAlleyOldPlugin', 'preserve-me.txt'), 'original-plugin');
 
-  const panelTarget = path.join(csgo, 'Panel v1.4.7.exe');
+  const panelTarget = path.join(csgo, 'Panel.exe');
   const existingPanels = panelPids(panelTarget);
   const port = await freePort();
   const app = spawn(electron, [appRoot, `--remote-debugging-port=${port}`, '--remote-allow-origins=*', `--user-data-dir=${userData}`], {
@@ -134,7 +155,7 @@ async function run() {
 
     await cdp.evaluate("document.querySelector('#appAddressInput').value='rainalley://app/feature/cs2-bots'; document.querySelector('#addressForm').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}))");
     await waitFor(cdp, "Boolean(document.querySelector('#installCs2Package'))", 'CS2 detail page did not render.');
-    await cdp.evaluate(`document.querySelector('#cs2Directory').value=${JSON.stringify(csgo)}; document.querySelector('#cs2Archive').value=${JSON.stringify(archive)};`);
+    await cdp.evaluate(`document.querySelector('#cs2Directory').value=${JSON.stringify(csgo)}; document.querySelector('#cs2Directory').dataset.chosen='true'; document.querySelector('#cs2Archive').value=${JSON.stringify(archive)}; document.querySelector('#cs2Archive').dataset.chosen='true';`);
 
     await cdp.evaluate("document.querySelector('#installCs2Package').click()");
     await waitFor(cdp, "document.querySelector('.cs2-modal h2')?.textContent === '清理其他 CS2 插件？'", 'Cleanup confirmation did not appear as an app modal.');
@@ -164,6 +185,17 @@ async function run() {
     assert.ok(fs.existsSync(path.join(csgo, 'addons', 'counterstrikesharp', 'api', 'CounterStrikeSharp.API.dll')), 'Official plugin files were not installed.');
     assert.ok(fs.existsSync(panelTarget), 'Official Panel executable was not installed.');
     assert.equal(fs.readFileSync(path.join(csgo, 'gameinfo.gi')).length > 100, true, 'The official gameinfo.gi was not copied as a file.');
+    assert.ok(fs.existsSync(path.join(csgo, 'backup/Online/gameinfo.gi')), 'Online mode backup missing');
+    assert.ok(fs.existsSync(path.join(csgo, 'backup/WithBots/gameinfo.gi')), 'Bot mode backup missing');
+    const previewFolder = path.join(root,'.work/cs2-bots-1.4.9'); fs.mkdirSync(previewFolder,{recursive:true});
+    const shot = await cdp.send('Page.captureScreenshot',{format:'png'});
+    fs.writeFileSync(path.join(previewFolder,'installed-page.png'),Buffer.from(shot.data,'base64'));
+    if (preview) {
+      fs.writeFileSync(path.join(previewFolder,'preview-state.json'),JSON.stringify({pid:app.pid,port,base,csgo,panelTarget,archive,appRoot},null,2));
+      previewReady = true;socket.close();app.unref();app.stdout.destroy();app.stderr.destroy();
+      console.log('PASS v1.4.9 actual ZIP install, cancel, backup, full payload and Panel launch. Preview: '+previewFolder);
+      return;
+    }
 
     for (const pid of panelPids(panelTarget)) if (!existingPanels.has(pid)) spawnSync('taskkill.exe', ['/PID', String(pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' });
     for (let attempt = 0; attempt < 40 && panelPids(panelTarget).size; attempt += 1) await sleep(100);
@@ -186,10 +218,12 @@ async function run() {
     if (app.exitCode === null) spawnSync('taskkill.exe', ['/PID', String(app.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' });
     throw new Error(`${cause.stack || cause}\nElectron output:\n${output.slice(-5000)}`);
   } finally {
+    if (!previewReady) {
     for (const pid of panelPids(panelTarget)) if (!existingPanels.has(pid)) spawnSync('taskkill.exe', ['/PID', String(pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' });
     for (let attempt = 0; attempt < 8; attempt += 1) {
       try { fs.rmSync(base, { recursive: true, force: true }); break; }
       catch (cause) { if (attempt === 7) console.error(`Temporary CS2 test files remain at ${base}: ${cause.message}`); else await sleep(250); }
+    }
     }
   }
 }

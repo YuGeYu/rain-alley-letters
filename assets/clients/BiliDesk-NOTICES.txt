@@ -1,0 +1,20 @@
+BiliDesk 1.6.2 / Rain Alley integration, 2026-11-05
+Upstream: https://github.com/ABING1111/BiliDesk
+Copyright: BiliDesk contributors. License: GPL-3.0 (see BiliDesk-LICENSE.txt).
+Corresponding complete patched source: BiliDesk-1.6.2-source.zip, supplied alongside the binary.
+Changes: optional isolated QA data directory and single-instance identity. Default user profile unchanged.
+Build: .NET SDK 10, dotnet publish BiliDesk/BiliDesk.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -p:PublishTrimmed=false
+
+This is a third-party client, not affiliated with Bilibili. All upstream features, credits and first-run disclaimer retained.
+Components (unmodified dependency binaries):
+LibVLCSharp / LibVLCSharp.WPF 3.8.0: LGPL-2.1-or-later
+  https://code.videolan.org/videolan/LibVLCSharp/-/tree/3.8.0
+VideoLAN.LibVLC.Windows 3.0.24: LGPL-2.1-or-later; bundled codec/plugin licenses also apply.
+  https://get.videolan.org/vlc/3.0.24/ (corresponding VLC source distribution)
+  https://code.videolan.org/videolan/vlc
+Microsoft.Web.WebView2 1.0.4191.47: Microsoft WebView2 SDK license, included from NuGet.
+  https://www.nuget.org/packages/Microsoft.Web.WebView2/1.0.4191.47
+.NET 10 runtime and Windows Desktop runtime: MIT and third-party notices shipped with runtime.
+  https://github.com/dotnet/runtime ; https://github.com/dotnet/wpf
+Native LGPL libraries are shipped as separate replaceable DLLs; no single-file embedding or trimming.
+Dependency license material from the official NuGet archives is in dependency-licenses/.

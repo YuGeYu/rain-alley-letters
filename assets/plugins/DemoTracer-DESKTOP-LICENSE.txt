@@ -3,7 +3,7 @@ DemoTracer Proprietary License
 Copyright (c) 2026 unicbm. All rights reserved.
 
 This license applies to the original DemoTracer desktop GUI and converter code
-in this directory from the private development line based on public commit
+under desktop/ in the private development repository, based on public commit
 600b43d295320e91579a3e398cb93ced2ed8ea9d. No permission to copy, modify,
 redistribute, sublicense, or publish that source code is granted without the
 copyright holder's written authorization.

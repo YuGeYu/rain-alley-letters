@@ -12,24 +12,32 @@ function walk(relative) {
   for (const entry of fs.readdirSync(path.join(root, relative), { withFileTypes: true })) {
     const name = path.posix.join(relative, entry.name);
     if (entry.isSymbolicLink()) throw new Error('Source preview refuses links: ' + name);
-    if (entry.isDirectory()) walk(name); else files.push(name);
+    if (entry.isDirectory()) { if (!(relative.startsWith('vendor/XCMusic') && ['node_modules','dist','dist_electron','.git','.husky'].includes(entry.name)) && !(relative.startsWith('vendor/BiliDesk') && ['bin', 'obj', '.vs', '.git'].includes(entry.name))) walk(name); } else files.push(name);
   }
 }
 for (const dir of dirs) walk(dir);
+walk('vendor/BiliDesk');
+walk('vendor/XCMusic');
 for (const entry of fs.readdirSync(path.join(root, 'tools'))) if (!excludedTools.has(entry)) files.push('tools/' + entry);
 for (const file of ['package.json', 'package-lock.json', 'README.md', 'cloudflare.config.ts', 'vite.config.ts']) files.push('cloudflare/auth-api/' + file);
 walk('cloudflare/auth-api/src'); walk('cloudflare/auth-api/migrations');
 const suspicious = [/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/, /gh[pousr]_[A-Za-z0-9]{30,}/, /github_pat_[A-Za-z0-9_]{40,}/, /AKIA[0-9A-Z]{16}/];
 const manifest = [];
 for (const name of files) {
+  if (Object.values(require('../src/external-resources.json')).some(resource => resource.localPath === name)) continue;
   const full = path.join(root, name);
   if (fs.lstatSync(full).isSymbolicLink() || !fs.statSync(full).isFile()) throw new Error('Unexpected file: ' + name);
   const data = fs.readFileSync(full);
   if (suspicious.some(pattern => pattern.test(data.toString('utf8')))) throw new Error('Possible secret: ' + name);
-  const bundledInventory = name === 'assets/plugins/InventorySimulator-v3.7.2.zip' && crypto.createHash('sha256').update(data).digest('hex') === require('../src/inventory-payload-manifest.json').archiveSha256;
+  const bundledInventory = name === 'assets/plugins/InventorySimulator-v3.8.2.zip' && crypto.createHash('sha256').update(data).digest('hex') === require('../src/inventory-payload-manifest.json').archiveSha256;
   const bundledRuntime = name === 'assets/plugins/cs2-shared-runtime.zip' && crypto.createHash('sha256').update(data).digest('hex') === require('../src/shared-runtime-manifest.json').archiveSha256;
-  const bundledDemo = name === 'assets/plugins/demotracer-css-v1.6.6.zip' && crypto.createHash('sha256').update(data).digest('hex') === require('../src/demo-payload-manifest.json').archiveSha256;
-  if (!bundledDemo && !bundledInventory && !bundledRuntime && ['.exe', '.dll', '.zip', '.vpk', '.db', '.sqlite', '.enc', '.pem', '.key'].includes(path.extname(name).toLowerCase())) throw new Error('Private or external binary file: ' + name);
+  const bundledOverlay = name === 'assets/plugins/cs2-runtime-1.0.380-overlay.zip' && crypto.createHash('sha256').update(data).digest('hex') === require('../src/runtime-overlay-manifest.json').archiveSha256;
+  const bundledDemo = name === 'assets/plugins/demotracer-css-v1.6.12.zip' && crypto.createHash('sha256').update(data).digest('hex') === require('../src/demo-payload-manifest.json').archiveSha256;
+  const biliManifest = require('../src/bilidesk-payload-manifest.json');
+  const bundledBiliDesk = (name === 'assets/clients/BiliDesk-win-x64.zip' && crypto.createHash('sha256').update(data).digest('hex') === biliManifest.archiveSha256) || (name === 'assets/clients/BiliDesk-1.6.2-source.zip' && crypto.createHash('sha256').update(data).digest('hex') === biliManifest.sourceSha256);
+  const xcmManifest = require('../src/xcmusic-payload-manifest.json');
+  const bundledXCMusic = (name === 'assets/clients/XCMusic-win-x64.zip' && crypto.createHash('sha256').update(data).digest('hex') === xcmManifest.archiveSha256) || (name === 'assets/clients/XCMusic-0.3.1-source.zip' && crypto.createHash('sha256').update(data).digest('hex') === xcmManifest.sourceSha256);
+  if (!bundledOverlay && !bundledXCMusic && !bundledBiliDesk && !bundledDemo && !bundledInventory && !bundledRuntime && ['.exe', '.dll', '.zip', '.vpk', '.db', '.sqlite', '.enc', '.pem', '.key'].includes(path.extname(name).toLowerCase())) throw new Error('Private or external binary file: ' + name);
   manifest.push({ path: name, bytes: data.length, sha256: crypto.createHash('sha256').update(data).digest('hex') });
 }
 fs.mkdirSync(out, { recursive: true });

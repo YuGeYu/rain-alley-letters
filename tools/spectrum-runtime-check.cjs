@@ -43,6 +43,8 @@ async function run() {
      await cdp.evaluate('document.documentElement.dataset.theme=' + JSON.stringify(theme));
      const style = await cdp.evaluate("(()=>{let b=getComputedStyle(document.querySelector('#installCs2Package'));let h=getComputedStyle(document.querySelector('#detailTitle'));return {background:b.backgroundImage,animation:b.animationName,color:b.color,title:h.backgroundImage,overflow:document.documentElement.scrollWidth>innerWidth}})()");
      assert.match(style.background,/linear-gradient/); assert.equal(style.animation,'alley-spectrum'); assert.match(style.title,/linear-gradient/); assert.equal(style.overflow,false);
+     assert.equal(await cdp.evaluate("getComputedStyle(document.querySelector('#detailTitle')).animationName"),'alley-spectrum','Detail title gradient did not animate continuously.');
+     assert.equal(await cdp.evaluate("getComputedStyle(document.querySelector('#installCs2Package')).animationPlayState"),'running','Primary button gradient animation is not running.');
      const box = await cdp.evaluate("(()=>{const b=document.querySelector('#installCs2Package').getBoundingClientRect();return {x:b.x+b.width/2,y:b.y+b.height/2}})()");
      await cdp.send('Input.dispatchMouseEvent',{type:'mouseMoved',...box});
      const hover = await cdp.evaluate("(()=>{const b=getComputedStyle(document.querySelector('#installCs2Package'));return {background:b.backgroundImage,color:b.color}})()");
@@ -51,11 +53,28 @@ async function run() {
    }
    await cdp.send('Emulation.setEmulatedMedia', { features:[{name:'prefers-reduced-motion',value:'reduce'}] });
    assert.equal(await cdp.evaluate("getComputedStyle(document.querySelector('#installCs2Package')).animationName"),'none');
+   assert.equal(await cdp.evaluate("getComputedStyle(document.querySelector('#detailTitle')).animationName"),'none','Reduced motion must stop title animation.');
    assert.equal(await cdp.evaluate("import('./celebration.js').then(m=>m.celebrate('cs2-installed',{},window.alleyDesktop))"),false);
    await cdp.send('Emulation.setEmulatedMedia', { features:[{name:'prefers-reduced-motion',value:'no-preference'}] });
    assert.equal(await cdp.evaluate("import('./celebration.js').then(m=>m.celebrate('ordinary-click',{},window.alleyDesktop))"),false);
+   assert.equal(await cdp.evaluate("window.alleyDesktop.claimCelebration('ordinary-click')"),false,'Non-milestone claimed the celebration quota.');
+   assert.equal(await cdp.evaluate("document.querySelectorAll('.alley-celebration').length"),0,'Persistent gradient must not create a celebration layer.');
    assert.equal(await cdp.evaluate("import('./celebration.js').then(m=>m.celebrate('cs2-installed',{lightweight:true},window.alleyDesktop))"),false);
-   assert.equal(await cdp.evaluate("import('./celebration.js').then(m=>m.celebrate('cs2-installed',{},window.alleyDesktop))"),true);
+   await cdp.evaluate("window.alleyDesktop.saveState({celebrationAt:Date.now()-59*60*1000})");
+   assert.equal(await cdp.evaluate("window.alleyDesktop.getState().then(s=>import('./celebration.js').then(m=>m.celebrate('cs2-installed',s.preferences,window.alleyDesktop)))"),false, 'Milestone was not throttled before one hour.');
+   await stop();
+   const preferencesPath=path.join(userData,'preferences.json');
+   const saved=JSON.parse(fs.readFileSync(preferencesPath,'utf8'));
+   saved.celebrationAt=Date.now()-60*60*1000;
+   fs.writeFileSync(preferencesPath,JSON.stringify(saved));
+   await start(); await detail();
+   assert.deepEqual(await cdp.evaluate("Promise.all([window.alleyDesktop.claimCelebration('cs2-installed'),window.alleyDesktop.claimCelebration('account-created')])"),[true,false],'Concurrent milestone claims bypassed the one-hour limit.');
+   await stop();
+   const afterClaim=JSON.parse(fs.readFileSync(preferencesPath,'utf8'));
+   afterClaim.celebrationAt=Date.now()-60*60*1000;
+   fs.writeFileSync(preferencesPath,JSON.stringify(afterClaim));
+   await start(); await detail();
+   assert.equal(await cdp.evaluate("import('./celebration.js').then(m=>m.celebrate('cs2-installed',{},window.alleyDesktop))"),true,'Important milestone did not play after cooldown.');
    assert.equal(await cdp.evaluate("document.querySelectorAll('.celebration-spark').length"),640);
    assert.equal(await cdp.evaluate("getComputedStyle(document.querySelector('.alley-celebration')).pointerEvents"),'none');
    await sleep(650); const shot=await cdp.send('Page.captureScreenshot'); fs.writeFileSync(path.join(root,'release','celebration.png'),Buffer.from(shot.data,'base64'));
@@ -65,7 +84,7 @@ async function run() {
    await waitFor(cdp, selection, 'ZIP did not survive restart');
    assert.equal(await cdp.evaluate("import('./celebration.js').then(m=>m.celebrate('account-created',{},window.alleyDesktop))"),false);
    fs.unlinkSync(archive); const status=await cdp.evaluate('window.alleyDesktop.getCs2Archive()'); assert.equal(status.available,false); assert.equal(status.path,archive);
-   await stop(); console.log('Spectrum runtime ok: ZIP selection/reload/restart/missing file; both themes; reduced motion; milestone gating; persistent cooldown; 640 sparks; cleanup.');
+   await stop(); console.log('Spectrum runtime ok: ZIP selection/reload/restart/missing file; both themes; reduced motion; non-milestone rejection; one-hour cooldown boundary and persistence; 640 sparks; cleanup.');
  } finally { if(app?.exitCode===null) spawnSync('taskkill.exe',['/PID',String(app.pid),'/T','/F'],{stdio:'ignore',windowsHide:true}); try{socket?.close();}catch{} try { fs.rmSync(base,{recursive:true,force:true,maxRetries:5,retryDelay:200}); } catch(error) { console.warn('Test temporary directory remains:', base, error.message); } }
 }
 run().catch(error=>{console.error(error);process.exitCode=1;});

@@ -1,0 +1,23 @@
+{
+  "bilidesk": {
+    "fileName": "BiliDesk-win-x64.zip",
+    "localPath": "assets/clients/BiliDesk-win-x64.zip",
+    "bytes": 101151595,
+    "sha256": "7eae83a813e55492749184def44f85c168907c5bc01bcc3f1fc34da1ff6d28f7",
+    "quarkUrl": "https://pan.quark.cn/s/65e0682788f8"
+  },
+  "xcmusic": {
+    "fileName": "XCMusic-win-x64.zip",
+    "localPath": "assets/clients/XCMusic-win-x64.zip",
+    "bytes": 178273205,
+    "sha256": "684fb76031fa8e9638bf0c6003dc208c780199f086708f835fc49e534e36557f",
+    "quarkUrl": "https://pan.quark.cn/s/65e0682788f8"
+  },
+  "cs2-runtime": {
+    "fileName": "cs2-shared-runtime.zip",
+    "localPath": "assets/plugins/cs2-shared-runtime.zip",
+    "bytes": 67943286,
+    "sha256": "c399a013da2247af837a0be8798c68d6a174e941d348b94cde648cd4f4aadd38",
+    "quarkUrl": "https://pan.quark.cn/s/65e0682788f8"
+  }
+}

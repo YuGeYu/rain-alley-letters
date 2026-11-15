@@ -3,9 +3,12 @@ const path = require('node:path');
 const os = require('node:os');
 const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
-const { owned, retainedRuntime, demoOverlap } = require('./cs2-ownership.cjs');
+const { owned, retainedRuntime, demoOverlap, shared } = require('./cs2-ownership.cjs');
 
-const INSTALL_ENTRIES = ['addons', 'cfg', 'gameinfo.gi', 'overrides', 'Panel v1.4.7.exe'];
+const payload = require('./cs2-payload-manifest.json');
+const legacy = require('./cs2-legacy-payload-manifest.json');
+const INSTALL_ENTRIES = payload.installEntries;
+const currentHashes = new Map(payload.files.map(item => [item.path.toLowerCase(), item.sha256]));
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function retryBusy(operation) {
   for (let attempt = 0; ; attempt++) {
@@ -26,7 +29,7 @@ function extractArchive(archive, stage) {
 
 // A committed install must never roll back because antivirus/Windows still holds
 // an extracted DLL open. Rollback storage lives outside the extraction directory.
-async function installOfficialPayload({ root, archive, keepBackup, io = fs, extract = extractArchive, entries = INSTALL_ENTRIES, preserveBot = false, installingDemo = false }) {
+async function installOfficialPayload({ root, archive, keepBackup, io = fs, extract = extractArchive, entries = INSTALL_ENTRIES, preserveBot = false, installingDemo = false, obsoleteFiles = [] }) {
   const stage = await io.mkdtemp(path.join(os.tmpdir(), 'rain-alley-cs2-'));
   const rollback = path.join(root, `.rain-alley-${keepBackup ? 'backup' : 'rollback'}-${crypto.randomUUID()}`);
   const journal = { root, archive, phase: 'preparing', moved: [], installed: [], created: [] };
@@ -62,6 +65,14 @@ async function installOfficialPayload({ root, archive, keepBackup, io = fs, extr
       // DemoTracer requires the matched API v3 provider. Installing bots later
       // must not downgrade its provider, API or Harmony assembly.
       if (!installingDemo && demoOverlap(relative) && await exists(path.join(root, 'addons/counterstrikesharp/plugins/DemoTracer/DemoTracer.dll'), io)) return;
+      // Companion archives can contain an older CSS/Metamod runtime. Preserve
+      // the current verified runtime installed by Bot Improver, while letting
+      // DemoTracer install its matched BotRandomizer API/Harmony provider.
+      const normalized = relative.replaceAll('\\','/').toLowerCase();
+      if (preserveBot && shared(relative) && !demoOverlap(relative) && currentHashes.has(normalized) && await exists(target,io)) {
+        const hash = crypto.createHash('sha256').update(await io.readFile(target)).digest('hex');
+        if (hash === currentHashes.get(normalized)) return;
+      }
       if (relative.replaceAll('\\', '/').toLowerCase().startsWith('addons/counterstrikesharp/configs/') && await exists(target, io)) return;
       if (await exists(target, io)) await moveOld(relative);
       // Record before copy: a failed write can leave a partial destination.
@@ -83,6 +94,13 @@ async function installOfficialPayload({ root, archive, keepBackup, io = fs, extr
     await assertAncestors(root);
     if ((await io.lstat(root)).isSymbolicLink()) throw new Error('请选择实际游戏目录。');
     await io.mkdir(rollback); await record();
+    for (const relative of obsoleteFiles) await moveOld(relative);
+    if (!preserveBot) {
+      const currentPaths = new Set(payload.files.map(item => item.path.toLowerCase()));
+      // Remove known obsolete upstream files transactionally, including the old
+      // versioned Panel, so users cannot accidentally launch the old version.
+      for (const item of legacy.files) if (!currentPaths.has(item.path.toLowerCase())) await moveOld(item.path);
+    }
     // Walk nested CSS plugins too; companion ownership is independent of UI flags.
     const allowed = new Set();
     async function collect(dir, prefix = '') {
@@ -116,6 +134,13 @@ async function installOfficialPayload({ root, archive, keepBackup, io = fs, extr
         if (!preserveBot) paths.unshift('csgo/overrides/botprofile.vpk');
         for (const entry of paths) if (!current.toLowerCase().includes(entry)) current = current.replace(/(SearchPaths\s*\{)/i, '$1\n\t\t\tGame\t' + entry);
         await io.writeFile(path.join(stage, 'gameinfo.gi'), current);
+        if (entries.includes('backup')) {
+          const { cleanGameinfo } = require('./cs2-uninstaller.cjs');
+          await io.mkdir(path.join(stage,'backup','Online'),{recursive:true});
+          await io.mkdir(path.join(stage,'backup','WithBots'),{recursive:true});
+          await io.writeFile(path.join(stage,'backup','Online','gameinfo.gi'),cleanGameinfo(current,true));
+          await io.writeFile(path.join(stage,'backup','WithBots','gameinfo.gi'),current);
+        }
       } else if (preserveBot) throw new Error('gameinfo.gi 缺少 SearchPaths，无法安全启用插件。');
     }
     journal.phase = 'installing'; await record();

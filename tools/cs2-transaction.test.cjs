@@ -10,8 +10,8 @@ async function fixture(run) {
   await fs.writeFile(path.join(root, 'addons', 'old', 'mine.txt'), 'original-plugin');
   await fs.writeFile(path.join(root, 'gameinfo.gi'), 'original-gameinfo');
   const extract = async (_archive, stage) => {
-    for (const name of ['addons/new', 'cfg', 'overrides']) await fs.mkdir(path.join(stage, name), { recursive: true });
-    for (const name of ['addons/new/plugin.dll', 'gameinfo.gi', 'Panel v1.4.7.exe']) await fs.writeFile(path.join(stage, name), 'official');
+    for (const name of ['addons/new', 'backup', 'cfg', 'overrides']) await fs.mkdir(path.join(stage, name), { recursive: true });
+    for (const name of ['addons/new/plugin.dll', 'gameinfo.gi', 'Panel.exe']) await fs.writeFile(path.join(stage, name), 'official');
   };
   try { await run(root, extract); } finally { await fs.rm(root, { recursive: true, force: true }); }
 }

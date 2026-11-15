@@ -1,0 +1,39 @@
+name: Electron Build (Ubuntu)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clean Electron Cache
+      run: |
+        rm -rf ~/.cache/electron
+        rm -rf ~/.cache/electron-builder
+
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+        cache: "npm"
+
+    - run: npm ci
+
+    - run: npm run electron:build -- --publish never
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: "electron-build-ubuntu-$(date +%Y%m%d)"
+        path: |
+          dist_electron/*
+          !dist_electron/*.yml
+        retention-days: 7

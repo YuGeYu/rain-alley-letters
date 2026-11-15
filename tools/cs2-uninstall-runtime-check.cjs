@@ -9,16 +9,16 @@ const root = path.resolve(__dirname, '..');
 const preview = process.argv.includes('--preview');
 async function run() {
   const base = fs.mkdtempSync(path.join(os.tmpdir(), 'rain-alley-uninstall-ui-'));
-  const appRoot = createTestApp(base);
+  const appRoot = createTestApp(base, { seedResources: true });
   const csgo = path.join(base, 'game', 'csgo'); fs.mkdirSync(csgo, { recursive: true });
-  const archive = process.env.CS2_BOT_IMPROVER_ARCHIVE || 'E:/dow/CS2BotImprover.zip';
+  const archive = process.env.CS2_BOT_IMPROVER_ARCHIVE || 'E:/dow/CS2BotImprover (1).zip';
   assert.ok(fs.existsSync(archive), 'Set CS2_BOT_IMPROVER_ARCHIVE to the official release ZIP.');
   assert.equal(require('node:crypto').createHash('sha256').update(fs.readFileSync(archive)).digest('hex'), require('../src/cs2-payload-manifest.json').archiveSha256, 'Official archive hash mismatch');
   const extracted = spawnSync('tar.exe', ['-xf', archive, '-C', csgo], { windowsHide: true });
   assert.equal(extracted.status, 0, 'Official archive extraction failed');
   fs.mkdirSync(path.join(csgo, 'addons', 'PlayerPlugin'), { recursive: true });
   fs.writeFileSync(path.join(csgo, 'addons', 'PlayerPlugin', 'keep.txt'), 'player data');
-  const profile = path.join(base, 'profile'); fs.mkdirSync(profile);
+  const profile = path.join(base, 'profile'); fs.mkdirSync(profile, { recursive: true });
   const downloads = path.join(base, 'downloads'); fs.mkdirSync(downloads);
   fs.writeFileSync(path.join(profile, 'preferences.json'), JSON.stringify({ downloadDirectory: downloads, cs2Directory: csgo }));
   const port = await freePort();
@@ -39,7 +39,7 @@ async function run() {
     const click = async label => cdp.evaluate(`[...document.querySelectorAll('.cs2-modal-actions button')].find(b=>b.textContent===${JSON.stringify(label)}).click()`);
     await cdp.evaluate("document.querySelector('#uninstallCs2Package').click()");
     await click('取消卸载');
-    assert.ok(fs.existsSync(path.join(csgo, 'Panel v1.4.7.exe')));
+    assert.ok(fs.existsSync(path.join(csgo, 'Panel.exe')));
     await cdp.evaluate("document.querySelector('#uninstallCs2Package').click()");
     await click('保留配置'); await click('保留运行库');
     await waitFor(cdp, "document.querySelector('#cs2ModalTitle')?.textContent==='确认卸载人机增强？'", 'No scan confirmation');
@@ -58,12 +58,12 @@ async function run() {
       return;
     }
     await click('取消卸载');
-    assert.ok(fs.existsSync(path.join(csgo, 'Panel v1.4.7.exe')));
+    assert.ok(fs.existsSync(path.join(csgo, 'Panel.exe')));
     await cdp.evaluate("document.querySelector('#uninstallCs2Package').click()"); await click('保留配置'); await click('保留运行库');
     await waitFor(cdp, "document.querySelector('#cs2ModalTitle')?.textContent==='确认卸载人机增强？'", 'No confirmation');
     await click('确认卸载');
     await waitFor(cdp, "document.querySelector('#cs2UninstallResult')?.textContent.includes('恢复备份')", 'Uninstall failed', 60000);
-    assert.ok(!fs.existsSync(path.join(csgo, 'Panel v1.4.7.exe')));
+    assert.ok(!fs.existsSync(path.join(csgo, 'Panel.exe')));
     assert.ok(!fs.existsSync(path.join(csgo, 'addons/BotVision/bin/win64/BotVision.dll')));
     assert.ok(!fs.existsSync(path.join(csgo, 'addons/counterstrikesharp/plugins/BotAI/BotAI.dll')));
     assert.ok(fs.existsSync(path.join(csgo, 'addons/counterstrikesharp/api/CounterStrikeSharp.API.dll')));

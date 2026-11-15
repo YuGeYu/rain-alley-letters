@@ -1,23 +1,16 @@
-const COOLDOWN = 30 * 60 * 1000;
 const milestones = new Set(['cs2-installed', 'account-created']);
-const shown = new Set();
 let active = null;
 let reserved = false;
 
 // Real milestones only; save cooldown before showing, including across restarts.
 export async function celebrate(key, preferences, desktop) {
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
-  if (!milestones.has(key) || reserved || active || shown.has(key) || shown.size >= 2 || document.hidden || preferences.lightweight || motion.matches) return false;
-  const now = Date.now();
-  if (now - (preferences.celebrationAt || 0) < COOLDOWN) return false;
+  if (!milestones.has(key) || reserved || active || document.hidden || preferences.lightweight || motion.matches) return false;
   reserved = true;
   try {
-    const current = await desktop.getState();
-    if (now - (current.preferences.celebrationAt || 0) < COOLDOWN) return false;
-    await desktop.saveState({ celebrationAt: now });
-    preferences.celebrationAt = now;
+    if (!await desktop.claimCelebration(key)) return false;
+    preferences.celebrationAt = Date.now();
     if (document.hidden || motion.matches || preferences.lightweight) return false;
-    shown.add(key);
     const layer = document.createElement('div');
     layer.className = 'alley-celebration'; layer.setAttribute('aria-hidden', 'true'); layer.inert = true;
     const colors = ['#80caff', '#b1a1ff', '#ff8edb', '#ffe5a1', '#fff5d9'];

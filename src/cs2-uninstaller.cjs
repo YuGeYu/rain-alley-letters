@@ -26,7 +26,7 @@ async function checked(root, relative, io = fs) {
 function cleanGameinfo(text, removeShared) {
   // Preserve the current Valve file and all unrelated search paths. Never copy
   // an old upstream gameinfo.gi over a file updated by Steam.
-  return text.replace(/^[ \t]*"?Game"?[ \t]+"?csgo[\/](overrides[\/]botprofile\.vpk|addons[\/]metamod)"?[ \t]*(?:\/\/[^\r\n]*)?(?:\r?\n|$)/gim, (line, entry) => entry.toLowerCase().startsWith('addons') && !removeShared ? line : '');
+  return text.replace(/^[ \t]*"?Game"?[ \t]+"?csgo[\/](overrides[\/]botprofile\.vpk|addons[\/]metamod)"?[ \t]*(?:\/\/[^\r\n]*)?(?:\r*\n|$)/gim, (line, entry) => entry.toLowerCase().startsWith('addons') && !removeShared ? line : '');
 }
 async function inspectUninstall({ root, removeShared = false, keepConfig = true, io = fs, plugin = 'bots' }) {
   if (!path.isAbsolute(root) || path.basename(root).toLowerCase() !== 'csgo' || path.basename(path.dirname(root)).toLowerCase() !== 'game') throw new Error('请选择 CS2 的 game\\csgo 目录。');
@@ -39,7 +39,8 @@ async function inspectUninstall({ root, removeShared = false, keepConfig = true,
   let changed = 0, retainedShared = 0, retainedConfig = 0;
   const payload = plugin === 'demo' ? require('./demo-payload-manifest.json') : plugin === 'inventory' ? require('./inventory-payload-manifest.json') : manifest;
   const config = 'cfg/rain-alley-inventory.cfg';
-  const candidates = [...payload.files];
+  const historical = plugin === 'bots' ? require('./cs2-legacy-payload-manifest.json').files : plugin === 'demo' ? require('./demo-legacy-payload-manifest.json').files : plugin === 'inventory' ? require('./inventory-legacy-payload-manifest.json').files : [];
+  const candidates = [...new Map([...historical,...payload.files].map(item=>[item.path.toLowerCase(),item])).values()];
   if (plugin === 'inventory' && !keepConfig && await checked(root, config, io)) candidates.push({ path: config });
   for (const item of candidates) {
     if (item.path === 'gameinfo.gi') continue;
@@ -52,10 +53,10 @@ async function inspectUninstall({ root, removeShared = false, keepConfig = true,
       // assembly rather than guessing at third-party ownership.
       if (item.path.toLowerCase().includes('/shared/0harmony/')) { retainedShared++; continue; }
     }
-    if (plugin !== 'demo' && !removeShared && shared(item.path)) { retainedShared++; continue; }
+    if (plugin === 'bots' && !removeShared && shared(item.path)) { retainedShared++; continue; }
     if (keepConfig && (item.path.startsWith('cfg/') || /(?:config|bot_info|map_whitelist|charm_placements).*\.json$/i.test(item.path))) { retainedConfig++; continue; }
     const digest = hash(await io.readFile(path.join(root, item.path)));
-    if (digest !== item.sha256) changed++;
+    if (digest !== item.sha256 && !historical.some(old=>old.path.toLowerCase()===item.path.toLowerCase() && old.sha256===digest)) changed++;
     files.push({ path: item.path, digest });
   }
   const original = await io.readFile(path.join(root, 'gameinfo.gi'));

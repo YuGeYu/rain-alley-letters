@@ -4,6 +4,11 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const { inspectUninstall, uninstallPayload } = require('../src/cs2-uninstaller.cjs');
+test('mode cleanup handles upstream CRCRLF without changing unrelated lines', () => {
+  const { cleanGameinfo } = require('../src/cs2-uninstaller.cjs');
+  const input='SearchPaths\r\r\n{\r\r\n Game csgo/overrides/botprofile.vpk\r\r\n Game csgo/addons/metamod\r\r\n Game player_content\r\r\n}\r\r\n';
+  assert.equal(cleanGameinfo(input,true),'SearchPaths\r\r\n{\r\r\n Game player_content\r\r\n}\r\r\n');
+});
 async function fixture(run) {
   const base = await fs.mkdtemp(path.join(os.tmpdir(), 'alley-uninstall-test-'));
   const root = path.join(base, 'game', 'csgo');

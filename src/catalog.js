@@ -2,6 +2,8 @@ import { celebrate } from './celebration.js';
 import { openManagement, closeManagement } from './management-ui.js';
 import { inventoryMarkup } from './inventory-ui.js';
 import { demoMarkup, bindDemoControls } from './demo-ui.js';
+import { xcMusicMarkup, bindXCMusicControls } from './xcmusic-ui.js';
+import { biliDeskMarkup, bindBiliDeskControls } from './bilidesk-ui.js';
 import { features, featureCategory, featureCategoryName } from './features.js';
 import { analyzeInput, getProvider, isSharePage, parseUrl } from './netdisk.js';
 
@@ -141,16 +143,15 @@ function toast(message, tone = 'info', duration = 2600) {
   toastTimer = window.setTimeout(() => element.classList.remove('is-visible'), duration);
 }
 
+let lastRevealedBrowserTabId = '';
 function renderBrowserTabs() {
   const list = $('#websiteTabs');
   if (!list) return;
-  const shortAt = browserTabs.length > 10 ? 8 : browserTabs.length > 5 ? 12 : 18;
   list.innerHTML = browserTabs.map((tab) => {
     const selected = activeBrowserTabId === tab.id;
     const full = String(tab.title || tab.hostname || '新标签页');
-    const points = [...full];
-    const label = points.length > shortAt ? `${points.slice(0, shortAt - 1).join('')}…` : full;
-    return `<div class="browser-tab${selected ? ' is-active' : ''}" role="presentation" draggable="true" data-sort-tab="${escapeHtml(tab.id)}"><button class="browser-tab-label" type="button" role="tab" data-browser-tab="${escapeHtml(tab.id)}" aria-controls="${tab.kind === 'tool' ? (tab.featureId === 'netdisk-links' ? 'netdiskToolPage' : 'detailPage') : 'sitePage'}" aria-selected="${selected}" aria-label="切换到 ${escapeHtml(full)}" title="${escapeHtml(full)}"><i class="browser-tab-mark" aria-hidden="true"></i><span>${escapeHtml(label)}</span></button><button class="browser-tab-close" type="button" data-close-browser-tab="${escapeHtml(tab.id)}" aria-label="关闭标签页：${escapeHtml(full)}" title="关闭标签页">×</button></div>`;
+    const label = full;
+    return `<div class="browser-tab${selected ? ' is-active' : ''}" role="presentation" draggable="true" data-sort-tab="${escapeHtml(tab.id)}"><button class="browser-tab-label" type="button" role="tab" data-browser-tab="${escapeHtml(tab.id)}" aria-controls="${tab.kind === 'settings' ? 'settingsPage' : tab.kind === 'tool' ? (tab.featureId === 'netdisk-links' ? 'netdiskToolPage' : 'detailPage') : 'sitePage'}" aria-selected="${selected}" aria-label="切换到 ${escapeHtml(full)}" title="${escapeHtml(full)}"><i class="browser-tab-mark" aria-hidden="true"></i><span>${escapeHtml(label)}</span></button><button class="browser-tab-close" type="button" data-close-browser-tab="${escapeHtml(tab.id)}" aria-label="关闭标签页：${escapeHtml(full)}" title="关闭标签页">×</button></div>`;
   }).join('');
   for (const id of ['home', 'collection', 'profile']) {
     const button = $(`[data-browser-tab="${id}"]`);
@@ -159,7 +160,73 @@ function renderBrowserTabs() {
     button.classList.toggle('is-active', selected);
     button.setAttribute('aria-selected', String(selected));
   }
-  list.querySelector('[data-browser-tab].is-active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  if (lastRevealedBrowserTabId !== activeBrowserTabId) {
+    list.querySelector('.browser-tab.is-active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    lastRevealedBrowserTabId = activeBrowserTabId;
+  }
+  $('#allTabsCount').textContent = String(browserTabs.length + 3);
+  if ($('#allTabsDialog').open) renderAllTabs();
+}
+
+let allTabsOpening = false;
+let allTabsBackground;
+function renderAllTabs() {
+  const list = $('#allTabsList');
+  const scroll = list.scrollTop;
+  const focused = document.activeElement.closest('[data-overview-tab], [data-overview-close]');
+  const focusId = focused?.dataset.overviewTab || focused?.dataset.overviewClose;
+  const wasClose = Boolean(focused?.dataset.overviewClose);
+  const oldIndex = focused ? [...list.children].indexOf(focused.closest('.all-tabs-row')) : -1;
+  const tabs = [{ id: 'home', title: '主页', kind: 'pinned' }, { id: 'collection', title: '收藏', kind: 'pinned' }, { id: 'profile', title: '个人', kind: 'pinned' }, ...browserTabs];
+  $('#allTabsSummary').textContent = `${tabs.length} 个`;
+  list.innerHTML = tabs.map(tab => {
+    const title = escapeHtml(tab.title || tab.hostname || '新标签页');
+    const selected = tab.id === activeBrowserTabId;
+    const description = tab.kind === 'pinned' ? '固定入口' : tab.kind === 'settings' ? '应用设置' : tab.kind === 'tool' ? '内置工具' : tab.url || '等待输入网页地址';
+    return `<div class="all-tabs-row${selected ? ' is-active' : ''}"><button class="all-tabs-select" type="button" data-overview-tab="${escapeHtml(tab.id)}"${selected ? ' aria-current="page"' : ''}><i class="browser-tab-mark" aria-hidden="true"></i><span class="all-tabs-copy"><strong>${title}</strong><small>${escapeHtml(description)}</small></span>${selected ? '<span class="all-tabs-current">当前</span>' : ''}</button>${tab.kind === 'pinned' ? '<span class="all-tabs-fixed">固定</span>' : `<button type="button" class="all-tabs-remove" data-overview-close="${escapeHtml(tab.id)}" aria-label="关闭标签页：${title}" title="关闭标签页">×</button>`}</div>`;
+  }).join('');
+  if (focusId) {
+    const same = [...list.querySelectorAll(wasClose ? '[data-overview-close]' : '[data-overview-tab]')].find(button => (button.dataset.overviewClose || button.dataset.overviewTab) === focusId);
+    (same || list.children[Math.min(oldIndex, list.children.length - 1)]?.querySelector('button') || $('#allTabsClose')).focus({ preventScroll: true });
+  }
+  list.scrollTop = scroll;
+}
+function closeAllTabs() {
+  const dialog = $('#allTabsDialog');
+  if (dialog.open) dialog.close();
+  dialog.hidden = true;
+  allTabsBackground?.remove(); allTabsBackground = null;
+  $('#allTabsButton').setAttribute('aria-expanded', 'false');
+  $('#allTabsButton').focus({ preventScroll: true });
+  scheduleSiteBounds();
+}
+async function showAllTabs() {
+  const dialog = $('#allTabsDialog');
+  if (allTabsOpening || dialog.open) return;
+  allTabsOpening = true;
+  try {
+    if (!sitePage.hidden && activeSiteTabId) {
+      const tabId = activeSiteTabId;
+      const capture = await desktop.captureWebsiteBackground(tabId).catch(() => null);
+      if (sitePage.hidden || activeSiteTabId !== tabId) return;
+      if (capture) {
+        allTabsBackground = document.createElement('img');
+        allTabsBackground.className = 'website-modal-background'; allTabsBackground.alt = '';
+        allTabsBackground.src = capture.dataUrl;
+        const b = capture.bounds;
+        Object.assign(allTabsBackground.style, { left: `${b.x}px`, top: `${b.y}px`, width: `${b.width}px`, height: `${b.height}px` });
+        await allTabsBackground.decode().catch(() => {});
+        document.body.append(allTabsBackground);
+      }
+      await desktop.setWebsiteBounds({ x: 0, y: 0, width: 0, height: 0 }, tabId).catch(() => {});
+    }
+    renderAllTabs(); dialog.hidden = false; dialog.showModal();
+    $('#allTabsButton').setAttribute('aria-expanded', 'true');
+    const selected = $('#allTabsList [aria-current="page"]');
+    (selected || $('#allTabsClose')).focus({ preventScroll: true });
+    selected?.scrollIntoView({ block: 'nearest' });
+    scheduleSiteBounds();
+  } finally { allTabsOpening = false; }
 }
 
 function createSiteTab(title = '新标签页') {
@@ -174,7 +241,7 @@ function createSiteTab(title = '新标签页') {
 
 async function ensureActiveWebsiteTab(title = '新标签页') {
   let tab = browserTabs.find((item) => item.id === activeBrowserTabId);
-  if (!tab || tab.kind === 'tool') tab = createSiteTab(title);
+  if (!tab || tab.kind === 'tool' || tab.kind === 'settings') tab = createSiteTab(title);
   await desktop?.registerWebsiteTab(tab.id).catch(() => {});
   await desktop?.activateWebsiteTab(tab.id).catch(() => {});
   activeSiteTabId = tab.id;
@@ -188,6 +255,7 @@ async function activateBrowserTab(id) {
   if (id === 'profile') { openProfile(); return; }
   const tab = browserTabs.find((item) => item.id === id);
   if (!tab) return;
+  if (tab.kind === 'settings') { showSettings(); return; }
   if (tab.kind === 'tool') { await openFeature(tab.featureId); return; }
   activeBrowserTabId = tab.id;
   activeSiteTabId = tab.id;
@@ -220,8 +288,11 @@ async function closeBrowserTab(id) {
   const index = browserTabs.findIndex((tab) => tab.id === id);
   if (index < 0) return;
   const [closed] = browserTabs.splice(index, 1);
-  if (closed.kind !== 'tool') await desktop.closeWebsite(id).catch(() => {});
-  else { toolSurfaces.delete(closed.featureId); if (mountedToolId === closed.featureId) { mountedToolId = ''; detailPage.replaceChildren(...detailTemplate.map(node => node.cloneNode(true))); } }
+  if (closed.kind === 'settings') {
+    if (settingsSaveTimer) { clearTimeout(settingsSaveTimer); settingsSaveTimer = 0; ++settingsRevision; await saveSettings({ quiet: true }); }
+    for (const input of settingsPage.querySelectorAll('input[type="password"]')) input.value = '';
+  } else if (closed.kind === 'tool') { toolSurfaces.delete(closed.featureId); if (mountedToolId === closed.featureId) { mountedToolId = ''; detailPage.replaceChildren(...detailTemplate.map(node => node.cloneNode(true))); } }
+  else await desktop.closeWebsite(id).catch(() => {});
   if (activeBrowserTabId !== id) { renderBrowserTabs(); return; }
   const next = browserTabs[Math.min(index, browserTabs.length - 1)];
   await activateBrowserTab(next?.id || activePinnedBrowserTabId);
@@ -665,7 +736,7 @@ function showPage(page) {
   if (page === 'scene') activePinnedBrowserTabId = activeBrowserTabId = 'home';
   else if (page === 'collection') activePinnedBrowserTabId = activeBrowserTabId = 'collection';
   else if (page === 'profile') activePinnedBrowserTabId = activeBrowserTabId = 'profile';
-  else if (!['site', 'new-tab', 'detail', 'netdisk'].includes(page)) activeBrowserTabId = activePinnedBrowserTabId;
+  else if (!['site', 'new-tab', 'detail', 'netdisk', 'settings'].includes(page)) activeBrowserTabId = activePinnedBrowserTabId;
   document.body.dataset.page = page;
   document.documentElement.dataset.page = page;
   const appShell = $('#appShell');
@@ -1007,6 +1078,7 @@ function renderBookmarkCurrentTitle(url, title) {
 }
 
 function deliveryLabel(feature) {
+  if (feature.kind === 'desktop-app') return '独立 Windows 窗口';
   if (feature.builtin) return '随桌面程序安装';
   if (feature.kind === 'website') return '应用内网页';
   if (featureCategory(feature) === 'steam') return '从 Steam 启动 CS2';
@@ -1067,10 +1139,30 @@ function renderDetail(feature) {
   const actions = $('#detailActions');
   $('#cs2ShareComment').hidden = feature.id !== 'cs2-bots';
   if (feature.id === 'cs2-bots') {
-    actions.innerHTML = `<p class="cs2-download-note">一键安装会从官方 Release 获取并校验插件包。安装前可确认清理其他插件，并选择是否保留备份。</p><button class="action-secondary" id="downloadCs2Package" type="button">${actionSvg('open')}查看官方分享与下载说明</button><button class="action-secondary" id="netdiskCs2Package" type="button">${actionSvg('open')}用网盘工具获取下载地址</button><div class="cs2-install-controls"><label>CS2 游戏目录<input id="cs2Directory" type="text" readonly placeholder="自动识别或选择 CS2 安装目录" /></label><button class="action-secondary" id="chooseCs2Directory" type="button">选择目录</button><label>官方 ZIP 文件（可选）<input id="cs2Archive" type="text" readonly placeholder="留空时自动从官方 Release 下载" /></label><button class="action-secondary" id="chooseCs2Archive" type="button">选择 ZIP</button><p class="cs2-download-note" id="cs2ArchiveHint" role="status">选择后会自动记住，下次无需重复查找。</p><button class="action-primary" id="installCs2Package" type="button">${actionSvg('check')}一键安装并打开 Panel</button><button class="action-secondary" id="openCs2Panel" type="button">打开 Panel</button><div class="cs2-uninstall-section"><div><strong>卸下人机增强</strong><p>按官方清单移除插件文件，保留其他内容。卸载前会预览范围，并自动保存恢复备份。</p></div><button class="action-secondary cs2-danger" id="uninstallCs2Package" type="button">卸载插件…</button><p id="cs2UninstallResult" role="status" hidden></p></div></div><a class="detail-inline-note" href="${escapeHtml(feature.source)}" target="_blank" rel="noreferrer">官方源码与发布说明 · ed0ard/CS2-Bot-Improver v1.4.7</a>`;
+    actions.innerHTML = `<p class="cs2-download-note">一键安装会从官方 Release 获取并校验插件包。安装前可确认清理其他插件，并选择是否保留备份。</p><button class="action-secondary" id="downloadCs2Package" type="button">${actionSvg('open')}查看官方分享与下载说明</button><button class="action-secondary" id="netdiskCs2Package" type="button">${actionSvg('open')}用网盘工具获取下载地址</button><div class="cs2-install-controls"><label>CS2 游戏目录<input id="cs2Directory" type="text" readonly placeholder="自动识别或选择 CS2 安装目录" /></label><button class="action-secondary" id="chooseCs2Directory" type="button">选择目录</button><label>官方 ZIP 文件（可选）<input id="cs2Archive" type="text" readonly placeholder="留空时自动从官方 Release 下载" /></label><button class="action-secondary" id="chooseCs2Archive" type="button">选择 ZIP</button><p class="cs2-download-note" id="cs2ArchiveHint" role="status">选择后会自动记住，下次无需重复查找。</p><button class="action-primary" id="installCs2Package" type="button">${actionSvg('check')}一键安装并打开 Panel</button><button class="action-secondary" id="openCs2Panel" type="button">打开 Panel</button><div class="cs2-uninstall-section"><div><strong>卸下人机增强</strong><p>按官方清单移除插件文件，保留其他内容。卸载前会预览范围，并自动保存恢复备份。</p></div><button class="action-secondary cs2-danger" id="uninstallCs2Package" type="button">卸载插件…</button><p id="cs2UninstallResult" role="status" hidden></p></div></div><a class="detail-inline-note" href="${escapeHtml(feature.source)}" target="_blank" rel="noreferrer">官方源码与发布说明 · ed0ard/CS2-Bot-Improver v1.4.9</a>`;
   } else if (feature.id === 'cs2-inventory') {
     actions.innerHTML = inventoryMarkup(feature);
     bindInventoryControls($('#detailActions'));
+  } else if (feature.id === 'xcmusic') {
+    actions.innerHTML = xcMusicMarkup();
+    bindXCMusicControls(actions, { desktop, choose: cs2InstallChoice, toast, onStatus: async result => {
+      result.installed ? state.installed.add(feature.id) : state.installed.delete(feature.id);
+      status.textContent = result.installed ? '已安装' : result.damaged ? '需要修复' : '可以安装';
+      status.classList.toggle('is-installed', result.installed);
+      $('#detailState').textContent = status.textContent;
+      updateInstallationSummary();
+      await desktop.saveState({ installedFeatures: [...state.installed] });
+    } });
+  } else if (feature.id === 'bilidesk') {
+    actions.innerHTML = biliDeskMarkup();
+    bindBiliDeskControls(actions, { desktop, choose: cs2InstallChoice, toast, onStatus: async result => {
+      result.installed ? state.installed.add(feature.id) : state.installed.delete(feature.id);
+      status.textContent = result.installed ? '已安装' : result.damaged ? '需要修复' : '可以安装';
+      status.classList.toggle('is-installed', result.installed);
+      $('#detailState').textContent = status.textContent;
+      updateInstallationSummary();
+      await desktop.saveState({ installedFeatures: [...state.installed] });
+    } });
   } else if (feature.id === 'cs2-demo') {
     actions.innerHTML = demoMarkup();
     bindDemoControls(actions, { desktop, choose: cs2InstallChoice, toast, onStatus: async result => {
@@ -1098,7 +1190,8 @@ function renderDetail(feature) {
   $('#downloadCs2Package')?.addEventListener('click', () => navigateAddress(feature.quarkUrl, true).catch((cause) => toast(cause?.message || '夸克分享页暂时无法打开。', 'error')));
   $('#cs2QuarkCommentLink')?.addEventListener('click', (event) => { event.preventDefault(); navigateAddress(feature.quarkUrl, true).catch((cause) => toast(cause?.message || '夸克分享页暂时无法打开。', 'error')); });
   $('#netdiskCs2Package')?.addEventListener('click', () => { showNetdiskTool(); $('#netdiskInput').value = feature.quarkUrl; void resolveNetdisk(); });
-  $('#chooseCs2Directory')?.addEventListener('click', async () => { const value = await desktop.chooseCs2Directory().catch((cause) => { toast(cause?.message || '无法选择游戏目录。', 'error'); return null; }); if (value) { selectedCs2Directory = value; $('#cs2Directory').value = value; } });
+  const directoryInput = $('#cs2Directory');
+  $('#chooseCs2Directory')?.addEventListener('click', async () => { if (directoryInput) directoryInput.dataset.chosen = 'true'; const value = await desktop.chooseCs2Directory().catch((cause) => { toast(cause?.message || '无法选择游戏目录。', 'error'); return null; }); if (value && directoryInput?.isConnected) { selectedCs2Directory = value; directoryInput.value = value; } });
   $('#chooseCs2Archive')?.addEventListener('click', async () => { const value = await desktop.chooseCs2Archive().catch((cause) => { toast(cause?.message || '无法选择 ZIP 文件。', 'error'); return null; }); if (value && $('#cs2Archive')) { $('#cs2Archive').value = value; $('#cs2Archive').dataset.chosen = 'true'; $('#cs2ArchiveHint').textContent = '已记住这个 ZIP，下次会自动选好。'; } });
   const archiveInput = $('#cs2Archive');
   void desktop.getCs2Archive?.().then((saved) => {
@@ -1107,8 +1200,8 @@ function renderDetail(feature) {
     $('#cs2ArchiveHint').textContent = saved?.path ? (saved.available ? '已自动选好上次的 ZIP。' : '上次的 ZIP 已移动或删除，请重新选择。') : '选择后会自动记住，下次无需重复查找。';
   }).catch(() => {});
   void desktop.findCs2Directory?.().then(async value => {
-    if (!value || !$('#cs2Directory')) return;
-    selectedCs2Directory = value; $('#cs2Directory').value = value;
+    if (feature.id !== 'cs2-bots' || !value || !directoryInput?.isConnected || directoryInput.dataset.chosen || directoryInput.value) return;
+    selectedCs2Directory = value; directoryInput.value = value;
     const current = await desktop.getCs2Status(value);
     if (!$('#cs2Directory')) return;
     for (const [id, present] of [['cs2-demo', current.demo], ['cs2-bots', current.bots], ['cs2-inventory', current.inventory]]) present ? state.installed.add(id) : state.installed.delete(id);
@@ -1148,7 +1241,7 @@ function renderDetail(feature) {
       if (removeShared === null) return;
       button.textContent = '正在扫描文件…';
       const plan = await desktop.inspectCs2Uninstall(directory, removeShared, keepConfig);
-      if (!plan.files.length && !plan.editGameinfo) { toast('没有找到可卸载的 v1.4.7 插件文件。'); return; }
+      if (!plan.files.length && !plan.editGameinfo) { toast('没有找到可卸载的 v1.4.9 插件文件。'); return; }
       const detail = `游戏目录：${directory}\n\n将移除 ${plan.files.length} 个官方清单文件，其中 ${plan.changed} 个内容已改变。保留 ${plan.retainedShared} 个共享文件、${plan.retainedConfig} 个配置文件。${plan.editGameinfo ? '同时移除对应的 gameinfo.gi 加载入口，保留其他游戏设置。' : ''}\n所有移除的文件都会保存在游戏目录下的恢复备份。请先关闭 CS2 和 Panel。`;
       const confirmed = await cs2InstallChoice('确认卸载人机增强？', detail, [{ label: '取消卸载', value: false }, { label: '确认卸载', value: true, danger: true }]);
       if (!confirmed) return;
@@ -1331,9 +1424,10 @@ function openProfile(username = state.username) {
     $('#profileFact').textContent = `真实账号 ${result.account.username} · 注册于 ${new Date(Number(result.account.createdAt) * 1000).toLocaleDateString('zh-CN')}`;
     $('#profileAvatar').textContent = [...displayName][0] || '雨';
     if (own) {
+      const preserveSettingsDraft = browserTabs.some(tab => tab.kind === 'settings') && $('#accountDisplayNameSetting').value !== (state.displayName || '');
       state.displayName = state.profile.displayName || '';
       updateAccountPresentation();
-      $('#accountDisplayNameSetting').value = state.displayName;
+      if (!preserveSettingsDraft) $('#accountDisplayNameSetting').value = state.displayName;
     }
     const iframe = document.createElement('iframe');
     iframe.className = 'profile-code-frame';
@@ -1376,14 +1470,16 @@ function updateAccountPresentation() {
 async function loadOwnDisplayName() {
   const username = state.username;
   if (!username) return;
-  $('#accountUsernameSetting').value = username;
+  const settingsTab = browserTabs.find(tab => tab.kind === 'settings');
+  const displayNameDraft = $('#accountDisplayNameSetting').value;
+  const displayNameIsClean = displayNameDraft === (state.displayName || '');
   try {
     const result = await desktop.getPublicProfile(username);
     if (state.username !== username) return;
     state.profile = result.profile || { displayName: '', bio: '', html: '', css: '' };
     state.displayName = state.profile.displayName || '';
     updateAccountPresentation();
-    $('#accountDisplayNameSetting').value = state.displayName;
+    if (browserTabs.includes(settingsTab) && displayNameIsClean && $('#accountDisplayNameSetting').value === displayNameDraft) $('#accountDisplayNameSetting').value = state.displayName;
   } catch { /* account settings remain usable if the public profile service is offline */ }
 }
 
@@ -1479,10 +1575,26 @@ function populateSettings() {
 function showSettings() {
   stopPreview();
   closeSiteAndHide();
-  populateSettings();
+  let tab = browserTabs.find(item => item.kind === 'settings');
+  const isNew = !tab;
+  if (isNew) {
+    tab = createSiteTab('设置');
+    tab.kind = 'settings';
+    populateSettings();
+    settingsPage.scrollTop = 0;
+    for (const selector of ['#settingsSaveStatus', '#displayNameSaveStatus', '#accountSaveStatus']) $(selector).textContent = '';
+  }
+  activeBrowserTabId = tab.id;
+  activeSiteTabId = '';
   showPage('settings');
-  loadOwnDisplayName();
+  if (isNew) loadOwnDisplayName();
   $('#settingsTitle').focus({ preventScroll: true });
+}
+
+function resetSettingsTab() {
+  browserTabs = browserTabs.filter(tab => tab.kind !== 'settings');
+  clearTimeout(settingsSaveTimer); settingsSaveTimer = 0; ++settingsRevision;
+  for (const input of settingsPage.querySelectorAll('input[type="password"]')) input.value = '';
 }
 
 function parseHostLines(value) { return [...new Set(value.split(/[\n,;\s]+/).map((host) => host.trim().toLowerCase()).filter(Boolean))]; }
@@ -1519,7 +1631,8 @@ function queueSettingsSave() {
   clearTimeout(settingsSaveTimer);
   const revision = ++settingsRevision;
   settingsSaveTimer = window.setTimeout(async () => {
-    if (revision !== settingsRevision || document.body.dataset.page !== 'settings') return;
+    settingsSaveTimer = 0;
+    if (revision !== settingsRevision) return;
     await saveSettings({ quiet: true });
   }, 180);
 }
@@ -1751,6 +1864,7 @@ async function savePendingCredentials() {
 
 function enterHome(profile) {
   if (state.username && state.username !== profile.username) {
+    resetSettingsTab();
     browserTabs = browserTabs.filter(tab => tab.kind !== 'tool');
     toolSurfaces.clear(); mountedToolId = ''; replyTarget = null; loadedComments = []; commentsBefore = null;
     ++commentRequest;
@@ -1824,6 +1938,8 @@ async function submitQuickRegister(event) {
 }
 
 function showAuth() {
+  if ($('#allTabsDialog').open) closeAllTabs();
+  resetSettingsTab();
   desktop?.developerAvailable?.().then(available => { $('#developerLoginButton').hidden = !available; }).catch(() => {});
   credentialsOverlay.hidden = true;
   showPage('none');
@@ -1912,6 +2028,21 @@ async function boot() {
   $('#collectionNavButton')?.addEventListener('click', () => showCollection());
   $('#profileNavButton')?.addEventListener('click', () => openProfile());
   $('#newBrowserTabButton')?.addEventListener('click', () => createBlankBrowserTab().catch(() => toast('新标签页暂时无法创建。', 'error')));
+  $('#allTabsButton').addEventListener('click', () => showAllTabs().catch(() => { closeAllTabs(); toast('标签页列表暂时无法打开。', 'error'); }));
+  $('#allTabsClose').addEventListener('click', closeAllTabs);
+  $('#allTabsDialog').addEventListener('cancel', event => { event.preventDefault(); closeAllTabs(); });
+  $('#allTabsDialog').addEventListener('keydown', event => { if (event.key === 'Escape') event.stopPropagation(); });
+  $('#allTabsDialog').addEventListener('click', event => { if (event.target === event.currentTarget) { const b = event.currentTarget.getBoundingClientRect(); if (event.clientX < b.left || event.clientX > b.right || event.clientY < b.top || event.clientY > b.bottom) closeAllTabs(); } });
+  $('#allTabsList').addEventListener('click', event => {
+    const close = event.target.closest('[data-overview-close]');
+    if (close) { closeBrowserTab(close.dataset.overviewClose).catch(() => toast('这个标签页暂时无法关闭。', 'error')); return; }
+    const tab = event.target.closest('[data-overview-tab]');
+    if (tab) { closeAllTabs(); activateBrowserTab(tab.dataset.overviewTab).catch(() => toast('这个标签页暂时无法打开。', 'error')); }
+  });
+  $('#websiteTabs').addEventListener('wheel', event => {
+    const list = event.currentTarget;
+    if (list.scrollWidth > list.clientWidth && Math.abs(event.deltaY) > Math.abs(event.deltaX)) { event.preventDefault(); list.scrollLeft += event.deltaY; }
+  }, { passive: false });
   $('#browserTabs')?.addEventListener('click', (event) => {
     const close = event.target.closest('[data-close-browser-tab]');
     if (close) { closeBrowserTab(close.dataset.closeBrowserTab).catch(() => {}); return; }
@@ -2281,6 +2412,7 @@ async function boot() {
 }
 
 function goBack() {
+  if ($('#allTabsDialog').open) { closeAllTabs(); return; }
   if (!$('#downloadsOverlay').hidden) { closeDownloadsDialog(); return; }
   if (!credentialsOverlay.hidden) { $('#credentialDoneButton').click(); return; }
   if (!authScreen.hidden) return;
@@ -2316,12 +2448,14 @@ function bindInventoryControls(surface) {
   const $ = selector => nodes.get(selector) || surface.querySelector(selector);
   const field = () => $('#inventoryDirectory');
   const status = () => $('#inventoryStatus');
+  let installing = false, inventoryPresent = false;
   const refresh = async () => {
     if (!field()?.value) { if (status()) status().textContent = '请选择 CS2 游戏目录。'; return; }
     const result = await desktop.getCs2Status(field().value);
     if (!status()) return;
-    status().textContent = '饰品工坊：' + (result.inventory ? '已安装' : '未安装') + ' · 人机增强：' + (result.bots ? '已安装' : '未安装');
-    if ($('#inventoryLaunch')) $('#inventoryLaunch').disabled = !result.inventory;
+    inventoryPresent = Boolean(result.inventory);
+    status().textContent = '饰品工坊：' + (result.inventory ? '已安装 ' + (result.inventoryVersion || '（版本未知，可重新安装）') + (result.inventoryVersion && result.inventoryVersion !== '3.8.2' ? '（可更新）' : '') : '未安装') + ' · 人机增强：' + (result.bots ? '已安装' : '未安装') + ' · Demo 重玩：' + (result.demo ? '已安装' : '未安装');
+    if ($('#inventoryLaunch')) $('#inventoryLaunch').disabled = installing || !result.inventory;
     for (const [key, present] of [['cs2-demo', result.demo], ['cs2-inventory', result.inventory], ['cs2-bots', result.bots]]) present ? state.installed.add(key) : state.installed.delete(key);
     $('#detailStatus').textContent = result.inventory ? '已安装' : '可以使用';
     $('#detailStatus').classList.toggle('is-installed', Boolean(result.inventory));
@@ -2329,15 +2463,18 @@ function bindInventoryControls(surface) {
     updateInstallationSummary();
     await desktop.saveState({ installedFeatures: [...state.installed] });
   };
-  void desktop.findCs2Directory().then(value => { if (value && field()) field().value = value; return refresh(); }).catch(cause => { if (status()) status().textContent = cause.message; });
+  void desktop.findCs2Directory().then(value => { if (value && field() && !field().dataset.chosen && !field().value) field().value = value; return refresh(); }).catch(cause => { if (status()) status().textContent = cause.message; });
+  $('#inventoryRuntimeDownload').onclick = () => desktop.downloadResource('cs2-runtime').catch(cause => toast(cause.message, 'error'));
   $('#inventoryChoose').addEventListener('click', async () => {
-    try { const value = await desktop.chooseCs2Directory(); if (value && field()) { field().value = value; await refresh(); } } catch (cause) { toast(cause.message, 'error'); }
+    try { const value = await desktop.chooseCs2Directory(); if (value && field()) { field().dataset.chosen = 'true'; field().value = value; await refresh(); } } catch (cause) { toast(cause.message, 'error'); }
   });
   $('#inventoryLaunch').addEventListener('click', () => desktop.launchInventoryGame().catch(cause => toast(cause.message, 'error')));
   $('#inventoryCopy').addEventListener('click', () => desktop.copyText('exec rain-alley-inventory.cfg').then(() => toast('已复制，请在本机地图控制台执行，再使用 !ws。')).catch(cause => toast(cause.message, 'error')));
   $('#inventoryWebsite').addEventListener('click', () => navigateAddress('https://inventory.cstrike.app/').catch(cause => toast(cause.message, 'error')));
   $('#inventoryFolder').addEventListener('click', () => desktop.openInventoryFolder(field()?.value).catch(cause => toast(cause.message, 'error')));
-  const busy = value => { for (const id of ['inventoryInstall', 'inventoryUninstall', 'inventoryChoose']) if ($('#' + id)) $('#' + id).disabled = value; };
+  $('#inventoryRefresh').onclick = () => refresh().catch(cause=>toast(cause.message,'error'));
+  for (const [id,command] of [['inventoryCopyRefresh','!ws'],['inventoryCopySpray','!spray'],['inventoryCopyPlugins','css_plugins list']]) $('#' + id).onclick = () => desktop.copyText(command).then(()=>toast('已复制：' + command + (command.startsWith('!') ? '，请在游戏聊天中发送。' : '，请在本机服务器控制台执行。'))).catch(cause=>toast(cause.message,'error'));
+  const busy = value => { installing = value; const controls = surface.querySelector('.inventory-controls'); controls.setAttribute('aria-busy',String(value)); for (const button of controls.querySelectorAll('button')) button.disabled = value; $('#inventoryLaunch').disabled = value || !inventoryPresent; };
   $('#inventoryInstall').addEventListener('click', async () => {
     const directory = field()?.value;
     if (!directory) { toast('请先选择 CS2 游戏目录。', 'warning'); return; }
@@ -2351,7 +2488,7 @@ function bindInventoryControls(surface) {
       const result = await desktop.installInventory(directory, { cleanOtherPlugins, keepBackup });
       if (result.cancelled) return;
       await refresh();
-      const message = '饰品工坊已安装。进入本机自建地图后输入 !ws。' + (result.backup ? '备份：' + result.backup : '') + (result.cleanupPending?.length ? '部分临时文件待系统释放后清理。' : '');
+      const message = '饰品工坊已安装。进入本机地图后先执行 exec rain-alley-inventory.cfg，再在聊天中输入 !ws。' + (result.backup ? '备份：' + result.backup : '') + (result.cleanupPending?.length ? '部分临时文件待系统释放后清理。' : '');
       if (status()) status().textContent += '。' + message;
       toast(message, 'success', 7000);
     } catch (cause) { if (status()) status().textContent = cause.message; toast(cause.message, 'error', 7000); }

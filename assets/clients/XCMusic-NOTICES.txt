@@ -1,0 +1,14 @@
+XCMusic 0.3.1 / Rain Alley Windows integration
+Upstream: https://github.com/yiktllw/XCMusic
+Copyright XCMusic contributors; MIT license, see XCMusic-LICENSE.txt.
+Corresponding complete patched source: XCMusic-0.3.1-source.zip.
+Original user-supplied archive: XCMusic-master.zip.
+Full Electron/Vue client retained, including local music, download, lyrics, themes,
+search, QR login and account interfaces. Platform authorization applies to all music.
+Changes: desktop JSON state instead of browser localStorage; isolated preview data;
+private dynamic loopback API; startup ordering; corrected Windows icon and runtime.
+Build instructions and integration changes are in RAIN-ALLEY-INTEGRATION.md.
+Electron runtime MIT and Chromium third-party licenses are supplied alongside the client.
+@yiktllw/ncm-api 4.24.2: MIT, Binaryify and contributors.
+Dependency license and package metadata are in dependency-licenses/.
+This is an independent third-party client, not an official NetEase product.

@@ -1,34 +1,37 @@
 {
-  "version": "3.7.2",
-  "archiveSha256": "a50f1a8c4157ff7f613af59f0e6a4268afe6a1f858431d15a4e6090cdb32125a",
+  "version": "3.8.2",
+  "archiveSha256": "7e310228ab4852e54c82d8c21a21f913cde946cc7aa149dab7c224ce6781d1ab",
+  "archiveBytes": 83861,
+  "sourceSha256": "fd0812d796fe1a40edf841ebd17a16004e130d0b4c47b20b93584c762bdc5af0",
+  "sourceUrl": "https://github.com/ianlucas/cs2-css-inventory-simulator/tree/v3.8.2",
   "files": [
     {
       "path": "addons/counterstrikesharp/gamedata/inventory-simulator.json",
-      "sha256": "902ca4183a715b857df6f06d40af113e151bc9fe6fa0f2592e21d5964976dee3"
-    },
-    {
-      "path": "addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.pdb",
-      "sha256": "a53a47276ccedd4639463d67ca94100cdb4cecbfc5a801533616109b466450f2"
+      "sha256": "c59a70bea67e75e107c58e8ee614474ccd76aa05453699f746b64f5317a30aa4"
     },
     {
       "path": "addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.deps.json",
       "sha256": "2a6336953530fbcf4e2716ed9b1ad4fb465d114b2ea2d6c91472ae4ec84ebc1e"
     },
     {
-      "path": "addons/counterstrikesharp/plugins/InventorySimulator/lang/zh-Hans.json",
-      "sha256": "c177f2c235504c6f6ca2a4c1322dfc7278a3707eb7d1ee3baae46a05999c20a3"
+      "path": "addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll",
+      "sha256": "5b74f10a48fe781fe5f06385a0f094b8c5f4e9a95ec98be3e07e947fe6dd91a9"
     },
     {
-      "path": "addons/counterstrikesharp/plugins/InventorySimulator/lang/pt-BR.json",
-      "sha256": "f04273f5c7e94c31c778590332949700633a51daf8c07f81df4931014dbb293d"
+      "path": "addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.pdb",
+      "sha256": "6e67f17b28b6fc0b0689f71a0c37e6f07cc447adddf0239efbadd6437bd3fc26"
     },
     {
       "path": "addons/counterstrikesharp/plugins/InventorySimulator/lang/en.json",
       "sha256": "2a97299d5e627339a4e88cc7214e1ae0011dceba9296944a89768a1f84cd433b"
     },
     {
-      "path": "addons/counterstrikesharp/plugins/InventorySimulator/InventorySimulator.dll",
-      "sha256": "865280c3849a4405cd5f32486c49d53cc6f83807199d0f4b559b8315ce435900"
+      "path": "addons/counterstrikesharp/plugins/InventorySimulator/lang/pt-BR.json",
+      "sha256": "f04273f5c7e94c31c778590332949700633a51daf8c07f81df4931014dbb293d"
+    },
+    {
+      "path": "addons/counterstrikesharp/plugins/InventorySimulator/lang/zh-Hans.json",
+      "sha256": "c177f2c235504c6f6ca2a4c1322dfc7278a3707eb7d1ee3baae46a05999c20a3"
     }
   ]
 }

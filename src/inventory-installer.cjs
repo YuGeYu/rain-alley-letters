@@ -10,9 +10,11 @@ const configPath = 'cfg/rain-alley-inventory.cfg';
 async function installInventory({ root, archive, runtimeArchive, keepBackup }) {
   const digest = crypto.createHash('sha256').update(await fs.readFile(archive)).digest('hex');
   if (digest !== inventoryManifest.archiveSha256) throw new Error('随应用附带的库存资源包校验失败。');
+  if (!runtimeArchive && !await require('./runtime-overlay.cjs').hasCompatibleRuntime(root)) throw new Error('共享运行库不完整，请选择共享运行库 ZIP 后重新安装。');
   return installOfficialPayload({ root, archive, keepBackup, entries: ['addons', 'cfg', 'gameinfo.gi'], preserveBot: true,
     extract: async (_archive, stage) => {
       // Reuse compatible runtime files only, without installing bot features.
+      if (runtimeArchive) {
       const runtime = await fs.mkdtemp(path.join(os.tmpdir(), 'alley-shared-runtime-'));
       try {
         // Native tar cannot read Electron ASAR virtual paths.
@@ -22,16 +24,20 @@ async function installInventory({ root, archive, runtimeArchive, keepBackup }) {
         const bundledManifest = require('./shared-runtime-manifest.json');
         if (![runtimeManifest.archiveSha256, bundledManifest.archiveSha256].includes(runtimeDigest)) throw new Error('共享运行库资源校验失败。');
         await extractArchive(localRuntime, runtime);
-        for (const item of runtimeManifest.files.filter(x => shared(x.path))) {
+        const selectedManifest = runtimeDigest === runtimeManifest.archiveSha256 ? runtimeManifest : bundledManifest;
+        for (const item of selectedManifest.files.filter(x => shared(x.path))) {
+          if (crypto.createHash('sha256').update(await fs.readFile(path.join(runtime,item.path))).digest('hex') !== item.sha256) throw new Error('共享运行库文件校验失败。');
           const target = path.join(stage, item.path);
           await fs.mkdir(path.dirname(target), { recursive: true });
           await fs.copyFile(path.join(runtime, item.path), target);
         }
+        await require('./runtime-overlay.cjs').applyRuntimeOverlay(stage, runtime, extractArchive);
         const core = path.join(stage, 'addons/counterstrikesharp/configs/core.json');
         const defaults = JSON.parse(await fs.readFile(core, 'utf8'));
         defaults.ServerLanguage = 'zh-Hans';
         await fs.writeFile(core, JSON.stringify(defaults, null, 2));
       } finally { await fs.rm(runtime, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); }
+      }
       // Windows tar cannot read inside app.asar; materialize the bundled ZIP.
       const bundled = path.join(stage, 'inventory.zip');
       await fs.copyFile(archive, bundled);

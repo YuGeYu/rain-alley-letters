@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test src/security.test.mjs src/community.test.mjs src/management.test.mjs",
+    "test": "node --test src/security.test.mjs src/community.test.mjs src/management.test.mjs src/player-tools.test.mjs",
     "dev": "cf dev",
     "build": "cf build",
     "deploy": "cf deploy"

@@ -1,4 +1,5 @@
 const manifest = require('./cs2-payload-manifest.json');
+const knownFiles = [...manifest.files, ...require('./cs2-legacy-payload-manifest.json').files];
 const botPlugins = new Set(['BotAI', 'BotAimImprover', 'BotBuy', 'BotControllerImpl', 'BotHiderImpl', 'BotRandomizer', 'BotState', 'NadeSystem', 'RoundDamageRecap'].map(x => x.toLowerCase()));
 const botAddons = new Set(['BotController', 'BotHider', 'BotVision', 'RayTrace'].map(x => x.toLowerCase()));
 function shared(relative) {
@@ -7,11 +8,11 @@ function shared(relative) {
   if (/^addons\/metamod\/(botcontroller|bothider|botvision|raytrace)\.vdf$/.test(p)) return false;
   return p.startsWith('addons/counterstrikesharp/') || p.startsWith('addons/metamod/') || /^addons\/metamod(?:_x64)?\.vdf$/.test(p);
 }
-const botFiles = new Set(manifest.files.filter(x => !shared(x.path)).map(x => x.path.toLowerCase()));
-const inventoryFiles = new Set(require('./inventory-payload-manifest.json').files.map(x => x.path.toLowerCase()));
-const runtimeFiles = new Set(manifest.files.filter(x => shared(x.path)).map(x => x.path.toLowerCase()));
+const botFiles = new Set(knownFiles.filter(x => !shared(x.path)).map(x => x.path.toLowerCase()));
+const inventoryFiles = new Set([...require('./inventory-payload-manifest.json').files,...require('./inventory-legacy-payload-manifest.json').files].map(x => x.path.toLowerCase()));
+const runtimeFiles = new Set(knownFiles.filter(x => shared(x.path)).map(x => x.path.toLowerCase()));
 // Compare file ownership on Windows without relying on saved UI installation flags.
-function owned(relative) { const p = relative.replaceAll('\\', '/').toLowerCase(); return botFiles.has(p) || inventoryFiles.has(p) || botAddons.has(p.split('/')[1]) || (p.startsWith('addons/counterstrikesharp/plugins/') && botPlugins.has(p.split('/')[3])) || p.startsWith('addons/counterstrikesharp/configs/plugins/inventorysimulator/'); }
+function owned(relative) { const p = relative.replaceAll('\\', '/').toLowerCase(); return botFiles.has(p) || inventoryFiles.has(p) || p.startsWith('addons/counterstrikesharp/plugins/inventorysimulator/') || botAddons.has(p.split('/')[1]) || (p.startsWith('addons/counterstrikesharp/plugins/') && botPlugins.has(p.split('/')[3])) || p.startsWith('addons/counterstrikesharp/configs/plugins/inventorysimulator/'); }
 function retainedRuntime(relative) {
   const p = relative.replaceAll('\\', '/').toLowerCase();
   return runtimeFiles.has(p) || p.startsWith('addons/counterstrikesharp/configs/') || p.startsWith('addons/counterstrikesharp/logs/') || p.startsWith('addons/counterstrikesharp/dotnet/');

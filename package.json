@@ -8,6 +8,9 @@
   "author": "雨巷来信工作室",
   "license": "AGPL-3.0-or-later",
   "scripts": {
+    "prepare:bilidesk": "node tools/prepare-bilidesk.cjs",
+    "test:bilidesk": "node --test tools/bilidesk-manager.test.cjs && node tools/bilidesk-runtime.cjs",
+    "preview:bilidesk": "node tools/bilidesk-runtime.cjs --preview --ui-only",
     "prepare-assets": "node tools/create-assets.cjs",
     "start": "node start.cjs",
     "test:cs2-uninstall": "node tools/cs2-uninstall-runtime-check.cjs",
@@ -16,10 +19,16 @@
     "test": "node --test tools/site-policy.test.cjs tools/netdisk.test.cjs tools/cs2-transaction.test.cjs tools/cs2-uninstall.test.cjs && node tools/renderer-smoke.cjs && node tools/_ui-runtime-check.cjs && node tools/cs2-install-runtime-check.cjs && node tools/spectrum-runtime-check.cjs && node --check src/celebration.js && node --check src/catalog.js && node --check src/renderer.js && node --check src/main.cjs && node --check src/preload.cjs && node --check src/site-preload.cjs && node --check src/netdisk-resolver.cjs && node --check src/features.js",
     "dist": "npm run prepare-assets && electron-builder --dir --win --x64 && node tools/build-direct-installer.cjs",
     "pack": "electron-builder --dir --win --x64",
+    "prepare:inventory": "node tools/prepare-inventory.cjs",
     "test:inventory": "node --test tools/inventory-coexist.test.cjs && node tools/inventory-runtime-check.cjs",
     "preview:inventory": "node tools/inventory-runtime-check.cjs --preview",
+    "prepare:demo": "node tools/prepare-demo.cjs",
     "test:demo": "node --test tools/demo-coexist.test.cjs tools/demo-gui.test.cjs && node tools/demo-runtime-check.cjs",
-    "preview:demo": "node tools/demo-runtime-check.cjs --preview"
+    "preview:demo": "node tools/demo-runtime-check.cjs --preview",
+    "prepare:xcmusic": "node tools/prepare-xcmusic.cjs",
+    "test:xcmusic": "node --test tools/xcmusic-manager.test.cjs && node tools/xcmusic-runtime.cjs",
+    "preview:xcmusic": "node tools/xcmusic-runtime.cjs --preview",
+    "check:resources": "node tools/check-resource-policy.cjs"
   },
   "devDependencies": {
     "electron": "^45.0.0",
@@ -37,7 +46,10 @@
       "assets/**/*",
       "LICENSE",
       "THIRD_PARTY_NOTICES.md",
-      "package.json"
+      "package.json",
+      "!assets/clients/BiliDesk-win-x64.zip",
+      "!assets/clients/XCMusic-win-x64.zip",
+      "!assets/plugins/cs2-shared-runtime.zip"
     ],
     "asar": true,
     "win": {
@@ -64,7 +76,8 @@
       "script": "installer.nsi",
       "installerHeader": "assets/installer-header.bmp",
       "installerSidebar": "assets/installer-sidebar.bmp"
-    }
+    },
+    "beforePack": "tools/check-resource-policy.cjs"
   },
   "dependencies": {
     "@sweetalert2/theme-dark": "5.0.26",

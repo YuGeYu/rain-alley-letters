@@ -1,10 +1,10 @@
 /* Emphasis is reserved for primary actions, key headings and achieved states. */
 :root { --spectrum: linear-gradient(115deg,#71efff,#b6a4ff 28%,#ff91d5 54%,#ffe3a3 75%,#71efff); --spectrum-ink: #101725; --spectrum-text: var(--spectrum); }
 :root[data-theme="light"] { --spectrum-text: linear-gradient(115deg,#006178,#5940ac 28%,#a62269 54%,#775000 75%,#006178); }
-.action-primary, .auth-submit, #credentialDoneButton, .hero-primary { background: var(--spectrum); background-size: 260% 100%; color: var(--spectrum-ink); border: 1px solid rgba(164,224,255,.65); box-shadow: 0 0 18px rgba(112,217,223,.15),inset 0 1px 0 rgba(255,255,255,.45); animation: alley-spectrum 9s ease-in-out infinite; font-weight: 650; }
+.action-primary, .auth-submit, #credentialDoneButton, .hero-primary { background: var(--spectrum); background-size: 260% 100%; animation: alley-spectrum 7s ease-in-out infinite; color: var(--spectrum-ink); border: 1px solid rgba(164,224,255,.65); box-shadow: 0 0 18px rgba(112,217,223,.15),inset 0 1px 0 rgba(255,255,255,.45); font-weight: 650; transition: filter 160ms ease, box-shadow 160ms ease; }
 :root :is(.action-primary,.auth-submit,#credentialDoneButton,.hero-primary):is(:hover,:focus-visible,:active):not(:disabled) { background-image: var(--spectrum); background-size: 260% 100%; background-color: #b6c9ff; color: var(--spectrum-ink); -webkit-text-fill-color: var(--spectrum-ink); box-shadow: 0 0 25px rgba(151,139,255,.35); filter: brightness(1.04); }
 .action-primary:disabled,.auth-submit:disabled { animation-play-state: paused; opacity: .6; }
-.scene-home-copy h1 span,#authTitle span,#detailTitle,.page-title,.feature-status.is-installed { background-image: var(--spectrum-text); background-size: 240% 100%; background-clip: text; -webkit-background-clip: text; color: transparent; animation: alley-spectrum 11s ease-in-out infinite; }
+.scene-home-copy h1 span,#authTitle span,#detailTitle,.page-title,.feature-status.is-installed { background-image: var(--spectrum-text); background-size: 260% 100%; background-clip: text; -webkit-background-clip: text; color: transparent; animation: alley-spectrum 9s ease-in-out infinite; }
 .feature-status.is-installed { border-color: #8c9be6; }
 .alley-celebration { opacity: .82; }
 /* Keep celebratory light behind readable surfaces and all interaction. */
